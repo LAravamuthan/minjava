@@ -6,6 +6,39 @@ import java.io.*;
 import java.lang.*;
 
 public class Convert{
+
+  /**
+   * read 8 bytes from given byte array at the specified position
+   * convert it to two set of integers
+   * @param  	data 		a byte array
+   * @param       position  	in data[]
+   * @exception   java.io.IOException I/O errors
+   * @return      an IntervalType object
+   */
+
+
+  public static IntervalType getIntervalValue (int position, byte []data) throws java.io.IOException
+  {
+    InputStream in;
+    DataInputStream instr;
+    IntervalType value;
+    byte tmp[] = new byte[12];
+    int start, end, level;
+    // copy the value from data array out to a tmp byte array
+    System.arraycopy (data, position, tmp, 0, 12);
+
+    /* creates a new data input stream to read data from the
+     * specified input stream
+     */
+    in = new ByteArrayInputStream(tmp);
+    instr = new DataInputStream(in);
+    start = instr.readInt();			//read the start value.
+    end = instr.readInt();			//read the end value.
+    level = instr.readInt();
+    value = new IntervalType();	//create an object of interval type after reading in start and end.
+    value.assign(start,end, level);		//assign start and end the corresponding values.
+    return value;
+  }
  
  /**
  * read 4 bytes from given byte array at the specified position
@@ -31,8 +64,7 @@ public class Convert{
        */
       in = new ByteArrayInputStream(tmp);
       instr = new DataInputStream(in);
-      value = instr.readInt();  
-      
+      value = instr.readInt();
       return value;
     }
   
@@ -302,4 +334,35 @@ public class Convert{
       System.arraycopy (B, 0, data, position, 2);
       
     }
+
+  /**
+   * Update a character in the given byte array at the specified position.
+   * @param       data            a byte array
+   * @param       value           the value to be copied into data[]
+   * @param       position        the position of tht value in data[]
+   * @exception   java.io.IOException I/O errors
+   */
+  public static void setIntervalValue (IntervalType value, int position, byte []data)
+          throws java.io.IOException
+  {
+    /* creates a new data output stream to write data to
+     * underlying output stream
+     */
+
+    OutputStream out = new ByteArrayOutputStream();
+    DataOutputStream outstr = new DataOutputStream (out);
+
+    // write the value to the output stream
+    outstr.writeInt(value.getS());
+    outstr.writeInt(value.getE());
+    outstr.writeInt(value.getL());
+
+    // creates a byte array with this output stream size and the
+    // valid contents of the buffer have been copied into it
+    byte []B = ((ByteArrayOutputStream) out).toByteArray();
+
+    // copies contents of this byte array into data[]
+    System.arraycopy (B, 0, data, position, 12);
+
+  }
 }

@@ -257,23 +257,47 @@ public class Tuple implements GlobalConst{
     *
     * @param    fldNo   the field number
     * @return           the character if success
-    *			
+    *
     * @exception   IOException I/O errors
     * @exception   FieldNumberOutOfBoundException Tuple field number out of bound
     */
 
-   public char getCharFld(int fldNo) 
-   	throws IOException, FieldNumberOutOfBoundException 
-    {   
+   public char getCharFld(int fldNo)
+   	throws IOException, FieldNumberOutOfBoundException
+    {
        char val;
-      if ( (fldNo > 0) && (fldNo <= fldCnt))      
+      if ( (fldNo > 0) && (fldNo <= fldCnt))
        {
         val = Convert.getCharValue(fldOffset[fldNo -1], data);
         return val;
        }
-      else 
+      else
        throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
- 
+
+    }
+
+
+    /**
+     * Convert this field into a IntervalType
+     *
+     * @param    fldNo   the field number
+     * @return           the Interval if success
+     *
+     * @exception   IOException I/O errors
+     * @exception   FieldNumberOutOfBoundException Tuple field number out of bound
+     */
+
+    public IntervalType getIntervalFld(int fldNo)
+            throws IOException, FieldNumberOutOfBoundException
+    {
+        IntervalType val;
+        if ( (fldNo > 0) && (fldNo <= fldCnt))
+        {
+            val = Convert.getIntervalValue(fldOffset[fldNo -1], data);
+            return val;
+        }
+        else
+            throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
     }
 
   /**
@@ -340,13 +364,34 @@ public class Tuple implements GlobalConst{
        throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
     }
 
+    /**
+     * Set this field to IntervalType value
+     *
+     * @param     fldNo   the field number
+     * @param     val     the IntervalType value
+     * @exception   IOException I/O errors
+     * @exception   FieldNumberOutOfBoundException Tuple field number out of bound
+     */
+
+    public Tuple setIntervalFld(int fldNo, IntervalType val)
+            throws IOException, FieldNumberOutOfBoundException
+    {
+        if ( (fldNo > 0) && (fldNo <= fldCnt))
+        {
+            Convert.setIntervalValue(val, fldOffset[fldNo -1], data);
+            return this;
+        }
+        else
+            throw new FieldNumberOutOfBoundException (null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
+    }
+
 
    /**
     * setHdr will set the header of this tuple.   
     *
     * @param	numFlds	  number of fields
-    * @param	types[]	  contains the types that will be in this tuple
-    * @param	strSizes[]      contains the sizes of the string 
+    * @param	types	  contains the types that will be in this tuple
+    * @param	strSizes      contains the sizes of the string
     *				
     * @exception IOException I/O errors
     * @exception InvalidTypeException Invalid tupe type
@@ -383,9 +428,13 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
      incr = 4;
      break;
 
-   case AttrType.attrReal:
-     incr =4;
-     break;
+    case AttrType.attrReal:
+        incr = 4;
+        break;
+
+    case AttrType.attrInterval:
+        incr = 12;
+        break;
 
    case AttrType.attrString:
      incr = (short) (strSizes[strCount] +2);  //strlen in bytes = strlen +2
@@ -406,9 +455,13 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
      incr = 4;
      break;
 
-   case AttrType.attrReal:
-     incr =4;
-     break;
+     case AttrType.attrReal:
+         incr = 4;
+         break;
+
+     case AttrType.attrInterval:
+         incr = 12;
+         break;
 
    case AttrType.attrString:
      incr =(short) ( strSizes[strCount] +2);  //strlen in bytes = strlen +2
@@ -468,6 +521,7 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
   int i, val;
   float fval;
   String sval;
+  IntervalType iVal;
 
   System.out.print("[");
   for (i=0; i< fldCnt-1; i++)
@@ -484,10 +538,16 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
      System.out.print(fval);
      break;
 
-   case AttrType.attrString:
-     sval = Convert.getStrValue(fldOffset[i], data,fldOffset[i+1] - fldOffset[i]);
-     System.out.print(sval);
-     break;
+    case AttrType.attrString:
+        sval = Convert.getStrValue(fldOffset[i], data, fldOffset[i + 1] - fldOffset[i]);
+        System.out.print(sval);
+        break;
+
+
+    case AttrType.attrInterval:
+        iVal = Convert.getIntervalValue(fldOffset[i], data);
+        System.out.print(iVal);
+        break;
   
    case AttrType.attrNull:
    case AttrType.attrSymbol:
@@ -508,10 +568,16 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
      System.out.print(fval);
      break;
 
-   case AttrType.attrString:
-     sval = Convert.getStrValue(fldOffset[i], data,fldOffset[i+1] - fldOffset[i]);
-     System.out.print(sval);
-     break;
+     case AttrType.attrString:
+         sval = Convert.getStrValue(fldOffset[i], data, fldOffset[i + 1] - fldOffset[i]);
+         System.out.print(sval);
+         break;
+
+
+     case AttrType.attrInterval:
+         iVal = Convert.getIntervalValue(fldOffset[i], data);
+         System.out.print(iVal);
+         break;
 
    case AttrType.attrNull:
    case AttrType.attrSymbol:

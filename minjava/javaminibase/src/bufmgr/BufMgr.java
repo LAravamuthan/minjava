@@ -465,8 +465,8 @@ public class BufMgr implements GlobalConst{
    * if emptyPage==TRUE, then actually no read is done to bring
    * the page in.
    *
-   * @param Page_Id_in_a_DB page number in the minibase.
-   * @param page the pointer poit to the page.       
+   * @param pin_pgid Page_Id_in_a_DB page number in the minibase.
+   * @param page the pointer poit to the page.
    * @param emptyPage true (empty page); false (non-empty page)
    *
    * @exception ReplacerException if there is a replacer error.

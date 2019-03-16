@@ -371,7 +371,6 @@ class JoinsDriverJT implements GlobalConst {
     expr[1].type2 = new AttrType(AttrType.attrInteger);
     expr[1].operand1.symbol = new FldSpec (new RelSpec(RelSpec.innerRel),2);
     expr[1].operand2.integer = 1;
- 
     expr[2] = null;
   }
 
