@@ -77,6 +77,27 @@ public abstract class pnodePQ
   public int pnodeCMP(pnode a, pnode b) 
          throws IOException, UnknowAttrType, TupleUtilsException {
     int ans = TupleUtils.CompareTupleWithTuple(fld_type, a.tuple, fld_no, b.tuple, fld_no);
+
+
+    try {
+      if (fld_type.attrType == AttrType.attrInterval) {
+        IntervalType aI, bI;
+        aI = a.tuple.getIntervalFld(fld_no);
+        bI = b.tuple.getIntervalFld(fld_no);
+        int aI_start, bI_start;
+        aI_start = aI.getS();
+        bI_start = bI.getS();
+        if (aI_start > bI_start) {
+          ans = 1;
+        } else if (aI_start < bI_start) {
+          ans = -1;
+        } else {
+          ans = 0;
+        }
+      }
+    } catch (FieldNumberOutOfBoundException e) {
+      e.printStackTrace();
+    }
     return ans;
   }
 

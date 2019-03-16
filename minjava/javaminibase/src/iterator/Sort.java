@@ -210,8 +210,39 @@ public class Sort extends Iterator implements GlobalConst
       cur_node = pcurr_Q.deq();
       if (cur_node == null) break; 
       p_elems_curr_Q --;
-      
-      comp_res = TupleUtils.CompareTupleWithValue(sortFldType, cur_node.tuple, _sort_fld, lastElem);  // need tuple_utils.java
+
+      /*
+   Implemented as part of Minibase changes.
+   Need to make Minibase changes. The conditions need to be set up appropriately over here. Function returns
+	– 1 for containment
+	– 2 for enclosure
+	– 3 for other types of overlap
+	– 0 for no-overlap
+  For enclosure(2) t1.start < t2.start so we are good. For 0, it could be either t1.e < t2.s || t1.s > t2.e. We will need to set it to true when t1.s < t2.s
+*/
+        IntervalType curr_val, last_val;
+        curr_val = last_val = null;
+        boolean interval_smaller = false;                //if the interval's start value is less than the other interval
+        boolean interval_larger = false;                //if the interval's start value is greater than the other interval
+        boolean is_interval = sortFldType.attrType == AttrType.attrInterval;
+
+
+        if (!is_interval)
+            comp_res = TupleUtils.CompareTupleWithValue(sortFldType, cur_node.tuple, _sort_fld, lastElem);  // need tuple_utils.java
+        else {
+            curr_val = cur_node.tuple.getIntervalFld(_sort_fld);    /*Added as part of Minibase changes. Get the intervaltype object for current element.*/
+            last_val = lastElem.getIntervalFld(_sort_fld);    /*Added as part of Minibase changes. Get the intervaltype object for last element.*/
+            int curr_s, last_s;
+            curr_s = curr_val.getS();
+            last_s = last_val.getS();
+//	System.out.println("curr_s = " + curr_s + " last_s = " + last_s);
+            if (curr_s < last_s)
+                comp_res = -1;
+            else if (curr_s == last_s)
+                comp_res = 0;
+            else
+                comp_res = 1;
+        }
       
       if ((comp_res < 0 && order.tupleOrder == TupleOrder.Ascending) || (comp_res > 0 && order.tupleOrder == TupleOrder.Descending)) {
 	// doesn't fit in current run, put into the other queue
@@ -491,6 +522,15 @@ public class Sort extends Iterator implements GlobalConst
       //      lastElem.setHdr(fld_no, junk, s_size);
       lastElem.setStrFld(_sort_fld, s);
       break;
+
+
+    case AttrType.attrInterval:
+        //      lastElem.setHdr(fld_no, junk, s_size);
+        IntervalType i_t =new IntervalType();
+        i_t.assign(-10000,-10000,0);
+        lastElem.setIntervalFld(_sort_fld, i_t);
+        break;
+
     default:
       // don't know how to handle attrSymbol, attrNull
       //System.err.println("error in sort.java");
@@ -530,10 +570,17 @@ public class Sort extends Iterator implements GlobalConst
       lastElem.setFloFld(_sort_fld, Float.MAX_VALUE);
       break;
     case AttrType.attrString:
-      //      lastElem.setHdr(fld_no, junk, s_size);
-      lastElem.setStrFld(_sort_fld, s);
-      break;
-    default:
+        //      lastElem.setHdr(fld_no, junk, s_size);
+        lastElem.setStrFld(_sort_fld, s);
+        break;
+    case AttrType.attrInterval:
+        //      lastElem.setHdr(fld_no, junk, s_size);
+        IntervalType i_t = new IntervalType();
+        i_t.assign(10000, 10000, 0);
+        lastElem.setIntervalFld(_sort_fld, i_t);
+        break;
+
+        default:
       // don't know how to handle attrSymbol, attrNull
       //System.err.println("error in sort.java");
       throw new UnknowAttrType("Sort.java: don't know how to handle attrSymbol, attrNull");
@@ -551,7 +598,7 @@ public class Sort extends Iterator implements GlobalConst
    * @param am an iterator for accessing the tuples
    * @param sort_fld the field number of the field to sort on
    * @param sort_order the sorting order (ASCENDING, DESCENDING)
-   * @param sort_field_len the length of the sort field
+   * @param sort_fld_len the length of the sort field
    * @param n_pages amount of memory (in pages) available for sorting
    * @exception IOException from lower layers
    * @exception SortException something went wrong in the lower layer. 

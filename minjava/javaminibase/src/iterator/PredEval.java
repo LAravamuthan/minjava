@@ -10,11 +10,11 @@ public class PredEval
    *predicate evaluate, according to the condition ConExpr, judge if 
    *the two tuple can join. if so, return true, otherwise false
    *@return true or false
-   *@param p[] single select condition array
+   *@param p single select condition array
    *@param t1 compared tuple1
    *@param t2 compared tuple2
-   *@param in1[] the attribute type corespond to the t1
-   *@param in2[] the attribute type corespond to the t2
+   *@param in1 the attribute type corespond to the t1
+   *@param in2 the attribute type corespond to the t2
    *@exception IOException  some I/O error
    *@exception UnknowAttrType don't know the attribute type
    *@exception InvalidTupleSizeException size of tuple not valid
@@ -64,11 +64,18 @@ public class PredEval
 		  comparison_type.attrType = AttrType.attrInteger;
 		  break;
 		case AttrType.attrReal:
-		  value.setHdr((short)1, val_type, null);
-		  value.setFloFld(1, temp_ptr.operand1.real);
-		  tuple1 = value;
-		  comparison_type.attrType =AttrType.attrReal; 
-		  break;
+			value.setHdr((short) 1, val_type, null);
+			value.setFloFld(1, temp_ptr.operand1.real);
+			tuple1 = value;
+			comparison_type.attrType = AttrType.attrReal;
+			break;
+
+		case AttrType.attrInterval:
+			value.setHdr((short) 1, val_type, null);
+			value.setIntervalFld(1, temp_ptr.operand1.interval);
+			tuple1 = value;
+			comparison_type.attrType = AttrType.attrInterval;
+			break;
 		case AttrType.attrString:
 		  str_size[0] = (short)(temp_ptr.operand1.string.length()+1 );
 		  value.setHdr((short)1, val_type, str_size);
@@ -104,10 +111,16 @@ public class PredEval
 		  tuple2 = value;
 		  break;
 		case AttrType.attrReal:
-		  value.setHdr((short)1, val_type, null);
-		  value.setFloFld(1, temp_ptr.operand2.real);
-		  tuple2 = value;
-		  break;
+			value.setHdr((short) 1, val_type, null);
+			value.setFloFld(1, temp_ptr.operand2.real);
+			tuple2 = value;
+			break;
+		case AttrType.attrInterval:
+			value.setHdr((short) 1, val_type, null);
+			value.setIntervalFld(1, temp_ptr.operand2.interval);
+			tuple1 = value;
+			comparison_type.attrType = AttrType.attrInterval;
+			break;
 		case AttrType.attrString:
 		  str_size[0] = (short)(temp_ptr.operand2.string.length()+1 );
 		  value.setHdr((short)1, val_type, str_size);
@@ -133,20 +146,81 @@ public class PredEval
 		throw new PredEvalException (e,"TupleUtilsException is caught by PredEval.java");
 	      }
 	      op_res = false;
+
+			boolean isIntervalType = comparison_type.attrType == AttrType.attrInterval;
+
+			IntervalType i1, i2;
+			int l1=0, l2=0;
+			if (isIntervalType) {
+				i1 = t1.getIntervalFld(1);
+				i2 = t2.getIntervalFld(1);
+				l1 = i1.getL();
+				l2 = i2.getL();
+			}
+
 	      
 	      switch (temp_ptr.op.attrOperator)
 		{
 		case AttrOperator.aopEQ:
-		  if (comp_res == 0) op_res = true;
+
+			if (isIntervalType) {
+
+				if (temp_ptr.flag == 0 && comp_res == 3)                //if flag = 0, then operands must be equal.
+				{
+					op_res = true;
+				} else if (temp_ptr.flag == 1 && comp_res != 0)            //if flag = 1, then operands must overlap.
+				{
+					op_res = true;
+				}
+			}
+		  else {
+		  	 if(comp_res == 0)
+				 op_res = true;
+			}
 		  break;
 		case AttrOperator.aopLT:
-		  if (comp_res <  0) op_res = true;
+			if (isIntervalType) {
+				if(comp_res == 1)		//for interval data type the comp_res value should be 1 for CONTAINED WITHIN.
+				{
+					if(temp_ptr.pc == 1 && l2 == l1 + 1)
+						op_res = true;
+					else if(temp_ptr.ad == 1 && l2 > l1 +1 )
+						op_res = true;
+				}
+			}
+		  else{
+		  	if(comp_res <  0)
+				op_res = true;
+		}
 		  break;
 		case AttrOperator.aopGT:
-		  if (comp_res >  0) op_res = true;
+			if (isIntervalType) {
+				if (comp_res == 2)        //for interval data type the comp_res value should be 2 ENCLOSES.
+				{
+					if (temp_ptr.pc == 1 && l2 == l1 + 1)
+						op_res = true;
+					else if (temp_ptr.ad == 1 && l2 > l1 + 1)
+						op_res = true;
+				}
+			} else {
+				if (comp_res > 0) op_res = true;
+			}
 		  break;
 		case AttrOperator.aopNE:
-		  if (comp_res != 0) op_res = true;
+			if (isIntervalType) {
+				if(temp_ptr.flag == 0 && comp_res != 3)			//flag=0, return true when they are not equal. 3 is returned when they are equal.
+				{
+					op_res = true;
+				}
+				else if(temp_ptr.flag == 1 && comp_res == 0)		//flag=1, return true when they don't overlap. 0 is returned when they do not overlap.
+				{
+					op_res = true;
+				}
+			}
+		  else {
+		  	if (comp_res != 0)
+				op_res = true;
+		}
 		  break;
 		case AttrOperator.aopLE:
 		  if (comp_res <= 0) op_res = true;

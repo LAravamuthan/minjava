@@ -14,6 +14,12 @@ public class CondExpr {
   /**
    * Operator like "<"
    */
+
+  public int flag;
+
+  public int pc = 0;
+  public int ad = 0;
+
   public AttrOperator op;    
   
   /**

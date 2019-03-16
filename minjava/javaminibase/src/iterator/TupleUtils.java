@@ -42,6 +42,7 @@ public class TupleUtils
       int   t1_i,  t2_i;
       float t1_r,  t2_r;
       String t1_s, t2_s;
+      IntervalType t1_iT, t2_iT;
       
       switch (fldType.attrType) 
 	{
@@ -66,19 +67,33 @@ public class TupleUtils
 	  if (t1_r == t2_r) return  0;
 	  if (t1_r <  t2_r) return -1;
 	  if (t1_r >  t2_r) return  1;
-	  
+
 	case AttrType.attrString:                // Compare two strings
-	  try {
-	    t1_s = t1.getStrFld(t1_fld_no);
-	    t2_s = t2.getStrFld(t2_fld_no);
-	  }catch (FieldNumberOutOfBoundException e){
-	    throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
-	  }
-	  
+		try {
+			t1_s = t1.getStrFld(t1_fld_no);
+			t2_s = t2.getStrFld(t2_fld_no);
+		} catch (FieldNumberOutOfBoundException e) {
+			throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
+		}
+		if(t1_s.compareTo( t2_s)>0)return 1;
+		if (t1_s.compareTo( t2_s)<0)return -1;
+		return 0;
+	case AttrType.attrInterval:
+		try {
+			t1_iT = t1.getIntervalFld(t1_fld_no);
+			t2_iT = t2.getIntervalFld(t2_fld_no);
+		} catch (FieldNumberOutOfBoundException e) {
+			throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
+		}
+		if (t1_iT.getS() > t2_iT.getS() && t1_iT.getE() < t2_iT.getE())         //interval 1 contained in interval 2
+			return 1;
+		if (t1_iT.getS() < t2_iT.getS() && t1_iT.getE() > t2_iT.getE())         //interval 1 encloses interval 2
+			return 2;
+		if (t1_iT.getS() > t2_iT.getE() || t1_iT.getE() < t2_iT.getS())        //no overlap
+			return 0;
+		return 3;
+
 	  // Now handle the special case that is posed by the max_values for strings...
-	  if(t1_s.compareTo( t2_s)>0)return 1;
-	  if (t1_s.compareTo( t2_s)<0)return -1;
-	  return 0;
 	default:
 	  
 	  throw new UnknowAttrType(null, "Don't know how to handle attrSymbol, attrNull");
@@ -117,7 +132,7 @@ public class TupleUtils
    *This function Compares two Tuple inn all fields 
    * @param t1 the first tuple
    * @param t2 the secocnd tuple
-   * @param type[] the field types
+   * @param types the field types
    * @param len the field numbers
    * @return  0        if the two are not equal,
    *          1        if the two are equal,
@@ -140,7 +155,7 @@ public class TupleUtils
   /**
    *get the string specified by the field number
    *@param tuple the tuple 
-   *@param fidno the field number
+   *@param fldno the field number
    *@return the content of the field number
    *@exception IOException some I/O fault
    *@exception TupleUtilsException exception from this class
@@ -192,12 +207,21 @@ public class TupleUtils
 	  }
 	  break;
 	case AttrType.attrString:
-	  try {
-	    value.setStrFld(fld_no, tuple.getStrFld(fld_no));
-	  }catch (FieldNumberOutOfBoundException e){
-	    throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
-	  }
-	  break;
+		try {
+			value.setStrFld(fld_no, tuple.getStrFld(fld_no));
+		} catch (FieldNumberOutOfBoundException e) {
+			throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
+		}
+		break;
+
+
+	case AttrType.attrInterval:
+		try {
+			value.setIntervalFld(fld_no, tuple.getIntervalFld(fld_no));
+		} catch (FieldNumberOutOfBoundException e) {
+			throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
+		}
+		break;
 	default:
 	  throw new UnknowAttrType(null, "Don't know how to handle attrSymbol, attrNull");
 	  
