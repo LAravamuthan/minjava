@@ -25,24 +25,57 @@ import java.util.Vector;
 
 
 
+//Creating a new class to test interval joins. 
+class IntervalTest{
+  public intervalType interval;		//an interval type
+  public String id;
 
+  public IntervalTest(intervalType _interval, String _id, int _level){
+   interval = _interval;
+   id = _id;
+ }
+}
 
-class JoinsDriverJT implements GlobalConst {
+class JoinsDriver implements GlobalConst {
   
   private boolean OK = true;
   private boolean FAIL = false;
   private Vector sailors;
   private Vector boats;
   private Vector reserves;
-  /** Constructor
-   */
-  public JoinsDriverJT() {
+  
+/* New constructor for interval joins testing */
+  private Vector intervals;
+
+  /* 
+     Constructor
+  */
+  public JoinsDriver() {
     
     //build Sailor, Boats, Reserves table
     sailors  = new Vector();
     boats    = new Vector();
     reserves = new Vector();
-    
+    intervals = new Vector();
+
+    intervalType A = new intervalType();  
+    A.assign(1,10,1);
+    intervalType B = new intervalType();  
+    B.assign(2,7,2);
+    intervalType C = new intervalType();  
+    C.assign(3,4,3);
+    intervalType D = new intervalType();  
+    D.assign(5,6,3);
+    intervalType E = new intervalType();  
+    E.assign(8,9,2);
+
+    intervals.addElement(A);
+    intervals.addElement(B);
+    intervals.addElement(C);
+    intervals.addElement(D);
+    intervals.addElement(D);
+
+
     sailors.addElement(new Sailor(53, "Bob Holloway",       9, 53.6));
     sailors.addElement(new Sailor(54, "Susan Horowitz",     1, 34.2));
     sailors.addElement(new Sailor(57, "Yannis Ioannidis",   8, 40.2));
@@ -334,25 +367,281 @@ class JoinsDriverJT implements GlobalConst {
       Runtime.getRuntime().exit(1);
     }
     
-  }
+    
+
+//Implemented as part of Minibase changes. Check if records with interval type data can be successfully inserted first. 
+    AttrType [] Itypes = new AttrType[3];
+    Itypes[0] = new AttrType(AttrType.attrInterval);
+    Itypes[1] = new AttrType(AttrType.attrString);
+ //   Itypes[2] = new AttrType(AttrType.attrInteger);
+
+    //SOS
+    short [] Isizes = new short [1];
+    Isizes[0] = 1;	//maximum allowed size
+    t = new Tuple();
+    try {
+      t.setHdr((short) 2, Itypes, Isizes);
+    }
+    catch (Exception e) {
+      System.err.println("*** error in Tuple.setHdr() for intervals relation ***");
+      status = FAIL;
+      e.printStackTrace();
+    }
+
+    size = t.size();
+    
+    f = null;
+    Heapfile f2 = null;
+    RID rid2 = null;
+
+    try{
+	f = new Heapfile("intervals.in");
+        f2 = new Heapfile("intervals2.in");
+    }
+    catch (Exception e) {
+      System.err.println("*** error in Heapfile constructor for intervals relation ***");
+      status = FAIL;
+      e.printStackTrace();
+    }
+    
+    t = new Tuple(size);
+    try {
+      t.setHdr((short) 2, Itypes, Isizes);
+    }
+    catch (Exception e) {
+      System.err.println("*** error in Tuple.setHdr() for intervals relation***");
+      status = FAIL;
+      e.printStackTrace();
+    }
+
+
+    int numintervals = intervals.size();
+    for(int i = 0 ; i < numintervals ; i++){
+      try{
+	  t.setIntervalFld(1, (intervalType)intervals.elementAt(i));
+	  t.setStrFld(2, "A");
+//int a = ((IntervalTest)intervals.elementAt(i)).level;
+//         System.out.println("id = " + a); 
+//	  t.setIntFld(3, ((IntervalTest)intervals.elementAt(i)).level);
+      }
+      catch (Exception e) {
+	System.err.println("*** error in Tuple.setStrFld() for intervals relation ***");
+	status = FAIL;
+	e.printStackTrace();
+      }      
+      
+      try {
+	rid = f.insertRecord(t.returnTupleByteArray());
+        if(i > 0 && i < 6)
+        	rid2 = f2.insertRecord(t.returnTupleByteArray());
+      }
+      catch (Exception e) {
+	System.err.println("*** error in Heapfile.insertRecord() for the intervals relation***");
+	status = FAIL;
+	e.printStackTrace();
+      }   
+    }
+
+   if (status != OK) {
+      //bail out
+      System.err.println ("*** Error creating relation for intervals");
+      Runtime.getRuntime().exit(1);
+    }
+ 
+  System.out.println("Records have been inserted into interval table successfully!!");   
+ }
   
   public boolean runTests() {
     
     Disclaimer();
-    Query1();
-    
+/*
+    Query1();   
     Query2();
     Query3();
     
    
     Query4();
     Query5();
+    System.out.println("Should start query 6 now");
     Query6();
+*/
+//     Query7();
+//     Query8();
+    test7();
+    System.out.println("Finished test 7 for testing interval sorting" + "\n");
+    System.out.println ("Finished joins testing"+"\n");
+    return true;
+  }
+
+
+  
+  /* Added 7th test for testing sort function on interval type. */
+  private boolean test7()
+  {
+    int SORTPGNUM = 12;
+    boolean status = OK;
+    intervalType[] data = new intervalType[10];
+    int numintervals = 6;
+
+    for(int i = 0 ; i < numintervals ; i++)
+      data[i] = new intervalType();
+
+   data[0].assign(1,12,1);
+   data[1].assign(3,4,2);
+   data[2].assign(2,5,3);
+   data[3].assign(9,10,4);
+   data[4].assign(7,8,5);
+   data[5].assign(6,11,6);
+
+ //  int intervalobjsize = instrumentation.getObjectSize(data[0]); 
+   short[] attrSize = new short[1];
+   short intervalobjsize = 12;		//2 integers, 4 bytes each.
+
+   short strsizes[] = new short[1];
+   strsizes[0] = 0;				//no strings in this relation. 
+ 
+   attrSize[0] = intervalobjsize;
+//   attrSize[1] = intervalobjsize;
+
+   AttrType[] attrType = new AttrType[1];
+   attrType[0] = new AttrType(AttrType.attrInterval);
+//   attrType[1] = new AttrType(AttrType.attrInterval);
+  
+   TupleOrder[] order = new TupleOrder[1];
+   order[0] = new TupleOrder(TupleOrder.Ascending);
+ //  order[1] = new TupleOrder(TupleOrder.Descending);
+  
+    // create a tuple of appropriate size
+    Tuple t = new Tuple();
+    try {
+      t.setHdr((short) 1, attrType, attrSize);
+    }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace();
+    }
+
+     int size = t.size();
     
+    // Create unsorted data file "test7.in"
     
-    System.out.print ("Finished joins testing"+"\n");
-   
+  
+    RID             rid;
+    Heapfile        f = null;
+    try {
+      f = new Heapfile("test8.in");
+    }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace();
+    }
     
+    t = new Tuple(size);
+    try {
+      t.setHdr((short) 1, attrType, attrSize);
+    }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace();
+    }
+
+    for(int i = 0 ; i < numintervals ; i++)
+    {
+	try{
+	   t.setIntervalFld(1,data[i]);	
+//           System.out.println(data[i].getStart() + " " + data[i].getEnd() + " " + data[i].getLevel());
+	}
+        catch (Exception e) {
+	status = FAIL;
+	e.printStackTrace();
+      }
+
+      try{
+        AttrType[] DTypes = {new AttrType(AttrType.attrInterval)};
+	System.out.println("Inserting :  ");
+        t.print(DTypes);
+	rid = f.insertRecord(t.returnTupleByteArray());
+      }
+      catch (Exception e) {
+	status = FAIL;
+	e.printStackTrace();
+      }
+    }
+
+   /**
+   *constructor
+   *@param file_name heapfile to be opened
+   *@param in1[]  array showing what the attributes of the input fields are. 
+   *@param s1_sizes[]  shows the length of the string fields.
+   *@param len_in1  number of attributes in the input tuple
+   *@param n_out_flds  number of fields in the out tuple
+   *@param proj_list  shows what input fields go where in the output tuple
+   *@param outFilter  select expressions
+
+   *@exception IOException some I/O fault
+   *@exception FileScanException exception from this class
+   *@exception TupleUtilsException exception from this class
+   *@exception InvalidRelation invalid relation 
+   */
+    FldSpec[] projlist = new FldSpec[1];
+    RelSpec rel = new RelSpec(RelSpec.outer); 
+    projlist[0] = new FldSpec(rel, 1);
+//    projlist[1] = new FldSpec(rel, 2);
+    
+    FileScan fscan = null;
+    
+    try {
+      fscan = new FileScan("test8.in", attrType, strsizes, (short)1 , (short)1, projlist, null);
+    }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace();
+    }
+
+    // Sort "test7.in"
+     /** 
+   * Class constructor, take information about the tuples, and set up 
+   * the sorting
+   * @param in array containing attribute types of the relation
+   * @param len_in number of columns in the relation
+   * @param str_sizes array of sizes of string attributes
+   * @param am an iterator for accessing the tuples
+   * @param sort_fld the field number of the field to sort on
+   * @param sort_order the sorting order (ASCENDING, DESCENDING)
+   * @param sort_field_len the length of the sort field
+   * @param n_pages amount of memory (in pages) available for sorting
+   * @exception IOException from lower layers
+   * @exception SortException something went wrong in the lower layer. 
+   */ 
+    Sort sort = null;
+    try {
+      sort = new Sort(attrType, (short) 1, strsizes, fscan, 1, order[0], intervalobjsize, SORTPGNUM);
+    }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace();
+    }
+  
+    int count = 0;
+    t = null;
+     
+    AttrType[]  RTypes = {new AttrType(AttrType.attrInterval)};	//get the types for the result tuple. 
+    System.out.println("\n\n******* Started printing the result tuples ********\n\n");
+    try {
+      while( (t = sort.get_next()) != null ){
+      	t.print(RTypes);
+//      intervaltype curr = t.getIntervalFld(1);
+//      System.out.println("start = " + curr.s + " end = " + curr.e);
+      	count++;
+	}
+    }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace(); 
+    }
+    
+    System.out.println("--------------------Test 7 completed successfully!---------------------------------");
+    System.out.println("Total number of tuples accessed : " + count);   
     return true;
   }
 
@@ -488,6 +777,18 @@ class JoinsDriverJT implements GlobalConst {
     expr2[1].operand2.string = "red";
  
     expr2[2] = null;
+  }
+  
+  private void Query7_CondExpr(CondExpr[] expr)
+  {
+    expr[0].next = null;
+    expr[0].flag = 0;
+    expr[0].op = new AttrOperator(AttrOperator.aopGT);
+    expr[0].type1 = new AttrType(AttrType.attrSymbol);
+    expr[0].type2 = new AttrType(AttrType.attrSymbol);
+    expr[0].operand1.symbol = new FldSpec (new RelSpec(RelSpec.outer),1);
+    expr[0].operand2.symbol = new FldSpec (new RelSpec(RelSpec.innerRel),1);
+    expr[1] = null;
   }
 
   public void Query1() {
@@ -1632,13 +1933,186 @@ class JoinsDriverJT implements GlobalConst {
       
       if (status != OK) {
 	//bail out
-	
+	System.out.println("There is some problem with Query 6!");
+	Runtime.getRuntime().exit(1);
+      }
+      System.out.println("Query 6 has completed. ");
+    }
+ 
+/* New Query for testing interval based joins */   
+    private void Query7() 
+    {
+ 
+    System.out.print("**********************Query7 strating *********************\n");
+      boolean status = OK;
+      // Sailors, Boats, Reserves Queries.
+      System.out.print( "Query: Test that joins based on intervals work."
+			+ "  SELECT   A.id, B.id, B.level\n"
+			+ "  FROM     IntervalTest A, IntervalTest B\n"
+			+ "  WHERE    A.interval > B.interval \n"
+			+ " All we are doing is testing if the > operator will work for the join. "
+			+ "(Tests FileScan, Multiple Selection, Projection,sort and nested-loop join.)\n\n");
+      
+     CondExpr [] outFilter  = new CondExpr[2];		//create 2 conditional expressions. The last oe is always null to indicate end. 
+     outFilter[0] = new CondExpr();
+     outFilter[1] = new CondExpr();
+     Query7_CondExpr(outFilter);			//outfilter will vary
+
+      AttrType [] Atypes = {
+	new AttrType(AttrType.attrInterval), 
+	new AttrType(AttrType.attrString), 
+	new AttrType(AttrType.attrInteger)
+      };
+      short []   Asizes = new short[1];
+      Asizes[0] = 10;
+
+      FldSpec [] Aprojection = {				//3 fields which we want to display in the projection list. 
+	new FldSpec(new RelSpec(RelSpec.outer), 1),
+	new FldSpec(new RelSpec(RelSpec.outer), 2),
+        new FldSpec(new RelSpec(RelSpec.outer), 3)
+      };
+      
+      AttrType [] Btypes = {
+	new AttrType(AttrType.attrInterval), 
+	new AttrType(AttrType.attrString), 
+	new AttrType(AttrType.attrInteger)
+      };
+      short []   Bsizes = new short[1];
+      Bsizes[0] = 10;
+
+      FldSpec [] Bprojection = {				//3 fields which we want to display in the projection list. 
+	new FldSpec(new RelSpec(RelSpec.outer), 1),
+	new FldSpec(new RelSpec(RelSpec.outer), 2),
+        new FldSpec(new RelSpec(RelSpec.outer), 3)
+      };
+      
+          
+      FileScan am = null;					//Finally am will hold all the data from intervals.in file, containing all 3 columns. 
+      try {
+	am  = new FileScan("intervals.in", Atypes, Asizes, 
+			   (short)3, (short)3,
+			   Aprojection, null);
+      }
+       catch (Exception e) {
+	status = FAIL;
+	System.err.println (""+e);
+	e.printStackTrace();
+      }
+   
+      Tuple test = new Tuple();
+/*
+      AttrType[] attrs = new AttrType[]{ new AttrType(AttrType.attrInterval),new AttrType(AttrType.attrString), new AttrType(AttrType.attrInteger)};
+      try{
+        for(int i = 0 ; i < 3 ; i++)
+        {
+	  test = am.get_next();
+          test.print(attrs);
+        }
+      }
+      catch(IOException | InvalidTypeException e) {
+	System.err.println ("*** Error outputting tuples ");
+	System.err.println (""+e);
+     }
+*/
+
+      if (status != OK) {
+	//bail out
+	System.err.println ("*** Error setting up scan for intervals");
 	Runtime.getRuntime().exit(1);
       }
       
-    }
-  
-  
+       FldSpec [] proj1  = {
+	new FldSpec(new RelSpec(RelSpec.outer), 1),
+	new FldSpec(new RelSpec(RelSpec.innerRel), 1),
+	new FldSpec(new RelSpec(RelSpec.outer), 2),
+        new FldSpec(new RelSpec(RelSpec.innerRel),2),
+        new FldSpec(new RelSpec(RelSpec.innerRel),3)
+      };
+
+      System.out.println("Outfilter[0] = " + outFilter[0]);
+      System.out.println(outFilter[0].type1);
+      System.out.println(outFilter[0].type2);
+
+
+      NestedLoopsJoins nlj = null;
+      NestedLoopsJoins nlj2 = null;
+
+      try {
+	nlj = new NestedLoopsJoins (Atypes, 3, Asizes,
+				    Btypes, 3, Bsizes,
+				    10,
+				  am, "intervals.in",
+				    outFilter, null, proj1, 5);
+      }
+      catch (Exception e) {
+	System.err.println ("*** Error preparing for nested_loop_join");
+	System.err.println (""+e);
+	e.printStackTrace();
+	Runtime.getRuntime().exit(1);
+      }
+     
+       
+       if(nlj != null)
+	  System.out.println("Nested loop join object created successfully!!");
+
+       AttrType [] Rtype = {
+	new AttrType(AttrType.attrInterval),
+	new AttrType(AttrType.attrInterval),
+	new AttrType(AttrType.attrString),
+        new AttrType(AttrType.attrString),
+	new AttrType(AttrType.attrInteger) 
+      };
+
+       Tuple t = new Tuple();		//create a result array which contains all tuples satifying join condition
+       Tuple res[] = new Tuple[30];
+
+       for(int i = 0 ; i < 30 ; i++)
+          res[i] =null;
+       int count = 0;
+
+
+       nlj2 = nlj;
+
+       try {
+	while ((t = nlj.get_next()) !=null) {
+          res[count++] = t;
+	  System.out.println("THE CONDITION IS TRUE FOR THIS TUPLE : PRINTING IT NOW" );
+	  t.print(Rtype);
+	}
+      }catch (Exception e) {
+	System.err.println ("*** Error preparing for get_next tuple");
+	System.err.println (""+e);
+	Runtime.getRuntime().exit(1);
+      }
+
+/* Seeing if causing get_next() once will cause a second invocation of get_next to fail as well. */
+      
+      System.out.println("Now trying for the nlj2 object : " + nlj2);
+       try {
+	while ((t = nlj2.get_next()) !=null) {
+	  System.out.println("THE CONDITION IS TRUE FOR THIS TUPLE : PRINTING IT NOW" );
+	  t.print(Rtype);
+	}
+      }catch (Exception e) {
+	System.err.println ("*** Error preparing for get_next tuple");
+	System.err.println (""+e);
+	Runtime.getRuntime().exit(1);
+      }
+
+
+      for(int i = 0 ; i < count ; i++)
+      {
+        try{
+        res[i].print(Rtype);
+       }
+       catch(IOException ie){
+       	 ie.printStackTrace();
+       }
+      }	
+      System.out.println("No of tuples read : " + count);
+      System.out.println("All tuples printed out successfully!");
+}
+
   private void Disclaimer() {
     System.out.print ("\n\nAny resemblance of persons in this database to"
          + " people living or dead\nis purely coincidental. The contents of "
@@ -1646,17 +2120,634 @@ class JoinsDriverJT implements GlobalConst {
          + " the Computer  Sciences Department or the\n"
          + "developers...\n\n");
   }
+
+/*
+Query to test for sort-merge join 
+*/
+/* Two conditions : One is interval should be greater and next is level should be greater. */
+private void Query8_CondExpr(CondExpr[] expr)
+{
+    expr[0].next  = null;
+    expr[0].op    = new AttrOperator(AttrOperator.aopGT);
+    expr[0].type1 = new AttrType(AttrType.attrSymbol);
+    expr[0].type2 = new AttrType(AttrType.attrSymbol);
+    expr[0].operand1.symbol = new FldSpec (new RelSpec(RelSpec.outer),1);
+    expr[0].operand2.symbol = new FldSpec (new RelSpec(RelSpec.innerRel),1); 
+
+/*
+    expr[1].next  = null;
+    expr[1].op    = new AttrOperator(AttrOperator.aopGT);
+    expr[1].type1 = new AttrType(AttrType.attrSymbol);
+    expr[1].type2 = new AttrType(AttrType.attrSymbol);
+    expr[1].operand1.symbol = new FldSpec (new RelSpec(RelSpec.outer),3);
+    expr[1].operand2.symbol = new FldSpec (new RelSpec(RelSpec.innerRel),3);
+*/
+    expr[1] = null;
 }
+
+public void Query8() {
+    
+    System.out.print("**********************Query 8 starting *********************\n");
+    boolean status = OK;
+    
+    // Sailors, Boats, Reserves Queries.
+    System.out.print (" Query to test for Sort-Merge join ");
+ 
+    CondExpr[] outFilter = new CondExpr[2];
+    outFilter[0] = new CondExpr(); 
+//    outFilter[1] = new CondExpr();
+    Query8_CondExpr(outFilter);			//condition filter. 
+ 
+    Tuple t = new Tuple();
+    
+    //Attribute types which are present in the relation. 
+    AttrType [] Stypes = new AttrType[3];				
+    Stypes[0] = new AttrType (AttrType.attrInterval);
+    Stypes[1] = new AttrType (AttrType.attrString);
+    Stypes[2] = new AttrType (AttrType.attrInteger);
+   
+    //SOS
+    short [] Ssizes = new short[1];
+    Ssizes[0] = 1; 
+    
+    FldSpec [] Sprojection = new FldSpec[3];					/* We are only projecting the interval and string values out now. */
+    Sprojection[0] = new FldSpec(new RelSpec(RelSpec.outer), 1);
+    Sprojection[1] = new FldSpec(new RelSpec(RelSpec.outer), 2);	
+    Sprojection[2] = new FldSpec(new RelSpec(RelSpec.outer), 3);
+
+  
+    FileScan am = null;
+    try {
+      am  = new FileScan("intervals.in", Stypes, Ssizes, 
+				  (short)3, (short)3,
+				  Sprojection, null);
+    }
+    catch (Exception e) {
+      status = FAIL;
+      System.err.println (""+e);
+    }
+
+    if (status != OK) {
+      //bail out
+      System.err.println ("*** Error setting up scan for intervals");
+      Runtime.getRuntime().exit(1);
+    }
+    
+    AttrType [] Rtypes = new AttrType[3];
+    Rtypes[0] = new AttrType (AttrType.attrInterval);
+    Rtypes[1] = new AttrType (AttrType.attrString);
+    Rtypes[2] = new AttrType (AttrType.attrInteger);
+
+    short [] Rsizes = new short[1];
+    Rsizes[0] = 1; 
+
+    FldSpec [] Rprojection = new FldSpec[3];
+    Rprojection[0] = new FldSpec(new RelSpec(RelSpec.outer), 1);
+    Rprojection[1] = new FldSpec(new RelSpec(RelSpec.outer), 2);
+    Rprojection[2] = new FldSpec(new RelSpec(RelSpec.outer), 3);
+ 
+    FileScan am2 = null;
+    try {
+      am2 = new FileScan("intervals2.in", Rtypes, Rsizes, 
+				  (short)3, (short) 3,
+				  Rprojection, null);
+    }    
+    catch (Exception e) {
+      status = FAIL;
+      System.err.println (""+e);
+    }
+  
+/*
+    AttrType[] attrs = {new AttrType(AttrType.attrInterval), new AttrType(AttrType.attrString), new AttrType(AttrType.attrInteger)};
+    try{
+      while((t = am2.get_next()) != null)
+        t.print(attrs);
+    }
+    catch(Exception e){
+    }
+
+    if (status != OK) {
+      //bail out
+      System.err.println ("*** Error setting up scan for intervals");
+      Runtime.getRuntime().exit(1);
+    }
+*/   
+ 
+    FldSpec [] proj_list = new FldSpec[6];
+    proj_list[0] = new FldSpec(new RelSpec(RelSpec.outer), 1);	//project all the 6 columns. 
+    proj_list[1] = new FldSpec(new RelSpec(RelSpec.outer), 2);
+    proj_list[2] = new FldSpec(new RelSpec(RelSpec.outer), 3);
+    proj_list[3] = new FldSpec(new RelSpec(RelSpec.innerRel), 1);
+    proj_list[4] = new FldSpec(new RelSpec(RelSpec.innerRel), 2);
+    proj_list[5] = new FldSpec(new RelSpec(RelSpec.innerRel), 3);
+
+   
+    TupleOrder ascending = new TupleOrder(TupleOrder.Ascending);
+    
+    SortMerge sm = null;
+    try {
+      sm = new SortMerge(Stypes, 3, Ssizes,
+			 Rtypes, 3, Rsizes,
+			 1, 8, 
+			 1, 8, 
+			 10,
+			 am, am2, 
+			 false, false, ascending,
+			 outFilter, proj_list, 6);
+    }
+    catch (Exception e) {
+      System.err.println("*** join error in SortMerge constructor ***"); 
+      status = FAIL;
+      System.err.println (""+e);
+      e.printStackTrace();
+    }
+
+    if (status != OK) {
+      //bail out
+      System.err.println ("*** Error constructing SortMerge");
+      Runtime.getRuntime().exit(1);
+    }
+
+    AttrType [] jtype = new AttrType[6];
+
+    jtype[0] = new AttrType (AttrType.attrInterval);
+    jtype[1] = new AttrType (AttrType.attrString);
+    jtype[2] = new AttrType (AttrType.attrInteger);
+    jtype[3] = new AttrType (AttrType.attrInterval);
+    jtype[4] = new AttrType (AttrType.attrString);
+    jtype[5] = new AttrType (AttrType.attrInteger);
+    
+    t = null;
+    System.out.println("----------JOIN COMPLETED SUCCESSFULLY. PLEASE FIND RESULTS BELOW------------");
+    int count = 0;
+
+    try {
+      System.out.println("Tuple " + count + ":");
+      while ((t = sm.get_next()) != null) {
+        System.out.println("printing tuple : ");
+        t.print(jtype);
+      }
+    }
+    catch (Exception e) {
+      System.err.println (""+e);
+       e.printStackTrace();
+       status = FAIL;
+    }
+    if (status != OK) {
+      //bail out
+      System.err.println ("*** Error in get next tuple ");
+      Runtime.getRuntime().exit(1);
+    }
+   
+    try {
+      sm.close();
+    }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace();
+    }
+    System.out.println ("\n"); 
+    if (status != OK) {
+      //bail out
+      System.err.println ("*** Error in closing ");
+      Runtime.getRuntime().exit(1);
+    }
+}
+
+/*
+A
+|
+B
+*/
+
+
+
+//read the data table
+public FileScan readtable(String key, int pos)	//read in the initial heapfile and return pointer. 
+{
+    boolean status = OK;  
+    String nodes[] = {"A","B","C","D","E"};
+
+    AttrType [] Itypes = new AttrType[2];
+    Itypes[0] = new AttrType(AttrType.attrInterval);
+    Itypes[1] = new AttrType(AttrType.attrString);
+   
+    FldSpec[] Sprojection = new FldSpec[2];
+    Sprojection[0] = new FldSpec(new RelSpec(RelSpec.outer),1);
+    Sprojection[1] = new FldSpec(new RelSpec(RelSpec.outer),2);
+
+//Create the filter for select expression. 
+    CondExpr[] selectFilter = new CondExpr[2];
+    selectFilter[0] = new CondExpr();
+    selectFilter[0].next = null;
+    selectFilter[0].op    = new AttrOperator(AttrOperator.aopEQ);
+    selectFilter[0].type1 = new AttrType(AttrType.attrSymbol);		//S.interval > R.interval
+    selectFilter[0].type2 = new AttrType(AttrType.attrString);
+    selectFilter[0].operand1.symbol = new FldSpec (new RelSpec(RelSpec.outer),pos); 
+    selectFilter[0].operand2.string = key; 
+
+    selectFilter[1] = null;
+
+    //SOS
+    short [] Isizes = new short [1];
+    Isizes[0] = 1;	//maximum allowed size
+    Tuple t = new Tuple();
+    try {
+      t.setHdr((short) 2, Itypes, Isizes);
+    }
+    catch (Exception e) {
+      System.err.println("*** error in Tuple.setHdr() for intervals relation ***");
+      status = FAIL;
+      e.printStackTrace();
+    }
+
+    int size = t.size();
+    
+    RID rid = null;
+    Heapfile f = null;
+    try{
+	f = new Heapfile("intervals.in");
+    }
+    catch (Exception e) {
+      System.err.println("*** error in Heapfile constructor for intervals relation ***");
+      status = FAIL;
+      e.printStackTrace();
+    }
+    
+    t = new Tuple(size);
+    try {
+      t.setHdr((short) 2, Itypes, Isizes);
+    }
+    catch (Exception e) {
+      System.err.println("*** error in Tuple.setHdr() for intervals relation***");
+      status = FAIL;
+      e.printStackTrace();
+    }
+
+
+    int numintervals = intervals.size();
+    for(int i = 0 ; i < numintervals ; i++){
+      try{
+	  t.setIntervalFld(1, (intervalType)intervals.elementAt(i));   //Interval String <>
+	  t.setStrFld(2, nodes[i]); 
+      }
+      catch (Exception e) {
+	System.err.println("*** error in Tuple.setStrFld() for intervals relation ***");
+	status = FAIL;
+	e.printStackTrace();
+      }      
+      
+      try {
+	rid = f.insertRecord(t.returnTupleByteArray());
+      }
+      catch (Exception e) {
+	System.err.println("*** error in Heapfile.insertRecord() for the intervals relation***");
+	status = FAIL;
+	e.printStackTrace();
+      }   
+   
+   if (status != OK) {
+      //bail out
+      System.err.println ("*** Error creating relation for intervals");
+      Runtime.getRuntime().exit(1);
+    }
+  }
+
+   FileScan am = null;					//Finally am will hold all the data from intervals.in file, containing all 3 columns. 
+      try {
+	am  = new FileScan("intervals.in", Itypes, Isizes, 
+			   (short)2, (short)2,
+			   Sprojection, selectFilter);
+      }
+       catch (Exception e) {
+	status = FAIL;
+	System.err.println (""+e);
+	e.printStackTrace();
+      }
+
+  System.out.println("Records have been inserted into interval table successfully!!");
+  return am;
+}
+
+//Create the conditional expression for the join query. 
+void createjoinquery_condexpr(CondExpr[] expr, String rel, int intervalpos1, int intervalpos2)
+{
+    expr[0].next = null;
+    expr[0].op    = new AttrOperator(AttrOperator.aopGT);
+    expr[0].type1 = new AttrType(AttrType.attrSymbol);		//S.interval > R.interval
+    expr[0].type2 = new AttrType(AttrType.attrSymbol);
+    expr[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer),intervalpos1); 
+    expr[0].operand2.symbol = new FldSpec(new RelSpec(RelSpec.innerRel),intervalpos2); 
+    
+    if(rel == "AD")
+       expr[0].ad = 1;
+    else 
+       expr[0].pc = 1;
+
+   expr[1] = null;
+}
+
+/*
+a
+|
+b
+
+T:  interval id
+     1,3     A
+*/
+
+//only need one iterator as nested loop join 
+public iterator.Iterator createjoinquery(FileScan am, String child , int intervalpos1, int intervalpos2, AttrType[] attr, String rel, int num_attrs, int pos) throws JoinsException
+{
+
+boolean status = OK;
+
+CondExpr[] outFilter = new CondExpr[2];		//will give 3 
+outFilter[0] = new CondExpr();
+
+//define conditions for join query
+createjoinquery_condexpr(outFilter, rel, intervalpos1, intervalpos2);
+    
+System.out.println("conditional expression created");
+
+AttrType[] Stypes = new AttrType[num_attrs];				
+for(int i = 0 ; i < num_attrs ; i++)
+ Stypes[i] = new AttrType(attr[i].attrType);				
+
+short [] Ssizes = new short[1];
+Ssizes[0] = 1; //first elt. is 30
+    
+/*Code for filescan using select*/
+
+/* Attribute types for the big intervals.in relation */
+AttrType [] Rtypes = new AttrType[2];				/*Here he's defining all the data types for the sailors relation*/
+Rtypes[0] = new AttrType(AttrType.attrInterval);
+Rtypes[1] = new AttrType(AttrType.attrString);
+
+//SOS
+short [] Rsizes = new short[1];
+Rsizes[0] = 1; 
+
+FldSpec[] RProjection = new FldSpec[2];
+RProjection[0] =  new FldSpec(new RelSpec(RelSpec.outer), 1); 
+RProjection[1] = new FldSpec(new RelSpec(RelSpec.outer), 2);
+
+FileScan table = null;	
+
+CondExpr[] selectFilter = new CondExpr[1];
+selectFilter[0] = new CondExpr();
+selectFilter[0].next = null;
+selectFilter[0].op    = new AttrOperator(AttrOperator.aopEQ);
+selectFilter[0].type1 = new AttrType(AttrType.attrSymbol);		//The equality condition on main table. 
+selectFilter[0].type2 = new AttrType(AttrType.attrString);
+selectFilter[0].operand1.symbol = new FldSpec (new RelSpec(RelSpec.outer),pos); 
+selectFilter[0].operand2.string = child; 
+		
+try {
+      table  = new FileScan("intervals.in", Rtypes, Rsizes, (short)2, (short)2, RProjection, selectFilter);
+}
+catch (Exception e) {
+      status = FAIL;
+      System.err.println (""+e);
+}
+
+try{
+Tuple t = new Tuple();
+AttrType[] Dtypes = {new AttrType(AttrType.attrInterval),new AttrType(AttrType.attrString)};
+System.out.println("Scanned tuples = " );
+while((t = table.get_next()) != null)
+  t.print(Dtypes);
+}
+catch(Exception e){
+
+}
+/*Code for filescan based on select condition ends*/
+
+
+/*Code to get the nested loop join iterator */
+
+//Deciding the schema for the final output table. 
+FldSpec [] Projection = new FldSpec[num_attrs+2];				
+
+for(int i = 0 ; i < num_attrs ; i++)
+  Projection[i] = new FldSpec(new RelSpec(RelSpec.outer), i+1);
+Projection[num_attrs] =  new FldSpec(new RelSpec(RelSpec.innerRel), 1);
+Projection[num_attrs+1] = new FldSpec(new RelSpec(RelSpec.innerRel), 2);
+
+if(outFilter == null)
+	System.out.println("outfilter is null");
+
+
+NestedLoopsJoins nlj = null;
+try {
+      nlj = new NestedLoopsJoins (Stypes, num_attrs, Ssizes,
+				  Rtypes, 2, Rsizes,
+				  50,
+				  table, "intervals.in",
+				  outFilter, null, Projection, num_attrs+2);
+}
+    catch (Exception e) {
+      System.err.println ("*** Error preparing for nested_loop_join");
+      System.err.println (""+e);
+      e.printStackTrace();
+      Runtime.getRuntime().exit(1);
+      status = FAIL;
+    }
+
+    if (status != OK) {
+      //bail out
+      System.err.println ("*** Error setting up scan for sailors");
+      Runtime.getRuntime().exit(1);
+    }
+
+/*
+Tuple t = new Tuple();
+t.setHdr(short(num_attrs+2), )
+*/
+
+return (iterator.Iterator)nlj;			//returns the nested loop join object constructed. 
+}
+
+/* First read parent table. Then perform one level of join. */
+  public void genqueryplan(ArrayList<Integer>[] graph, String[] keys, int[][] PC, int[][] AD) throws JoinsException, IndexException, IOException	
+  {
+
+	int p = 1;
+        int c = graph[p].get(0);			//fetch the first child.
+	for(int i = 1 ; i <= 5 ; i++)
+        {
+           for(int j = 0 ; j < graph[i].size() ; j++)
+             System.out.print(graph[i].get(j) + " " );
+           System.out.println();
+        }
+
+	String parent = keys[p];
+	String child = keys[c];
+        for(int i = 1 ; i <= 5 ; i++)
+           System.out.println(keys[i] + " ");
+
+	System.out.println("parent = " + parent + " child = " + child);
+
+	String rel = "";
+
+	if(PC[p][c] == 1)
+	  rel = "PC";
+        else if(AD[p][c] == 1)
+          rel = "AD";
+
+	int intervalpos1 = 1;
+        int intervalpos2 = 1;
+
+	FileScan data;
+	iterator.Iterator a1, a2;
+	int num_attrs = 2;        //for the initial table. 
+
+        AttrType[] attr = {new AttrType(AttrType.attrInterval),new AttrType(AttrType.attrString)};
+	
+        data = readtable(parent, 2);		//the node is at position 2.
+	if(data !=  null)
+          System.out.println("able to read data successfully!"); 	
+        
+	AttrType[] DTypes = {new AttrType(AttrType.attrInterval), new AttrType(AttrType.attrString)}; 
+        Tuple t = new Tuple();
+/*
+        try{
+           while( (t = data.get_next()) != null)
+		t.print(DTypes);
+        }
+	catch(Exception e){
+		e.printStackTrace();
+        }		
+*/
+
+	a2 = createjoinquery(data, child, intervalpos1, intervalpos2, attr, rel, num_attrs, 2);       //Takes as input,
+        System.out.println("Query created successfully!"); 
+	
+   /*
+        try{
+           while( (t = a2.get_next()) != null)
+		t.print(DTypes);
+        }
+	catch(Exception e){
+		e.printStackTrace();
+        }
+   */
+  }
+
+} //end of class
+
+
 
 public class JoinTest
 {
-  public static void main(String argv[])
+
+public static ArrayList<Integer>[] graph;
+public static String[] keys;
+public static int[][] PC;
+public static int[][] AD;
+
+public static ArrayList<Integer>[] getgraph() throws IOException {
+		// TODO Auto-generated method stub
+
+		String path = System.getProperty("user.dir") + "/data";
+		System.out.println(path);
+		File file = new File(path);
+
+                BufferedReader br = null;
+		int n,i,count,tagcount;
+                i = n = count = tagcount = 0;
+		String line;
+
+		try{
+			br = new BufferedReader(new FileReader(file));
+		   	line = br.readLine();
+			n = Integer.parseInt(line);
+			keys = new String[n+1];
+			i = 0;
+			count = n;
+		}
+		 catch(IOException ioe){
+			ioe.printStackTrace();
+		      }
+
+ 		String[] tagmap = new String[count];		//store the mapping from node number to tag. 
+
+		//get the tags from the next few lines. 
+		while(count >= 1)
+		{
+		      String tag = "";
+                      try{
+			tag = br.readLine();
+		      }
+                      catch(IOException ioe){
+			ioe.printStackTrace();
+		      }
+			keys[tagcount] = tag;
+			tagcount++;
+			count--;
+			System.out.println(tag);
+		}
+		
+		PC = new int[n+1][n+1];			//parent child matrix. 
+		AD = new int[n+1][n+1];
+		
+		for(i = 0 ; i <= n ; i++)
+			for(int j = 0 ; j <= n ; j++)
+				AD[i][j] = PC[i][j] = 0;
+		
+		System.out.println("Starting next loop now : \n");
+	
+		graph = new ArrayList[n+1];
+		for(i = 0 ; i <= n ; i++)
+			graph[i] = new ArrayList<Integer>();
+		
+		int desc_count[] = new int[n+1];
+		for(i = 0 ; i <= n ; i++)
+			desc_count[i] = 0;			//count no of descendants for each node. 
+		
+		while((line = br.readLine()) != null)
+		{
+			String tokens[] = line.split(" ");
+			int a = Integer.parseInt(tokens[0]); //1 2 PC
+			int d = Integer.parseInt(tokens[1]);
+			String rel = tokens[2];
+	//		System.out.println(tokens[0] + " " +  tokens[1] +  " " + rel);
+			if(rel == "AD")
+				AD[a][d] = 1;
+			else
+				PC[a][d] = 1;
+			graph[a].add(d);
+			desc_count[a]++;
+		}
+		
+		int root = 1;
+	
+		for(i = 0 ; i <= n ; i++)
+		{
+			System.out.println(graph[i]);
+		}		
+	
+	boolean visited[] = new boolean[n+1];
+	for(i = 1 ; i <= n ; i++)
+		visited[i] = false;	
+	br.close();
+        return graph;
+/*
+	List<Integer> pathtillnow = new ArrayList<Integer>();
+	dfs(graph,1,pathtillnow,1);			//perform a dfs on graph to find all root to leaf paths in this tree
+	System.out.println(prefix);
+*/
+   }
+
+
+
+  public static void main(String argv[]) throws IOException, JoinsException
   {
     boolean sortstatus;
     //SystemDefs global = new SystemDefs("bingjiedb", 100, 70, null);
     //JavabaseDB.openDB("/tmp/nwangdb", 5000);
 
-    JoinsDriverJT jjoin = new JoinsDriverJT();
+    JoinsDriver jjoin = new JoinsDriver();
 
     sortstatus = jjoin.runTests();
     if (sortstatus != true) {
@@ -1665,6 +2756,22 @@ public class JoinTest
     else {
       System.out.println("join tests completed successfully");
     }
+
+
+//CODE BELOW IS FOR CREATING PATTERN TREE. REFER THESE FUNCTIONS :
+    try {
+    graph = getgraph();
+    }
+    catch(IOException ioe){
+	ioe.printStackTrace();
+    }
+    try{
+       jjoin.genqueryplan(graph, keys, PC, AD);
+    }
+    catch(Exception e){
+
+    }
+
   }
 }
 
