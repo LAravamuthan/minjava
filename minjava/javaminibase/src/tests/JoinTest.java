@@ -86,7 +86,7 @@ class JoinsDriverJT implements GlobalConst {
     intervals.addElement(B);
     intervals.addElement(C);
     intervals.addElement(D);
-    intervals.addElement(D);
+    intervals.addElement(E);
 
 
     sailors.addElement(new Sailor(53, "Bob Holloway",       9, 53.6));
@@ -405,7 +405,8 @@ class JoinsDriverJT implements GlobalConst {
     size = t.size();
     
     f = null;
-    Heapfile f2 = null;
+    Heapfile f2;
+    f2 = null;
     RID rid2 = null;
 
     try{
@@ -494,18 +495,18 @@ class JoinsDriverJT implements GlobalConst {
   {
     int SORTPGNUM = 12;
     boolean status = OK;
-    IntervalType[] data = new IntervalType[10];
-    int numintervals = 6;
+    intervalType[] data = new intervalType[10];
+    int numintervals = 5;
 
     for(int i = 0 ; i < numintervals ; i++)
-      data[i] = new IntervalType();
+      data[i] = new intervalType();
 
-   data[0].assign(1,12,1);
-   data[1].assign(3,4,2);
-   data[2].assign(2,5,3);
-   data[3].assign(9,10,4);
-   data[4].assign(7,8,5);
-   data[5].assign(6,11,6);
+   data[0].assign(1,10,1);
+   data[1].assign(2,7,2);
+   data[2].assign(8,9,3);
+   data[3].assign(3,4,4);
+   data[4].assign(5,6,5);
+//   data[5].assign(6,11,6);
 
  //  int intervalobjsize = instrumentation.getObjectSize(data[0]); 
    short[] attrSize = new short[1];
@@ -1751,6 +1752,7 @@ class JoinsDriverJT implements GlobalConst {
       System.err.println ("*** Error close for sortmerge");
       Runtime.getRuntime().exit(1);
     }
+    System.out.println("This is the end of query 5!");
  }
 
   public void Query6()
@@ -2342,6 +2344,8 @@ public FileScan readtable(String key, int pos)	//read in the initial heapfile an
     boolean status = OK;  
     String nodes[] = {"A","B","C","D","E"};
 
+    System.out.println("key = " + key);
+
     AttrType [] Itypes = new AttrType[2];
     Itypes[0] = new AttrType(AttrType.attrInterval);
     Itypes[1] = new AttrType(AttrType.attrString);
@@ -2379,8 +2383,11 @@ public FileScan readtable(String key, int pos)	//read in the initial heapfile an
     
     RID rid = null;
     Heapfile f = null;
+    Heapfile f2 = null;
+
     try{
-	f = new Heapfile("intervals.in");
+	f = new Heapfile("intervalstest.in");
+	f2 = new Heapfile("datatable.in");
     }
     catch (Exception e) {
       System.err.println("*** error in Heapfile constructor for intervals relation ***");
@@ -2398,7 +2405,7 @@ public FileScan readtable(String key, int pos)	//read in the initial heapfile an
       e.printStackTrace();
     }
 
-
+    AttrType[] attr = {new AttrType(AttrType.attrInterval),new AttrType(AttrType.attrString)};
     int numintervals = intervals.size();
     for(int i = 0 ; i < numintervals ; i++){
       try{
@@ -2411,8 +2418,10 @@ public FileScan readtable(String key, int pos)	//read in the initial heapfile an
 	e.printStackTrace();
       }      
       
+      RID rid2;
       try {
-	rid = f.insertRecord(t.returnTupleByteArray());
+	rid = f.insertRecord(t.getTupleByteArray());
+	rid2 = f2.insertRecord(t.getTupleByteArray());
       }
       catch (Exception e) {
 	System.err.println("*** error in Heapfile.insertRecord() for the intervals relation***");
@@ -2429,7 +2438,7 @@ public FileScan readtable(String key, int pos)	//read in the initial heapfile an
 
    FileScan am = null;					//Finally am will hold all the data from intervals.in file, containing all 3 columns. 
       try {
-	am  = new FileScan("intervals.in", Itypes, Isizes, 
+	am  = new FileScan("intervalstest.in", Itypes, Isizes, 
 			   (short)2, (short)2,
 			   Sprojection, selectFilter);
       }
@@ -2446,18 +2455,24 @@ public FileScan readtable(String key, int pos)	//read in the initial heapfile an
 //Create the conditional expression for the join query. 
 void createjoinquery_condexpr(CondExpr[] expr, String rel, int intervalpos1, int intervalpos2)
 {
+    System.out.println("In create join query conditional expression");
     expr[0].next = null;
     expr[0].op    = new AttrOperator(AttrOperator.aopGT);
     expr[0].type1 = new AttrType(AttrType.attrSymbol);		//S.interval > R.interval
     expr[0].type2 = new AttrType(AttrType.attrSymbol);
     expr[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer),intervalpos1); 
     expr[0].operand2.symbol = new FldSpec(new RelSpec(RelSpec.innerRel),intervalpos2); 
-    
-    if(rel == "AD")
+    System.out.println("rel = "  + rel);
+    if(rel.compareTo("AD") == 0)
+    {
        expr[0].ad = 1;
-    else 
-       expr[0].pc = 1;
-
+       System.out.println("setting ad to 1");
+    }
+    else
+    {
+       System.out.println("Setting pc to 1"); 
+       expr[0].pc = 1; 
+    }
    expr[1] = null;
 }
 
@@ -2471,25 +2486,51 @@ T:  interval id
 */
 
 //only need one iterator as nested loop join 
-public iterator.Iterator createjoinquery(FileScan am, String child , int intervalpos1, int intervalpos2, AttrType[] attr, String rel, int num_attrs, int pos) throws JoinsException
+/*
+@Parameters
+FileScan am : the left table file scan object
+intervalpos1 : the index of the interval in first table
+intervalpos2 : the index of interval in second table 
+attr : attribute types of outer table
+rel: relationship between the nodes (PC/AD) ? 
+num_attrs: number of attributes of outer table. 
+pos: The position of the column in outer table, on which select must be applied.
+*/
+/* First read parent table. Then perform one level of join. 
+
+
+res, childvalue, intervalpos[parent],1,Dtypes,num_attrs,rel
+*/
+public iterator.Iterator createjoinquery(FileScan am, String child , int intervalpos1, int intervalpos2, AttrType[] attr, String rel, int num_attrs) throws JoinsException
 {
 
 boolean status = OK;
 
 CondExpr[] outFilter = new CondExpr[2];		//will give 3 
 outFilter[0] = new CondExpr();
+outFilter[1] = new CondExpr();
 
 //define conditions for join query
 createjoinquery_condexpr(outFilter, rel, intervalpos1, intervalpos2);
+System.out.println("pc = " + outFilter[0].pc + " ad = " + outFilter[0].ad);
     
 System.out.println("conditional expression created");
+
+//count how many strings are coming in from the input table being passed as am. 
+int num_strs = 0;
+for(int i = 0 ; i < num_attrs ; i++)
+{
+   if(attr[i].attrType == AttrType.attrString)
+     num_strs++;
+}
 
 AttrType[] Stypes = new AttrType[num_attrs];				
 for(int i = 0 ; i < num_attrs ; i++)
  Stypes[i] = new AttrType(attr[i].attrType);				
 
-short [] Ssizes = new short[1];
-Ssizes[0] = 1; //first elt. is 30
+short [] Ssizes = new short[num_strs];
+for(int i = 0 ; i < num_strs ; i++)
+	Ssizes[i] = 10; 		//Let's keep string size as 10 bytes. 
     
 /*Code for filescan using select*/
 
@@ -2500,7 +2541,7 @@ Rtypes[1] = new AttrType(AttrType.attrString);
 
 //SOS
 short [] Rsizes = new short[1];
-Rsizes[0] = 1; 
+Rsizes[0] = 10; 				//right hand side data table has one column which is string. 
 
 FldSpec[] RProjection = new FldSpec[2];
 RProjection[0] =  new FldSpec(new RelSpec(RelSpec.outer), 1); 
@@ -2508,32 +2549,41 @@ RProjection[1] = new FldSpec(new RelSpec(RelSpec.outer), 2);
 
 FileScan table = null;	
 
-CondExpr[] selectFilter = new CondExpr[1];
+//System.out.println("pos = " + pos);
+
+CondExpr[] selectFilter = new CondExpr[2];
 selectFilter[0] = new CondExpr();
 selectFilter[0].next = null;
 selectFilter[0].op    = new AttrOperator(AttrOperator.aopEQ);
 selectFilter[0].type1 = new AttrType(AttrType.attrSymbol);		//The equality condition on main table. 
 selectFilter[0].type2 = new AttrType(AttrType.attrString);
-selectFilter[0].operand1.symbol = new FldSpec (new RelSpec(RelSpec.outer),pos); 
-selectFilter[0].operand2.string = child; 
+selectFilter[0].operand1.symbol = new FldSpec (new RelSpec(RelSpec.outer),2);   //pos = 2 for String. 
+selectFilter[0].operand2.string = child; //child value for which we have to filter from the right table; 
+System.out.println("child being searched = " + child);
+selectFilter[1] = null;
 		
 try {
-      table  = new FileScan("intervals.in", Rtypes, Rsizes, (short)2, (short)2, RProjection, selectFilter);
+      System.out.println("In try block...trying to create a table pointer");
+      table  = new FileScan("datatable.in", Rtypes, Rsizes, (short)2, (short)2, RProjection, /*selectFilter*/null);          //read the child node values from right data table. 
 }
 catch (Exception e) {
+      System.out.println("Whoops!");
       status = FAIL;
       System.err.println (""+e);
 }
 
-try{
-Tuple t = new Tuple();
-AttrType[] Dtypes = {new AttrType(AttrType.attrInterval),new AttrType(AttrType.attrString)};
-System.out.println("Scanned tuples = " );
-while((t = table.get_next()) != null)
-  t.print(Dtypes);
-}
-catch(Exception e){
 
+System.out.println("table pointer created!");
+Tuple t1 = new Tuple();
+	AttrType[] ptypes = {new AttrType(AttrType.attrInterval),new AttrType(AttrType.attrString)};
+	try{
+	while( (t1 = table.get_next()) != null)
+	{
+	   System.out.println("Wow, look data!");
+	   t1.print(ptypes);
+        }
+       }
+	catch(Exception e){
 }
 /*Code for filescan based on select condition ends*/
 
@@ -2557,7 +2607,7 @@ try {
       nlj = new NestedLoopsJoins (Stypes, num_attrs, Ssizes,
 				  Rtypes, 2, Rsizes,
 				  50,
-				  table, "intervals.in",
+				  /*table*/ am, "intervalstest.in",                      //table contains all As, the other table contains all decendants of A.
 				  outFilter, null, Projection, num_attrs+2);
 }
     catch (Exception e) {
@@ -2570,7 +2620,7 @@ try {
 
     if (status != OK) {
       //bail out
-      System.err.println ("*** Error setting up scan for sailors");
+      System.err.println ("*** Error setting up scan");
       Runtime.getRuntime().exit(1);
     }
 
@@ -2582,8 +2632,253 @@ t.setHdr(short(num_attrs+2), )
 return (iterator.Iterator)nlj;			//returns the nested loop join object constructed. 
 }
 
-/* First read parent table. Then perform one level of join. */
-  public void genqueryplan(ArrayList<Integer>[] graph, String[] keys, int[][] PC, int[][] AD) throws JoinsException, IndexException, IOException
+
+/* 
+GENERATE A DYNAMIC QUERY GIVEN A GRAPH. 
+Target file to work on : intervalstest.in
+
+Plan is as follows : 
+1. Call the readtable function to read in the root node. 
+2. for every element extracted from the queue, process its PC and AD matrix. Create table according to the connditions (PC/AD), one join at a time. 
+*/
+
+
+
+
+
+/*Reads data from an iterator, stores it in heap file. */
+public FileScan readdata (iterator.Iterator am,short num_attrs,AttrType[] attr_types)
+{
+	Heapfile f = null;
+	try{
+	  f = new Heapfile("intmdt2.in");
+	}
+	catch(Exception e){
+	  e.printStackTrace();
+	}
+	
+	Tuple t = new Tuple();			//list of attribute types, no of string sizes. 
+	short n = num_attrs;	
+
+	int num_strs = 0;			//counting number of strings in this table. 
+	for(int i = 0 ; i < num_attrs ; i++)
+	   if(attr_types[i].attrType == AttrType.attrString)
+		num_strs++;
+	
+	short[] s_sizes = new short[num_strs];
+	for(int i = 0 ; i < num_strs ; i++)
+		s_sizes[i] = 10;			//keeping string size as 10 bytes for all strings stored on system. 	
+	
+        try {
+      		t.setHdr((short) n,attr_types, s_sizes);
+    	}
+    	catch (Exception e) {
+      		System.err.println("*** error in Tuple.setHdr() ***");
+      		e.printStackTrace();
+    	}
+
+	int size = t.size();
+	t = new Tuple(size);
+	RID rid;
+
+	System.out.println("printing attr types in readdata");
+	for(int i = 0 ; i < num_attrs ; i++)
+	{			
+	        System.out.println(attr_types[i].toString());
+	}	
+
+	try{
+	   while((t = am.get_next()) != null){
+		  try {
+			t.print(attr_types);
+			rid = f.insertRecord(t.getTupleByteArray());
+      		  }
+      		catch (Exception e) {
+			System.err.println("*** error in Heapfile.insertRecord() ***");
+			e.printStackTrace();
+      		}      
+    	    }
+	}
+	catch(Exception e){
+	}
+
+	System.out.println("n = " + n);
+	System.out.println("data inserted into intmdt.in");
+
+	FldSpec[] SProjection = new FldSpec[num_attrs];
+	for(int i = 0 ; i < num_attrs ; i++)
+		SProjection[i] = new FldSpec(new RelSpec(RelSpec.outer),i+1);
+
+	FileScan scan = null;					//Finally am will hold all the data from intervals.in file, containing all 3 columns. 
+      	try {
+		scan  = new FileScan("intmdt2.in", attr_types, s_sizes, (short)n, (short)n, SProjection, null);	//first just check if one table is properly written to or not. 
+      	}
+       catch (Exception e) {
+	System.err.println (""+e);
+	e.printStackTrace();
+      }
+
+      System.out.println("Records have been inserted into interval table successfully!!");
+      return scan;
+}
+
+
+
+
+
+
+
+/* Given a graph, generate a query plan from it. */
+  public void generate_query(ArrayList<Integer>[] graph,String[] keys, int[][] PC, int[][] AD, int n) throws JoinsException,IOException,IndexException         //0 1 2 3 4 5 (in case of nodes uptil 5)
+  {
+
+	System.out.println("Graph size = " + n);
+	System.out.println("Graph is : ");
+
+	for(int i = 1 ; i <= 5 ; i++)
+        {
+           for(int j = 0 ; j < graph[i].size() ; j++)
+             System.out.print(graph[i].get(j) + " " );
+           System.out.println();
+        }
+
+        Queue<Integer> q = new LinkedList<>();
+	q.add(1);						//1 is given as root node. 
+ 
+	System.out.println("Queue is : ");
+        while(q.isEmpty() == false)
+        {
+	    int element = q.remove();
+	    System.out.println(element + " " );			//print elmeents of queue one by one. 
+	    for(int i = 0 ; i < graph[element].size() ; i++)
+		q.add(graph[element].get(i));
+        }
+
+        int parent = 1;
+	String rootkey = keys[1];						//get string label of root node. 
+	System.out.println("Read table function being called...");
+
+	FileScan root = readtable(rootkey,2);				//read the root node value and store it in a table. 
+	
+	System.out.println("In generate query : Filescan done successfully!");
+
+/*
+	Tuple t1 = new Tuple();
+	AttrType[] ptypes = {new AttrType(AttrType.attrInterval),new AttrType(AttrType.attrString)};
+	try{
+	while( (t1 = root.get_next()) != null)
+	{
+	   System.out.println("Wow, look data!");
+	   t1.print(ptypes);
+        }
+       }
+	catch(Exception e){
+	}
+*/
+
+	String rel;
+	short num_attrs = 2;			           			//store column count in final result table.. 
+	AttrType[] Dtypes = new AttrType[50];
+	Dtypes[0] = new AttrType(AttrType.attrInterval);
+	Dtypes[1] = new AttrType(AttrType.attrString);
+	int end = 2;
+
+	int[] intervalpos = new int[n+1];					//store the position of interval field for key k.(from 1 to n).
+	intervalpos[1] = 1;							//the interval for first node is at position 1. 
+	iterator.Iterator res = null;							//store the file pointer to resulting table. 
+	FileScan f = null;
+
+	boolean first = true;
+	for(int child = 0 ; child < graph[parent].size() ; child++)		//go through all child nodes in the graph. 	
+        {
+		int childnode = graph[parent].get(child);
+		System.out.println("Reached here parent = " + keys[parent] + " child = " + keys[childnode]);
+		if(PC[parent][childnode] == 1)
+			rel = "PC";
+		else if(AD[parent][childnode] == 1)
+			rel = "AD";		
+		else
+			continue;
+
+		System.out.println("Processing for parent = " + keys[parent] + " child = " + keys[childnode]);
+		String childvalue = keys[childnode];					//get the string key of child node.
+		if(first == true) 
+		{
+			res = createjoinquery(root, childvalue, intervalpos[parent],1,Dtypes,rel,num_attrs);
+			first = false;
+		}
+		else
+		{
+			res = createjoinquery(f, childvalue, intervalpos[parent],1,Dtypes,rel,num_attrs);
+		}
+
+		System.out.println("Join done successfully");
+
+/* Adding the two new columns for the new table. */
+		Dtypes[end] = new AttrType(AttrType.attrInterval);
+		intervalpos[child] = end+1;
+		end++;						//store the position of interval column for the child node. 
+		Dtypes[end] = new AttrType(AttrType.attrString);
+		end++;	
+		num_attrs += 2; 
+
+		AttrType[] types = new AttrType[num_attrs];
+		for(int i = 0 ; i < num_attrs ; i++)
+		{			
+			types[i] = Dtypes[i];
+			System.out.println(types[i].toString());
+		}	
+		Tuple t = new Tuple();
+		try{
+	 	    while( (t = res.get_next()) != null)
+	  	   {
+			System.out.println("This tuple is part of result!--");
+			t.print(types);
+	           }
+	       }
+		catch(Exception e){ }	
+
+/* The res iterator is created now. Just store all the tuples from the res pointer in a heapfile, and obtain a pointer to that heap file. */
+		f = readdata(res,num_attrs,types);
+	}
+
+//Examine the results obtained 
+	System.out.println("here now");
+	Tuple t = new Tuple();
+	AttrType[] types = new AttrType[num_attrs];
+	for(int i = 0 ; i < num_attrs ; i++)
+		types[i] = Dtypes[i];
+
+	try{
+	  while( (t = f.get_next()) != null)
+	  {
+		System.out.println("This tuple is part of result!--");
+		t.print(types);
+	  }
+	}
+	catch(Exception e){
+
+	}
+  }
+
+/*
+@Parameters
+FileScan am : the left table file scan object
+child : the key of the child. 
+intervalpos1 : the index of the interval in first table
+intervalpos2 : the index of interval in second table 
+attr : attribute types of outer table
+rel: relationship between the nodes (PC/AD) ? 
+num_attrs: number of attributes of outer table. 
+pos: The position of the column in outer table, on which select must be applied.
+*/
+
+
+
+
+
+
+  public void genqueryplan(ArrayList<Integer>[] graph, String[] keys, int[][] PC, int[][] AD) throws JoinsException, IndexException, IOException	
   {
 
 	int p = 1;
@@ -2609,11 +2904,12 @@ return (iterator.Iterator)nlj;			//returns the nested loop join object construct
         else if(AD[p][c] == 1)
           rel = "AD";
 
+	System.out.println("rel = " + rel);
 	int intervalpos1 = 1;
         int intervalpos2 = 1;
 
 	FileScan data;
-	iterator.Iterator a1, a2;
+	iterator.Iterator nlj, a2;
 	int num_attrs = 2;        //for the initial table. 
 
         AttrType[] attr = {new AttrType(AttrType.attrInterval),new AttrType(AttrType.attrString)};
@@ -2622,30 +2918,37 @@ return (iterator.Iterator)nlj;			//returns the nested loop join object construct
 	if(data !=  null)
           System.out.println("able to read data successfully!"); 	
         
-	AttrType[] DTypes = {new AttrType(AttrType.attrInterval), new AttrType(AttrType.attrString)}; 
+	AttrType[] DTypes = {new AttrType(AttrType.attrInterval), new AttrType(AttrType.attrString),new AttrType(AttrType.attrInterval), new AttrType(AttrType.attrString)}; 
         Tuple t = new Tuple();
-/*
+
+	System.out.println("Printing data from table and checking if valid");
         try{
            while( (t = data.get_next()) != null)
+           {
+                System.out.println("valid tuple! : ");
 		t.print(DTypes);
+           }
         }
 	catch(Exception e){
 		e.printStackTrace();
         }		
-*/
 
-	a2 = createjoinquery(data, child, intervalpos1, intervalpos2, attr, rel, num_attrs, 2);       //Takes as input,
+
+	nlj = createjoinquery(data, child, intervalpos1, intervalpos2, attr, rel, num_attrs);       //Takes as input,
         System.out.println("Query created successfully!"); 
 	
-   /*
+   
         try{
-           while( (t = a2.get_next()) != null)
+           while( (t = nlj.get_next()) != null)
+           {
+		System.out.println("\n\nValid tuple!");
 		t.print(DTypes);
+           }
         }
 	catch(Exception e){
 		e.printStackTrace();
         }
-   */
+   
   }
 
 } //end of class
@@ -2660,11 +2963,13 @@ public static ArrayList<Integer>[] graph;
 public static String[] keys;
 public static int[][] PC;
 public static int[][] AD;
+public static int n;
+public static int tagcount;
 
 public static ArrayList<Integer>[] getgraph() throws IOException {
 		// TODO Auto-generated method stub
 
-		String path = System.getProperty("user.dir") + "/data";
+		String path = System.getProperty("user.dir") + "/patterntree";			//a A -> C (AD)
 		System.out.println(path);
 		File file = new File(path);
 
@@ -2697,8 +3002,8 @@ public static ArrayList<Integer>[] getgraph() throws IOException {
                       catch(IOException ioe){
 			ioe.printStackTrace();
 		      }
+			tagcount++;				//keep count of no of tags. 
 			keys[tagcount] = tag;
-			tagcount++;
 			count--;
 			System.out.println(tag);
 		}
@@ -2781,12 +3086,12 @@ public static ArrayList<Integer>[] getgraph() throws IOException {
 	ioe.printStackTrace();
     }
     try{
-       jjoin.genqueryplan(graph, keys, PC, AD);
+	System.out.println("n = " + n);
+	jjoin.generate_query(graph, keys, PC, AD,n+1);
     }
     catch(Exception e){
 
     }
-
   }
 }
 

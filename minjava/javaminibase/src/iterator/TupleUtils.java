@@ -259,9 +259,12 @@ public class TupleUtils
       int i, count = 0;
       
       for (i = 0; i < len_in1; i++)
+      {	
+	//System.out.println("Field " + i + " attribute type is : " + in[i].attrType);
         if (in1[i].attrType == AttrType.attrString)
 	  sizesT1[i] = t1_str_sizes[count++];
-      
+      }
+
       for (count = 0, i = 0; i < len_in2; i++)
 	if (in2[i].attrType == AttrType.attrString)
 	  sizesT2[i] = t2_str_sizes[count++];
