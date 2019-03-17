@@ -414,7 +414,7 @@ class JoinsDriverJT1 implements GlobalConst {
 
 
 //Implemented as part of Minibase changes. Check if records with interval type data can be successfully inserted first.
-        AttrType [] Itypes = new AttrType[3];
+        AttrType [] Itypes = new AttrType[2];
         Itypes[0] = new AttrType(AttrType.attrInterval);
         Itypes[1] = new AttrType(AttrType.attrString);
         //   Itypes[2] = new AttrType(AttrType.attrInteger);
@@ -501,6 +501,8 @@ class JoinsDriverJT1 implements GlobalConst {
 
         test7();
         testSelect();
+        //testSortMerge();
+        Query7();
         System.out.println("Finished test 7 for testing interval sorting" + "\n");
         System.out.println ("Finished joins testing"+"\n");
         return true;
@@ -663,6 +665,18 @@ class JoinsDriverJT1 implements GlobalConst {
         expr[1].operand1.symbol = new FldSpec (new RelSpec(RelSpec.innerRel),2);
         expr[1].operand2.integer = 1;
         expr[2] = null;
+    }
+
+    private void sortMege_CondExpr(CondExpr[] expr) {
+
+        expr[0].next  = null;
+        expr[0].op    = new AttrOperator(AttrOperator.aopEQ);
+        expr[0].type1 = new AttrType(AttrType.attrSymbol);
+        expr[0].type2 = new AttrType(AttrType.attrSymbol);
+        expr[0].operand1.symbol = new FldSpec (new RelSpec(RelSpec.outer),2);
+        expr[0].operand2.symbol = new FldSpec (new RelSpec(RelSpec.innerRel),2);
+        expr[0].pc = 1;
+        expr[1] = null;
     }
 
 
@@ -984,6 +998,242 @@ class JoinsDriverJT1 implements GlobalConst {
         System.out.println("Total number of tuples accessed : " + count);
     }
 
+    private void testSortMerge(){
+        boolean status = OK;
+        short[] attrSize = new short[1];
+        short intervalobjsize = 12;		//2 integers, 4 bytes each.
+
+
+        short strsizes[] = new short[1];
+        strsizes[0] = 5;				//no strings in this relation.
+        attrSize[0] = 17;
+
+//   attrSize[1] = intervalobjsize;
+
+        AttrType[] attrType = new AttrType[2];
+        attrType[0] = new AttrType(AttrType.attrString);
+        attrType[1] = new AttrType(AttrType.attrInterval);
+
+
+        TupleOrder[] order = new TupleOrder[1];
+        order[0] = new TupleOrder(TupleOrder.Ascending);
+        //  order[1] = new TupleOrder(TupleOrder.Descending);
+
+        // create a tuple of appropriate size
+        Tuple t = new Tuple();
+        try {
+            t.setHdr((short) 2, attrType, attrSize);
+        }
+        catch (Exception e) {
+            status = FAIL;
+            e.printStackTrace();
+        }
+
+        int size = t.size();
+
+        // Create unsorted data file "test7.in"
+
+
+        RID             rid;
+        Heapfile        f = null;
+        try {
+            f = new Heapfile("sortMergeXml.in");
+        }
+        catch (Exception e) {
+            status = FAIL;
+            e.printStackTrace();
+        }
+
+        t = new Tuple(size);
+        try {
+            t.setHdr((short) 2, attrType, attrSize);
+        }
+        catch (Exception e) {
+            status = FAIL;
+            e.printStackTrace();
+        }
+
+        for(int i = 0 ; i < xmlDataList.size() ; i++)
+        {
+            try{
+                t.setStrFld(1,xmlDataList.get(i).getTag());
+                t.setIntervalFld(2,xmlDataList.get(i).getIt());
+//           System.out.println(data[i].getStart() + " " + data[i].getEnd() + " " + data[i].getLevel());
+            }
+            catch (Exception e) {
+                status = FAIL;
+                e.printStackTrace();
+            }
+
+            try{
+                AttrType[] DTypes = {new AttrType(AttrType.attrString), new AttrType(AttrType.attrInterval)};
+                System.out.println("Inserting :  ");
+                t.print(DTypes);
+                rid = f.insertRecord(t.returnTupleByteArray());
+            }
+            catch (Exception e) {
+                status = FAIL;
+                e.printStackTrace();
+            }
+        }
+
+
+        System.out.print("**********************SortMerge xmlData strating *********************\n");
+
+
+        // Sailors, Boats, Reserves Queries.
+        System.out.print ("Query: Find the names of sailors who have reserved "
+                + "boat number 1.\n"
+                + "       and print out the date of reservation.\n\n"
+                + "  SELECT S.sname, R.date\n"
+                + "  FROM   Sailors S, Reserves R\n"
+                + "  WHERE  S.sid = R.sid AND R.bid = 1\n\n");
+
+        System.out.print ("\n(Tests FileScan, Projection, and Sort-Merge Join)\n");
+
+        CondExpr[] outFilter = new CondExpr[2];
+        outFilter[0] = new CondExpr();
+        outFilter[1] = new CondExpr();
+
+
+        sortMege_CondExpr(outFilter);
+
+        t = new Tuple();
+
+        AttrType [] Stypes = new AttrType[2];
+        Stypes[0] = new AttrType (AttrType.attrString);
+        Stypes[1] = new AttrType (AttrType.attrInterval);
+
+        //SOS
+        short [] Ssizes = new short[1];
+        Ssizes[0] = 17; //first elt. is 30
+
+        FldSpec [] Sprojection = new FldSpec[2];
+        Sprojection[0] = new FldSpec(new RelSpec(RelSpec.outer), 1);
+        Sprojection[1] = new FldSpec(new RelSpec(RelSpec.outer), 2);
+
+
+        CondExpr [] selects = new CondExpr [1];
+        selects = null;
+
+
+        FileScan am = null;
+        try {
+            am  = new FileScan("sortMergeXml.in", Stypes, Ssizes,
+                    (short)2, (short)2,
+                    Sprojection, null);
+        }
+        catch (Exception e) {
+            status = FAIL;
+            System.err.println (""+e);
+        }
+
+        if (status != OK) {
+            //bail out
+            System.err.println ("*** Error setting up scan for XMLDATA");
+            Runtime.getRuntime().exit(1);
+        }
+
+        AttrType [] Rtypes = new AttrType[2];
+        Rtypes[0] = new AttrType (AttrType.attrString);
+        Rtypes[1] = new AttrType (AttrType.attrInterval);
+
+
+        short [] Rsizes = new short[1];
+        Rsizes[0] = 17;
+        FldSpec [] Rprojection = new FldSpec[2];
+        Rprojection[0] = new FldSpec(new RelSpec(RelSpec.outer), 1);
+        Rprojection[1] = new FldSpec(new RelSpec(RelSpec.outer), 2);
+
+        FileScan am2 = null;
+        try {
+            am2 = new FileScan("sortMergeXml.in", Rtypes, Rsizes,
+                    (short)2, (short) 2,
+                    Rprojection, null);
+        }
+        catch (Exception e) {
+            status = FAIL;
+            System.err.println (""+e);
+        }
+
+        if (status != OK) {
+            //bail out
+            System.err.println ("*** Error setting up scan for reserves");
+            Runtime.getRuntime().exit(1);
+        }
+
+
+        FldSpec [] proj_list = new FldSpec[4];
+        proj_list[0] = new FldSpec(new RelSpec(RelSpec.outer), 1);
+        proj_list[1] = new FldSpec(new RelSpec(RelSpec.outer), 2);
+        proj_list[2] = new FldSpec(new RelSpec(RelSpec.innerRel), 1);
+        proj_list[3] = new FldSpec(new RelSpec(RelSpec.innerRel), 2);
+
+        AttrType [] jtype = new AttrType[4];
+        jtype[0] = new AttrType (AttrType.attrString);
+        jtype[1] = new AttrType (AttrType.attrInterval);
+        jtype[2] = new AttrType (AttrType.attrString);
+        jtype[3] = new AttrType (AttrType.attrInterval);
+
+        TupleOrder ascending = new TupleOrder(TupleOrder.Ascending);
+        SortMerge sm = null;
+        try {
+            sm = new SortMerge(Stypes, 2, Ssizes,
+                    Rtypes, 2, Rsizes,
+                    2, 1,
+                    2, 1,
+                    30,
+                    am, am2,
+                    false, false, ascending,
+                    outFilter, proj_list, 4);
+        }
+        catch (Exception e) {
+            System.err.println("*** join error in SortMerge constructor ***");
+            status = FAIL;
+            System.err.println (""+e);
+            e.printStackTrace();
+        }
+
+        if (status != OK) {
+            //bail out
+            System.err.println ("*** Error constructing SortMerge");
+            Runtime.getRuntime().exit(1);
+        }
+
+        t = null;
+
+        try {
+            while ((t = sm.get_next()) != null) {
+                t.print(jtype);
+            }
+        }
+        catch (Exception e) {
+            System.err.println (""+e);
+            e.printStackTrace();
+            status = FAIL;
+        }
+        if (status != OK) {
+            //bail out
+            System.err.println ("*** Error in get next tuple ");
+            Runtime.getRuntime().exit(1);
+        }
+
+
+        try {
+            sm.close();
+        }
+        catch (Exception e) {
+            status = FAIL;
+            e.printStackTrace();
+        }
+        System.out.println ("\n");
+        if (status != OK) {
+            //bail out
+            System.err.println ("*** Error in closing ");
+            Runtime.getRuntime().exit(1);
+        }
+    }
+
 
 
     /* New Query for testing interval based joins */
@@ -1007,37 +1257,33 @@ class JoinsDriverJT1 implements GlobalConst {
 
         AttrType [] Atypes = {
                 new AttrType(AttrType.attrInterval),
-                new AttrType(AttrType.attrString),
-                new AttrType(AttrType.attrInteger)
+                new AttrType(AttrType.attrString)
         };
         short []   Asizes = new short[1];
-        Asizes[0] = 10;
+        Asizes[0] = 1;
 
         FldSpec [] Aprojection = {				//3 fields which we want to display in the projection list.
                 new FldSpec(new RelSpec(RelSpec.outer), 1),
-                new FldSpec(new RelSpec(RelSpec.outer), 2),
-                new FldSpec(new RelSpec(RelSpec.outer), 3)
+                new FldSpec(new RelSpec(RelSpec.outer), 2)
         };
 
         AttrType [] Btypes = {
                 new AttrType(AttrType.attrInterval),
-                new AttrType(AttrType.attrString),
-                new AttrType(AttrType.attrInteger)
+                new AttrType(AttrType.attrString)
         };
         short []   Bsizes = new short[1];
-        Bsizes[0] = 10;
+        Bsizes[0] = 1;
 
         FldSpec [] Bprojection = {				//3 fields which we want to display in the projection list.
                 new FldSpec(new RelSpec(RelSpec.outer), 1),
-                new FldSpec(new RelSpec(RelSpec.outer), 2),
-                new FldSpec(new RelSpec(RelSpec.outer), 3)
+                new FldSpec(new RelSpec(RelSpec.outer), 2)
         };
 
 
         FileScan am = null;					//Finally am will hold all the data from intervals.in file, containing all 3 columns.
         try {
             am  = new FileScan("intervals.in", Atypes, Asizes,
-                    (short)3, (short)3,
+                    (short)2,(short)2,
                     Aprojection, null);
         }
         catch (Exception e) {
@@ -1072,8 +1318,7 @@ class JoinsDriverJT1 implements GlobalConst {
                 new FldSpec(new RelSpec(RelSpec.outer), 1),
                 new FldSpec(new RelSpec(RelSpec.innerRel), 1),
                 new FldSpec(new RelSpec(RelSpec.outer), 2),
-                new FldSpec(new RelSpec(RelSpec.innerRel),2),
-                new FldSpec(new RelSpec(RelSpec.innerRel),3)
+                new FldSpec(new RelSpec(RelSpec.innerRel),2)
         };
 
         System.out.println("Outfilter[0] = " + outFilter[0]);
@@ -1085,11 +1330,11 @@ class JoinsDriverJT1 implements GlobalConst {
         NestedLoopsJoins nlj2 = null;
 
         try {
-            nlj = new NestedLoopsJoins (Atypes, 3, Asizes,
-                    Btypes, 3, Bsizes,
-                    10,
+            nlj = new NestedLoopsJoins (Atypes, 2, Asizes,
+                    Btypes, 2, Bsizes,
+                    30,
                     am, "intervals.in",
-                    outFilter, null, proj1, 5);
+                    outFilter, null, proj1, 4);
         }
         catch (Exception e) {
             System.err.println ("*** Error preparing for nested_loop_join");
@@ -1106,8 +1351,7 @@ class JoinsDriverJT1 implements GlobalConst {
                 new AttrType(AttrType.attrInterval),
                 new AttrType(AttrType.attrInterval),
                 new AttrType(AttrType.attrString),
-                new AttrType(AttrType.attrString),
-                new AttrType(AttrType.attrInteger)
+                new AttrType(AttrType.attrString)
         };
 
         Tuple t = new Tuple();		//create a result array which contains all tuples satifying join condition
@@ -1129,6 +1373,7 @@ class JoinsDriverJT1 implements GlobalConst {
         }catch (Exception e) {
             System.err.println ("*** Error preparing for get_next tuple");
             System.err.println (""+e);
+            e.printStackTrace();
             Runtime.getRuntime().exit(1);
         }
 
