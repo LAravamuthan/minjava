@@ -48,6 +48,15 @@ public class IntervalType {
     }
 
     @Override
+    public String toString() {
+        return "IntervalType{" +
+                "start=" + s +
+                ", end=" + e +
+                ", level=" + l +
+                '}';
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(s, e, l);
     }

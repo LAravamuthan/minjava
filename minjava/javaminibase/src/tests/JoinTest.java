@@ -7,11 +7,24 @@ import global.*;
 import heap.Heapfile;
 import heap.Scan;
 import heap.Tuple;
+import index.IndexException;
 import index.IndexScan;
 import iterator.*;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Vector;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 
 /**
    Here is the implementation for the tests. There are N tests performed.
@@ -27,16 +40,16 @@ import java.util.Vector;
 
 //Creating a new class to test interval joins. 
 class IntervalTest{
-  public intervalType interval;		//an interval type
+  public IntervalType interval;		//an interval type
   public String id;
 
-  public IntervalTest(intervalType _interval, String _id, int _level){
+  public IntervalTest(IntervalType _interval, String _id, int _level){
    interval = _interval;
    id = _id;
  }
 }
 
-class JoinsDriver implements GlobalConst {
+class JoinsDriverJT implements GlobalConst {
   
   private boolean OK = true;
   private boolean FAIL = false;
@@ -50,7 +63,7 @@ class JoinsDriver implements GlobalConst {
   /* 
      Constructor
   */
-  public JoinsDriver() {
+  public JoinsDriverJT() {
     
     //build Sailor, Boats, Reserves table
     sailors  = new Vector();
@@ -58,15 +71,15 @@ class JoinsDriver implements GlobalConst {
     reserves = new Vector();
     intervals = new Vector();
 
-    intervalType A = new intervalType();  
+    IntervalType A = new IntervalType();
     A.assign(1,10,1);
-    intervalType B = new intervalType();  
+    IntervalType B = new IntervalType();
     B.assign(2,7,2);
-    intervalType C = new intervalType();  
+    IntervalType C = new IntervalType();
     C.assign(3,4,3);
-    intervalType D = new intervalType();  
+    IntervalType D = new IntervalType();
     D.assign(5,6,3);
-    intervalType E = new intervalType();  
+    IntervalType E = new IntervalType();
     E.assign(8,9,2);
 
     intervals.addElement(A);
@@ -269,6 +282,7 @@ class JoinsDriver implements GlobalConst {
       status = FAIL;
       e.printStackTrace();
     }
+
     
     for (int i=0; i<numboats; i++) {
       try {
@@ -418,7 +432,7 @@ class JoinsDriver implements GlobalConst {
     int numintervals = intervals.size();
     for(int i = 0 ; i < numintervals ; i++){
       try{
-	  t.setIntervalFld(1, (intervalType)intervals.elementAt(i));
+	  t.setIntervalFld(1, (IntervalType) intervals.elementAt(i));
 	  t.setStrFld(2, "A");
 //int a = ((IntervalTest)intervals.elementAt(i)).level;
 //         System.out.println("id = " + a); 
@@ -480,11 +494,11 @@ class JoinsDriver implements GlobalConst {
   {
     int SORTPGNUM = 12;
     boolean status = OK;
-    intervalType[] data = new intervalType[10];
+    IntervalType[] data = new IntervalType[10];
     int numintervals = 6;
 
     for(int i = 0 ; i < numintervals ; i++)
-      data[i] = new intervalType();
+      data[i] = new IntervalType();
 
    data[0].assign(1,12,1);
    data[1].assign(3,4,2);
@@ -2388,7 +2402,7 @@ public FileScan readtable(String key, int pos)	//read in the initial heapfile an
     int numintervals = intervals.size();
     for(int i = 0 ; i < numintervals ; i++){
       try{
-	  t.setIntervalFld(1, (intervalType)intervals.elementAt(i));   //Interval String <>
+	  t.setIntervalFld(1, (IntervalType) intervals.elementAt(i));   //Interval String <>
 	  t.setStrFld(2, nodes[i]); 
       }
       catch (Exception e) {
@@ -2569,7 +2583,7 @@ return (iterator.Iterator)nlj;			//returns the nested loop join object construct
 }
 
 /* First read parent table. Then perform one level of join. */
-  public void genqueryplan(ArrayList<Integer>[] graph, String[] keys, int[][] PC, int[][] AD) throws JoinsException, IndexException, IOException	
+  public void genqueryplan(ArrayList<Integer>[] graph, String[] keys, int[][] PC, int[][] AD) throws JoinsException, IndexException, IOException
   {
 
 	int p = 1;
@@ -2638,6 +2652,7 @@ return (iterator.Iterator)nlj;			//returns the nested loop join object construct
 
 
 
+@SuppressWarnings("ALL")
 public class JoinTest
 {
 
@@ -2747,7 +2762,7 @@ public static ArrayList<Integer>[] getgraph() throws IOException {
     //SystemDefs global = new SystemDefs("bingjiedb", 100, 70, null);
     //JavabaseDB.openDB("/tmp/nwangdb", 5000);
 
-    JoinsDriver jjoin = new JoinsDriver();
+    JoinsDriverJT jjoin = new JoinsDriverJT();
 
     sortstatus = jjoin.runTests();
     if (sortstatus != true) {
