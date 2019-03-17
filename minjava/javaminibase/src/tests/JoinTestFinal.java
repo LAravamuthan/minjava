@@ -1,17 +1,14 @@
 package tests;
 //originally from : joins.C
 
-import btree.BTreeFile;
-import btree.IntegerKey;
 import global.*;
 import heap.Heapfile;
 import heap.Tuple;
 import index.IndexException;
 import iterator.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+
+import javax.xml.stream.XMLStreamException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -42,6 +39,16 @@ class IntervalTest1{
 
 class JoinsDriverJT1 implements GlobalConst {
 
+
+    public static String[] str = new String[400000];
+    public static int i = 0;
+    public static int l = 0;
+    public static int s = 0;
+    public static int e = 0;
+    public static int[] level = new int[400000];
+    public static int[] start = new int[400000];
+    public static int[] end = new int[400000];
+
     private boolean OK = true;
     private boolean FAIL = false;
     private Vector sailors;
@@ -62,6 +69,8 @@ class JoinsDriverJT1 implements GlobalConst {
         boats    = new Vector();
         reserves = new Vector();
         intervals = new Vector();
+
+
 
 
 
@@ -194,7 +203,7 @@ class JoinsDriverJT1 implements GlobalConst {
 			      1000,500,200,"Clock");
     */
 
-        SystemDefs sysdef = new SystemDefs( dbpath, 1000, NUMBUF, "Clock" );
+        SystemDefs sysdef = new SystemDefs( dbpath, 100000, NUMBUF, "Clock" );
 
         // creating the sailors relation
         AttrType [] Stypes = new AttrType[4];
@@ -495,14 +504,17 @@ class JoinsDriverJT1 implements GlobalConst {
         System.out.println("Records have been inserted into interval table successfully!!");
     }
 
-    public boolean runTests() {
+
+    public boolean runTests() throws FileNotFoundException, XMLStreamException {
 
         Disclaimer();
 
-        test7();
-        testSelect();
+
+        //test7();
+        //testSelect();
         //testSortMerge();
-        Query7();
+        //Query7();
+
         System.out.println("Finished test 7 for testing interval sorting" + "\n");
         System.out.println ("Finished joins testing"+"\n");
         return true;
@@ -1740,6 +1752,9 @@ public class JoinTestFinal
     public static int[][] PC;
     public static int[][] AD;
 
+
+
+
     public static ArrayList<Integer>[] getgraph() throws IOException {
         // TODO Auto-generated method stub
 
@@ -1835,13 +1850,17 @@ public class JoinTestFinal
 
 
 
-    public static void main(String argv[]) throws IOException, JoinsException
-    {
+
+    public static void main(String argv[]) throws IOException, JoinsException, XMLStreamException {
         boolean sortstatus;
         //SystemDefs global = new SystemDefs("bingjiedb", 100, 70, null);
         //JavabaseDB.openDB("/tmp/nwangdb", 5000);
 
         JoinsDriverJT1 jjoin = new JoinsDriverJT1();
+
+        String [] temp = new String[2];
+
+
 
         sortstatus = jjoin.runTests();
         if (sortstatus != true) {
