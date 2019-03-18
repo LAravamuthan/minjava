@@ -1,5 +1,6 @@
 package tests;
 
+import bufmgr.PCounter;
 import iterator.*;
 import heap.*;
 import global.*;
@@ -1220,7 +1221,7 @@ public class XMLTest// implements  GlobalConst
 	public static void main(String [] argvs) 
 	{
 		String DataFileName = "./xml_sample_data.xml";
-		String QueryFileName = "./queryfile.txt";
+		String QueryFileName = "/home/aravamuthan/Documents/codebase/minjava/javaminibase/queryfile.txt";
 		//String DataFileName = "./plane.xml";
 		try
 		{

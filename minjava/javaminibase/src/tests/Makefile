@@ -72,4 +72,12 @@ sortmerge: SMJoin
 
 
 
+XMLTest:XMLTest.java
+	$(JAVAC) XMLTest.java TestDriver.java
+
+xmltest: XMLTest
+	$(JAVA) tests.XMLTest
+
+
+
 
