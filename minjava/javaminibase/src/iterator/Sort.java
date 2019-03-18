@@ -210,7 +210,7 @@ public class Sort extends Iterator implements GlobalConst
       cur_node = pcurr_Q.deq();
       if (cur_node == null) break; 
       p_elems_curr_Q --;
-
+      
       comp_res = TupleUtils.CompareTupleWithValue(sortFldType, cur_node.tuple, _sort_fld, lastElem);  // need tuple_utils.java
 
       if ((comp_res < 0 && order.tupleOrder == TupleOrder.Ascending) || (comp_res > 0 && order.tupleOrder == TupleOrder.Descending)) {
@@ -476,8 +476,8 @@ public class Sort extends Iterator implements GlobalConst
     char[] c = new char[1];
     c[0] = Character.MIN_VALUE; 
     String s = new String(c);
-    IntervalType n = new IntervalType();
-    n.assign(-100000,-100000);
+    intervaltype n = new intervaltype();
+    n.assign(-400000,-400000);
     //    short fld_no = 1;
     
     switch (sortFldType.attrType) {
@@ -489,12 +489,12 @@ public class Sort extends Iterator implements GlobalConst
       //      lastElem.setHdr(fld-no, junk, null);
       lastElem.setFloFld(_sort_fld, Float.MIN_VALUE);
       break;
+    case AttrType.attrInterval:
+      lastElem.setIntervalFld(_sort_fld, n);
+      break;
     case AttrType.attrString:
       //      lastElem.setHdr(fld_no, junk, s_size);
       lastElem.setStrFld(_sort_fld, s);
-      break;
-    case AttrType.attrInterval: // create a case for attribute interval? set it to no values?
-      lastElem.setIntervalField(_sort_fld, n);
       break;
     default:
       // don't know how to handle attrSymbol, attrNull
@@ -523,8 +523,8 @@ public class Sort extends Iterator implements GlobalConst
     char[] c = new char[1];
     c[0] = Character.MAX_VALUE; 
     String s = new String(c);
-    IntervalType n = new IntervalType();
-    n.assign(100000,100000);
+    intervaltype n = new intervaltype();
+    n.assign(400000,400000);
     //    short fld_no = 1;
     
     switch (sortFldType.attrType) {
@@ -536,12 +536,12 @@ public class Sort extends Iterator implements GlobalConst
       //      lastElem.setHdr(fld_no, junk, null);
       lastElem.setFloFld(_sort_fld, Float.MAX_VALUE);
       break;
-    case AttrType.attrString:
-        //      lastElem.setHdr(fld_no, junk, s_size);
-        lastElem.setStrFld(_sort_fld, s);
-        break;
     case AttrType.attrInterval:
-      lastElem.setIntervalField(_sort_fld, n);
+      lastElem.setIntervalFld(_sort_fld, n);
+      break;
+    case AttrType.attrString:
+      //      lastElem.setHdr(fld_no, junk, s_size);
+      lastElem.setStrFld(_sort_fld, s);
       break;
     default:
       // don't know how to handle attrSymbol, attrNull
@@ -561,7 +561,7 @@ public class Sort extends Iterator implements GlobalConst
    * @param am an iterator for accessing the tuples
    * @param sort_fld the field number of the field to sort on
    * @param sort_order the sorting order (ASCENDING, DESCENDING)
-   * @param sort_fld_len the length of the sort field
+   * @param sort_field_len the length of the sort field
    * @param n_pages amount of memory (in pages) available for sorting
    * @exception IOException from lower layers
    * @exception SortException something went wrong in the lower layer. 
