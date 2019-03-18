@@ -433,7 +433,7 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
         break;
 
     case AttrType.attrInterval:
-        incr = 8;
+        incr = 12;
         break;
 
    case AttrType.attrString:
@@ -460,7 +460,7 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
          break;
 
      case AttrType.attrInterval:
-         incr = 8;
+         incr = 12;
          break;
 
    case AttrType.attrString:

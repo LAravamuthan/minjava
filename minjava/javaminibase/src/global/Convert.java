@@ -25,7 +25,7 @@ public class Convert{
     byte tmp[] = new byte[12];
     int start, end, level;
     // copy the value from data array out to a tmp byte array
-    System.arraycopy (data, position, tmp, 0, 8);
+    System.arraycopy (data, position, tmp, 0, 12);
 
     /* creates a new data input stream to read data from the
      * specified input stream
@@ -34,8 +34,9 @@ public class Convert{
     instr = new DataInputStream(in);
     start = instr.readInt();			//read the start value.
     end = instr.readInt();			//read the end value.
+    level = instr.readInt();
     value = new IntervalType();	//create an object of interval type after reading in start and end.
-    value.assign(start,end);		//assign start and end the corresponding values.
+    value.assign(start,end, level);		//assign start and end the corresponding values.
     return value;
   }
  
@@ -354,13 +355,14 @@ public class Convert{
     // write the value to the output stream
     outstr.writeInt(value.getS());
     outstr.writeInt(value.getE());
+    outstr.writeInt(value.getL());
 
     // creates a byte array with this output stream size and the
     // valid contents of the buffer have been copied into it
     byte []B = ((ByteArrayOutputStream) out).toByteArray();
 
     // copies contents of this byte array into data[]
-    System.arraycopy (B, 0, data, position, 8);
+    System.arraycopy (B, 0, data, position, 12);
 
   }
 }

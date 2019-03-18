@@ -527,7 +527,7 @@ public class Sort extends Iterator implements GlobalConst
     case AttrType.attrInterval:
         //      lastElem.setHdr(fld_no, junk, s_size);
         IntervalType i_t =new IntervalType();
-        i_t.assign(-10000,-10000);
+        i_t.assign(-10000,-10000,0);
         lastElem.setIntervalFld(_sort_fld, i_t);
         break;
 
@@ -576,7 +576,7 @@ public class Sort extends Iterator implements GlobalConst
     case AttrType.attrInterval:
         //      lastElem.setHdr(fld_no, junk, s_size);
         IntervalType i_t = new IntervalType();
-        i_t.assign(10000, 10000);
+        i_t.assign(10000, 10000, 0);
         lastElem.setIntervalFld(_sort_fld, i_t);
         break;
 

@@ -150,9 +150,12 @@ public class PredEval
 			boolean isIntervalType = comparison_type.attrType == AttrType.attrInterval;
 
 			IntervalType i1, i2;
+			int l1=0, l2=0;
 			if (isIntervalType) {
 				i1 = t1.getIntervalFld(1);
 				i2 = t2.getIntervalFld(1);
+				l1 = i1.getL();
+				l2 = i2.getL();
 			}
 
 	      
@@ -179,7 +182,10 @@ public class PredEval
 			if (isIntervalType) {
 				if(comp_res == 1)		//for interval data type the comp_res value should be 1 for CONTAINED WITHIN.
 				{
-					op_res = true;
+					if(temp_ptr.pc == 1 && l2 == l1 + 1)
+						op_res = true;
+					else if(temp_ptr.ad == 1 && l2 > l1 +1 )
+						op_res = true;
 				}
 			}
 		  else{
@@ -191,6 +197,9 @@ public class PredEval
 			if (isIntervalType) {
 				if (comp_res == 2)        //for interval data type the comp_res value should be 2 ENCLOSES.
 				{
+					if (temp_ptr.pc == 1 && l2 == l1 + 1)
+						op_res = true;
+					else if (temp_ptr.ad == 1 && l2 > l1 + 1)
 						op_res = true;
 				}
 			} else {
