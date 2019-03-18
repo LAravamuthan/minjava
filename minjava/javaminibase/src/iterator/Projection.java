@@ -50,11 +50,8 @@ public class Projection
 		  Jtuple.setFloFld(i+1, t1.getFloFld(perm_mat[i].offset));
 		  break;
 		case AttrType.attrString:
-			Jtuple.setStrFld(i + 1, t1.getStrFld(perm_mat[i].offset));
-			break;
-		case AttrType.attrInterval:
-			Jtuple.setIntervalFld(i + 1, t1.getIntervalFld(perm_mat[i].offset));
-			break;
+		  Jtuple.setStrFld(i+1, t1.getStrFld(perm_mat[i].offset));
+		  break;
 		default:
 		  
 		  throw new UnknowAttrType("Don't know how to handle attrSymbol, attrNull");
@@ -72,12 +69,8 @@ public class Projection
 		  Jtuple.setFloFld(i+1, t2.getFloFld(perm_mat[i].offset));
 		  break;
 		case AttrType.attrString:
-			Jtuple.setStrFld(i + 1, t2.getStrFld(perm_mat[i].offset));
-			break;
-		case AttrType.attrInterval:
-			Jtuple.setIntervalFld(i + 1, t2.getIntervalFld(perm_mat[i].offset));
-			break;
-
+		  Jtuple.setStrFld(i+1, t2.getStrFld(perm_mat[i].offset));
+		  break;
 		default:
 		  
 		  throw new UnknowAttrType("Don't know how to handle attrSymbol, attrNull");  
@@ -132,11 +125,8 @@ public class Projection
 		  Jtuple.setFloFld(i+1, t1.getFloFld(perm_mat[i].offset));
 		  break;
 		case AttrType.attrString:
-			Jtuple.setStrFld(i + 1, t1.getStrFld(perm_mat[i].offset));
-			break;
-		case AttrType.attrInterval:
-			Jtuple.setIntervalFld(i + 1, t1.getIntervalFld(perm_mat[i].offset));
-			break;
+		  Jtuple.setStrFld(i+1, t1.getStrFld(perm_mat[i].offset));
+		  break;
 		default:
 		  
 		  throw new UnknowAttrType("Don't know how to handle attrSymbol, attrNull"); 

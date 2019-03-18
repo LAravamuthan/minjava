@@ -48,7 +48,7 @@ public class PredEval
 	  return true;
 	}
       
-      while (p[i] != null)
+      while (i<p.length && p[i] != null)
 	{
 	  temp_ptr = p[i];
 	  while (temp_ptr != null)
@@ -64,24 +64,23 @@ public class PredEval
 		  comparison_type.attrType = AttrType.attrInteger;
 		  break;
 		case AttrType.attrReal:
-			value.setHdr((short) 1, val_type, null);
-			value.setFloFld(1, temp_ptr.operand1.real);
-			tuple1 = value;
-			comparison_type.attrType = AttrType.attrReal;
-			break;
-
-		case AttrType.attrInterval:
-			value.setHdr((short) 1, val_type, null);
-			value.setIntervalFld(1, temp_ptr.operand1.interval);
-			tuple1 = value;
-			comparison_type.attrType = AttrType.attrInterval;
-			break;
+		  value.setHdr((short)1, val_type, null);
+		  value.setFloFld(1, temp_ptr.operand1.real);
+		  tuple1 = value;
+		  comparison_type.attrType =AttrType.attrReal; 
+		  break;
 		case AttrType.attrString:
 		  str_size[0] = (short)(temp_ptr.operand1.string.length()+1 );
 		  value.setHdr((short)1, val_type, str_size);
 		  value.setStrFld(1, temp_ptr.operand1.string);
 		  tuple1 = value;
 		  comparison_type.attrType = AttrType.attrString;
+		  break;
+		case AttrType.attrInterval:
+		  value.setHdr((short)1, val_type, null);
+		  value.setIntervalFld(1, temp_ptr.operand1.interval);
+		  tuple1 = value;
+		  comparison_type.attrType = AttrType.attrInterval;
 		  break;
 		case AttrType.attrSymbol:
 		  fld1 = temp_ptr.operand1.symbol.offset;
@@ -111,20 +110,19 @@ public class PredEval
 		  tuple2 = value;
 		  break;
 		case AttrType.attrReal:
-			value.setHdr((short) 1, val_type, null);
-			value.setFloFld(1, temp_ptr.operand2.real);
-			tuple2 = value;
-			break;
-		case AttrType.attrInterval:
-			value.setHdr((short) 1, val_type, null);
-			value.setIntervalFld(1, temp_ptr.operand2.interval);
-			tuple1 = value;
-			comparison_type.attrType = AttrType.attrInterval;
-			break;
+		  value.setHdr((short)1, val_type, null);
+		  value.setFloFld(1, temp_ptr.operand2.real);
+		  tuple2 = value;
+		  break;
 		case AttrType.attrString:
 		  str_size[0] = (short)(temp_ptr.operand2.string.length()+1 );
 		  value.setHdr((short)1, val_type, str_size);
 		  value.setStrFld(1, temp_ptr.operand2.string);
+		  tuple2 = value;
+		  break;
+		case AttrType.attrInterval:
+		  value.setHdr((short)1, val_type, null);
+		  value.setIntervalFld(1, temp_ptr.operand2.interval);
 		  tuple2 = value;
 		  break;
 		case AttrType.attrSymbol:
@@ -146,81 +144,25 @@ public class PredEval
 		throw new PredEvalException (e,"TupleUtilsException is caught by PredEval.java");
 	      }
 	      op_res = false;
-
-			boolean isIntervalType = comparison_type.attrType == AttrType.attrInterval;
-
-			IntervalType i1, i2;
-			int l1=0, l2=0;
-			if (isIntervalType) {
-				i1 = t1.getIntervalFld(1);
-				i2 = t2.getIntervalFld(1);
-				l1 = i1.getL();
-				l2 = i2.getL();
-			}
-
 	      
 	      switch (temp_ptr.op.attrOperator)
 		{
 		case AttrOperator.aopEQ:
-
-			if (isIntervalType) {
-
-				if (temp_ptr.flag == 0 && comp_res == 3)                //if flag = 0, then operands must be equal.
-				{
-					op_res = true;
-				} else if (temp_ptr.flag == 1 && comp_res != 0)            //if flag = 1, then operands must overlap.
-				{
-					op_res = true;
-				}
-			}
-		  else {
-		  	 if(comp_res == 0)
-				 op_res = true;
-			}
+		  if (comp_res == 0 && temp_ptr.flag == 0) op_res = true;	      
+		  else if (comp_res > 0  && temp_ptr.flag == 1) op_res = true;
 		  break;
 		case AttrOperator.aopLT:
-			if (isIntervalType) {
-				if(comp_res == 1)		//for interval data type the comp_res value should be 1 for CONTAINED WITHIN.
-				{
-					if(temp_ptr.pc == 1 && l2 == l1 + 1)
-						op_res = true;
-					else if(temp_ptr.ad == 1 && l2 > l1 +1 )
-						op_res = true;
-				}
-			}
-		  else{
-		  	if(comp_res <  0)
-				op_res = true;
-		}
+		  if (comp_res == -1) op_res = true; //attrinterval
+		  //if (comp_res <  0) op_res = true;
 		  break;
 		case AttrOperator.aopGT:
-			if (isIntervalType) {
-				if (comp_res == 2)        //for interval data type the comp_res value should be 2 ENCLOSES.
-				{
-					if (temp_ptr.pc == 1 && l2 == l1 + 1)
-						op_res = true;
-					else if (temp_ptr.ad == 1 && l2 > l1 + 1)
-						op_res = true;
-				}
-			} else {
-				if (comp_res > 0) op_res = true;
-			}
+		  if (comp_res == -1) op_res = true; //attrinterval
+		  //if (comp_res >  0) op_res = true;
 		  break;
 		case AttrOperator.aopNE:
-			if (isIntervalType) {
-				if(temp_ptr.flag == 0 && comp_res != 3)			//flag=0, return true when they are not equal. 3 is returned when they are equal.
-				{
-					op_res = true;
-				}
-				else if(temp_ptr.flag == 1 && comp_res == 0)		//flag=1, return true when they don't overlap. 0 is returned when they do not overlap.
-				{
-					op_res = true;
-				}
-			}
-		  else {
-		  	if (comp_res != 0)
-				op_res = true;
-		}
+		  if(temp_ptr.flag <= 1)  //if flag == 0 or flag == 1
+		  	return true;
+		  if (comp_res != 0) op_res = true;
 		  break;
 		case AttrOperator.aopLE:
 		  if (comp_res <= 0) op_res = true;

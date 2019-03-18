@@ -111,6 +111,29 @@ class TagParams
 	}
 }
 
+class TagparamField
+{
+	private TagParams tgpr = null;
+	private List<Integer> Fldtrk = null;
+
+	public TagparamField(TagParams tagpar, List<Integer> fldtrk)
+	{
+		this.tgpr = tagpar;
+		this.Fldtrk = fldtrk;
+	}
+
+	public TagParams GetTagParams()
+	{
+		return this.tgpr;
+	}
+
+	public List<Integer> GetFldtrk()
+	{
+		return this.Fldtrk;
+	}
+}
+
+
 class XMLLineParser
 {
 	public XMLLineParser(){}
@@ -395,19 +418,36 @@ class XMLDriver implements GlobalConst
 	}
 
 
-	public FldSpec[] GetProjections(int outer, int inner)
+	public FldSpec[] GetProjections(int outer, int inner, List<Integer> ltfieldtoomit)
 	{
-		FldSpec[] projections = new FldSpec[outer+inner];
+		FldSpec[] projections = new FldSpec[outer+inner-(3*ltfieldtoomit.size())];
 		RelSpec rel_out = new RelSpec(RelSpec.outer); 
 		RelSpec rel_in = new RelSpec(RelSpec.innerRel); 
-
+		
+		int[] fieldstokeep = new int[(inner/3)-ltfieldtoomit.size()];
+		int k = 0;
+		for(int i=1;i<=(inner/3);i++)
+		{
+			if(ltfieldtoomit.indexOf(i) == -1)
+			{
+				fieldstokeep[k] = i; 
+				k+=1;
+			}
+		}
 		for(int i=0;i<outer;i++)
 		{
 			projections[i] = new FldSpec(rel_out, i+1);
 		}
-		for(int i=outer;i<outer+inner;i++)
+		k=outer;
+		for(int i=0;i<fieldstokeep.length;i++)
 		{
-			projections[i] = new FldSpec(rel_in, i-outer+1);
+			int pos = 3*(fieldstokeep[i]-1) + 1;
+			for(int p=0;p<3;p++)
+			{
+				projections[k]=new FldSpec(rel_in, pos);
+				k+=1;
+				pos+=1;			
+			}
 		}
 		return projections;
 	}
@@ -438,11 +478,52 @@ class XMLDriver implements GlobalConst
 		return outFilter;
 	}
 
-  
+
+	public AttrType[] JoinAttrtype(AttrType[] tagattrtype1, AttrType[] tagattrtype2, int outer, FldSpec[] projections)
+	{
+		AttrType[] JoinedTagAttrtype = new AttrType[projections.length];
+		System.arraycopy(tagattrtype1, 0, JoinedTagAttrtype, 0, outer); 
+
+		for(int i=outer;i<projections.length;i++)
+		{
+			JoinedTagAttrtype[i] = tagattrtype2[projections[i].offset-1];
+		}
+		return JoinedTagAttrtype;
+	}
+ 
+	public short[] JoinAttrsize(short[] tagattrsize1, short[] tagattrsize2, List<Integer> fieldtoomit)
+	{
+		short[] JoinedTagsize = new short[tagattrsize1.length + tagattrsize2.length - fieldtoomit.size()];
+		System.arraycopy(tagattrsize1, 0, JoinedTagsize, 0, tagattrsize1.length); 
+		int pos = 0;
+
+		for(int i=tagattrsize1.length; i<JoinedTagsize.length; i++)
+		{
+			JoinedTagsize[i] = tagattrsize2[pos];
+			pos+=1;
+		}
+		return JoinedTagsize;
+	}
+
+	public int JoinedTupSize(AttrType[] JoinedTagAttrtype, short[] JoinedTagsize)
+	{
+		Tuple temptup = new Tuple();
+		try
+		{
+			temptup.setHdr((short) JoinedTagAttrtype.length, JoinedTagAttrtype, JoinedTagsize);
+		}
+		catch (Exception e)
+		{
+			System.err.println("*** error in Tuple.setHdr() ***");
+			e.printStackTrace();
+		}
+		return temptup.size();		
+	}
+
   	//parentchildflag == true check parent child or else check ancester descendant
   	//ContainOrEquality == true check containment or else check equality
 
-	public TagParams JoinTwoFields(TagParams tag1, int joinfieldno1, TagParams tag2, int joinfieldno2, boolean parentchildflag, boolean ContainOrEquality)
+	public TagParams JoinTwoFields(TagParams tag1, int joinfieldno1, TagParams tag2, int joinfieldno2, List<Integer> ltfieldtoomit, boolean parentchildflag, boolean ContainOrEquality)
 	{
 
     	AttrType [] tagattrtype1  = tag1.GetAtrTypes();
@@ -457,20 +538,14 @@ class XMLDriver implements GlobalConst
 		String   taghpfilename2   = tag2.GetHPFileName();
 		int      inner            = tagattrtype2.length;
 
-		AttrType [] JoinedTagAttrtype = new AttrType[outer+inner];
-		System.arraycopy(tagattrtype1, 0, JoinedTagAttrtype, 0, outer); 	
-		System.arraycopy(tagattrtype2, 0, JoinedTagAttrtype, outer, inner);
 
-		short [] JoinedTagsize = new short[tagattrsize1.length + tagattrsize2.length];
-		System.arraycopy(tagattrsize1, 0, JoinedTagsize, 0, tagattrsize1.length); 	
-		System.arraycopy(tagattrsize2, 0, JoinedTagsize, tagattrsize1.length, tagattrsize2.length);
-
+		AttrType[] JoinedTagAttrtype = null;
+		short [] JoinedTagsize = null;
+		int JoinedTagTupSize = 0;
 
 		byte[] array = new byte[10]; 
 		new Random().nextBytes(array); 
 
-		int JoinedTagTupSize = tagtupsize1 + tagtupsize2;
-		//String JoinedTaghpfilename = taghpfilename1+"_"+taghpfilename2;
 		String JoinedTaghpfilename = new String(array, Charset.forName("UTF-8")); 
 		Heapfile JoinedTaghpfile = null;
 
@@ -487,11 +562,36 @@ class XMLDriver implements GlobalConst
 		RID JoinedTagRID = new RID();
 
 		FldSpec[] projlist_tag1 = null, projlist_tag2  = null;
-		projlist_tag1 = GetProjections(outer, 0);
-		projlist_tag2 = GetProjections(outer, inner);
+		List<Integer> ftoO1 = new ArrayList<Integer>();
+		List<Integer> ftoO2 = ltfieldtoomit;
+		projlist_tag1 = GetProjections(outer, 0, ftoO1);
+		projlist_tag2 = GetProjections(outer, inner, ftoO2);
+
+		/*
+		for(int i=0;i<projlist_tag2.length;i++)
+		{
+			System.out.println(projlist_tag2[i].offset);
+		}*/
 
 		CondExpr[] outFilter = null;
 		outFilter = GenerateCondExpr(joinfieldno1, joinfieldno2, ContainOrEquality);
+
+		JoinedTagAttrtype = JoinAttrtype(tagattrtype1, tagattrtype2, outer, projlist_tag2);
+		JoinedTagsize     = JoinAttrsize(tagattrsize1, tagattrsize2, ltfieldtoomit);
+		JoinedTagTupSize  = JoinedTupSize(JoinedTagAttrtype, JoinedTagsize);
+	/*
+		System.out.println("jere");
+		System.out.printf("%s %s\n", joinfieldno1, joinfieldno2);
+	for(int i=0;i<JoinedTagsize.length;i++)
+		{
+			System.out.println(JoinedTagsize[i]);
+		}
+
+
+		for(int i=0;i<JoinedTagAttrtype.length;i++)
+		{
+			System.out.println(JoinedTagAttrtype[i].toString());
+		}*/
 
 		FileScan fscan = null;
 		try 
@@ -507,7 +607,7 @@ class XMLDriver implements GlobalConst
 	    NestedLoopsJoins nlj = null;
 	    try 
 	    {
-	    	nlj = new NestedLoopsJoins(tagattrtype1, outer, tagattrsize1, tagattrtype2, inner, tagattrsize2, 10, fscan, taghpfilename2, outFilter, null, projlist_tag2, outer+inner);
+	    	nlj = new NestedLoopsJoins(tagattrtype1, outer, tagattrsize1, tagattrtype2, inner, tagattrsize2, 10, fscan, taghpfilename2, outFilter, null, projlist_tag2, outer+inner-(3*ltfieldtoomit.size()));
 	    }
 	    catch (Exception e) 
 	    {
@@ -547,72 +647,10 @@ class XMLDriver implements GlobalConst
 	}
 
 
-	public void Sort_My_Field()
-	{
-
-	    FldSpec[] projlist = new FldSpec[3];
-	    RelSpec rel = new RelSpec(RelSpec.outer); 
-	    projlist[0] = new FldSpec(rel, 1);
-	    projlist[1] = new FldSpec(rel, 2);
-	    projlist[2] = new FldSpec(rel, 3);
-	    int sizetup;
-
-    	AttrType [] Stps = GetAttrType();
-		short [] Sszs = GetStrSizes();
-		int TupSize = GetTupleSize();
-
-    	FileScan fscan = null;
-
-		Tuple tup = new Tuple(TupSize);
-		try 
-		{
-			tup.setHdr((short) 3, Stps, Sszs);
-		}
-		catch (Exception e)
-		{
-		 	e.printStackTrace();
-		}
-		
-		try
-		{
-		  fscan = new FileScan("Entry.in", Stps, Sszs, (short) 3, 3, projlist, null);
-		}
-		catch (Exception e)
-		{
-		  	e.printStackTrace();
-		}
-
-		TupleOrder ascending = new TupleOrder(TupleOrder.Ascending);
-		Sort sort_names = null;
-		try 
-		{
-			sort_names = new Sort (Stps, (short)3, Sszs, fscan, 2, ascending, Sszs[0], 10);
-		}
-		catch (Exception e) 
-		{
-			System.err.println ("*** Error preparing for sorting");
-			System.err.println (""+e);
-			Runtime.getRuntime().exit(1);
-		}
-		try 
-		{
-			while ((tup=sort_names.get_next()) !=null) 
-			{
-				tup.print(Stps);
-			}
-		}
-		catch (Exception e) 
-		{
-			System.err.println ("*** Error preparing for get_next tuple");
-			System.err.println (""+e);
-			e.printStackTrace();
-			Runtime.getRuntime().exit(1);
-		}
-	}
-
 
 	public TagParams[] ExtractTagToHeap(TagParams tag_params, String[] tagnames)
 	{
+
 		Heapfile heaptosearch = tag_params.GetHeapFile();
 		RID ridtosearch = tag_params.GetRID();
 
@@ -727,6 +765,14 @@ class XMLDriver implements GlobalConst
 		}
 	}
 
+	public void AddField(List<Integer> FieldTracker, int num)
+	{
+		if(FieldTracker.indexOf(num) == -1)
+		{
+			FieldTracker.add(num);
+		}
+	}
+
 	public int[] GetFieldsToJoin(List<Integer> FieldTracker, int ftfld, int scfld)
 	{
 		int[] fields = new int[2];
@@ -748,14 +794,28 @@ class XMLDriver implements GlobalConst
 		return fields;
 	}
 
+	public List<Integer> GetMyOmitList(List<Integer> FieldTracker, List<Integer> ltfieldtoomit, int ftfld, int scflt)
+	{
+		ltfieldtoomit.clear();
+		if(FieldTracker.indexOf(ftfld) > -1)
+		{
+			ltfieldtoomit.add(1);
+		}
+		if(FieldTracker.indexOf(scflt) > -1)
+		{
+			ltfieldtoomit.add(2);
+		}
+		return ltfieldtoomit;
+	}
   	//parentchildflag == true check parent child or else check ancester descendant
   	//ContainOrEquality == true check containment or else check equality
 
-	public TagParams Query(TagParams[] ExtractTags, String[] Joins)
+	public TagparamField Query(TagParams[] ExtractTags, String[] Joins)
 	{
 		TagParams ResultTagPar = null;
 		TagParams TempTagPar = null;
 		List<Integer> FieldTracker = new ArrayList<Integer>();
+		List<Integer> ltfieldtoomit = new ArrayList<Integer>();
 
 		for(int i=0;i<Joins.length;i++)
 		{
@@ -766,35 +826,178 @@ class XMLDriver implements GlobalConst
 			boolean relflag = false;
 			int[] fields = null;
 
-
 			if(typerel.equals("PC"))
 			{
 				relflag = true;
 			}
 
-			TempTagPar = JoinTwoFields(ExtractTags[ftfld], 2, ExtractTags[scfld], 2, relflag, true);
+			TempTagPar = JoinTwoFields(ExtractTags[ftfld], 2, ExtractTags[scfld], 2, ltfieldtoomit, relflag, true);
 
 			if(ResultTagPar != null)
 			{
 				fields = GetFieldsToJoin(FieldTracker, ftfld, scfld);
-				ResultTagPar = JoinTwoFields(ResultTagPar, fields[0], TempTagPar, fields[1], false, false);
-				FieldTracker.add(ftfld);
-				FieldTracker.add(scfld);
+				ltfieldtoomit = GetMyOmitList(FieldTracker, ltfieldtoomit, ftfld, scfld);
+				ResultTagPar = JoinTwoFields(ResultTagPar, fields[0], TempTagPar, fields[1], ltfieldtoomit, false, false);
+				AddField(FieldTracker, ftfld);
+				AddField(FieldTracker, scfld);
+				ltfieldtoomit.clear();
 			}
 			else
 			{
 				ResultTagPar = TempTagPar;
-				FieldTracker.add(ftfld);
-				FieldTracker.add(scfld);
+				AddField(FieldTracker, ftfld);
+				AddField(FieldTracker, scfld);
 			}
 		}
-		return ResultTagPar;
+		return new TagparamField(ResultTagPar, FieldTracker);
+	}
+
+	public String[] GetJoins(String[] NumberofJoins, int st, int end)
+	{
+		String[] subjoins = new String[end-st];
+		int k = 0;
+		for(int i=st;i<end;i++)
+		{
+			subjoins[k] = NumberofJoins[i];
+			k+=1;
+		}
+		return subjoins;
+	} 
+
+	public TagParams JoinQuery(TagparamField query1,TagparamField query2)
+	{
+		TagParams tagpar1 = query1.GetTagParams();
+		TagParams tagpar2 = query2.GetTagParams();
+		List<Integer> fldtrk1 = query1.GetFldtrk();
+		List<Integer> fldtrk2 =query2.GetFldtrk();
+
+		List<Integer> ltfieldtoomit = new ArrayList<Integer>();
+
+		int[] fields = new int[2];
+
+		for(int i=0;i<fldtrk2.size();i++)
+		{
+			if(fldtrk1.indexOf(fldtrk2.get(i)) > -1)
+			{
+				ltfieldtoomit.add(i+1);
+			}
+		}
+
+		for(int i=0;i<fldtrk2.size();i++)
+		{
+			if(fldtrk1.indexOf(fldtrk2.get(i)) > -1)
+			{
+				fields[0] = 3*fldtrk1.indexOf(fldtrk2.get(i))+2;
+				fields[1] = 3*i+2;
+				break;
+			}
+		}
+
+
+		TagParams ResQueryJoin = JoinTwoFields(tagpar1, fields[0], tagpar2, fields[1], ltfieldtoomit, false, false);
+		return ResQueryJoin;
+
 	}
 
 
-	public TagParams ReadQueryAndExecute(TagParams MainTagpair, String Queryfilename) 
+	public int[] querypossible(String[] NumberofJoins)
 	{
-		TagParams QueryResult;
+		int count = 0;
+
+		List<Integer> firlot = new ArrayList<Integer>();
+		List<Integer> seclot = new ArrayList<Integer>();
+		int splitter = 1;
+		int lenoflist = NumberofJoins.length;
+		int[] splitlist = new int[]{-1, -1};
+		boolean possiblesec = true;
+
+		while(splitter < lenoflist)
+		{
+			String[] tempstr;
+			for(int i=0;i<splitter;i++)
+			{
+				tempstr = NumberofJoins[i].split(" ");
+				firlot.add(Integer.parseInt(tempstr[0]));
+				firlot.add(Integer.parseInt(tempstr[1]));
+			}
+			for(int i=splitter;i<lenoflist;i++)
+			{
+				tempstr = NumberofJoins[i].split(" ");
+				if(seclot.size()!=0)
+				{
+					if(seclot.indexOf(Integer.parseInt(tempstr[0])) == -1  &&  seclot.indexOf(Integer.parseInt(tempstr[1])) == -1)
+					{
+						possiblesec = false;
+						break;
+					}
+				}
+				seclot.add(Integer.parseInt(tempstr[0]));
+				seclot.add(Integer.parseInt(tempstr[1]));
+			}
+			if(possiblesec)
+			{
+				for(int i=0;i<firlot.size();i++)
+				{
+					if(seclot.indexOf(firlot.get(i)) > -1)
+					{
+						splitlist[count] = splitter;
+						count += 1;
+						break;
+					}
+				}
+			}
+			splitter+=1;
+			firlot.clear();
+			seclot.clear();	
+			possiblesec = true;
+			if(count == 2)
+			{
+				break;
+			}
+		}
+		return splitlist;
+	}
+
+	public TagParams[] MakeQueryPlanner(TagParams[] AllTags, String[] NumberofJoins)
+	{
+		TagparamField tf1 = null;
+		TagparamField tf2 = null;
+
+		TagParams[] tgprarr = new TagParams[3];
+
+		//PCounter.initialize();
+
+		tgprarr[0] = Query(AllTags, NumberofJoins).GetTagParams();
+		System.out.println("Query 1 executed");
+		System.out.printf("reads = %s writes = %s\n", PCounter.getreads(), PCounter.getwrites());
+
+		int[] spliter = querypossible(NumberofJoins);
+
+		for(int i=0;i<spliter.length;i++)
+		{
+			if(spliter[i] != -1)
+			{
+				tf1 = Query(AllTags, GetJoins(NumberofJoins, 0, spliter[i]));
+				tf2 = Query(AllTags, GetJoins(NumberofJoins, spliter[i], NumberofJoins.length));
+				tgprarr[i+1] = JoinQuery(tf1, tf2);		
+
+				System.out.printf("reads = %s writes = %s\n", PCounter.getreads(), PCounter.getwrites());
+				System.out.printf("Query %s executed\n", i+2);
+
+			}
+			else
+			{
+				System.out.printf("Query %s not possible\n", i+1);
+			}
+
+		}
+		
+		return tgprarr;
+	}
+
+	public TagParams[] ReadQueryAndExecute(TagParams MainTagpair, String Queryfilename) 
+	{
+		TagParams QueryResult = null;
 		List<String> querylinelist = null;
 		try
 		{
@@ -823,15 +1026,23 @@ class XMLDriver implements GlobalConst
 		{
 			NumberofJoins[i] = querylinelist.get(numberofnodes+1+i);
 		}
-
 		TagParams[] AllTags = ExtractTagToHeap(MainTagpair, searchtags);
 
+		System.out.println("File Parsing Completed");
+/*		try
+		{
+			MainTagpair.GetHeapFile().deleteFile();			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();		
+		}*/
 
-		ReverseArray(NumberofJoins);
 
-		QueryResult = Query(AllTags, NumberofJoins);
-		return QueryResult;
-
+		//ReverseArray(NumberofJoins);
+		TagParams[] finalresult = MakeQueryPlanner(AllTags, NumberofJoins);
+		//QueryResult = Query(AllTags, NumberofJoins);
+		return finalresult;
 	}
 
 	public void ScanHeapFile(TagParams tgprms)
@@ -870,7 +1081,7 @@ class XMLDriver implements GlobalConst
 				}
 				temptup.setHdr((short) numoffields, Atrtyps, Strsizes);
 				temptup.print(Atrtyps);
-				System.out.println();
+				//System.out.println();
 				count_records+=1;
 			}
 			catch (Exception e) 
@@ -890,9 +1101,9 @@ public class XMLTest// implements  GlobalConst
 {
 	public static void main(String [] argvs) 
 	{
-		String DataFileName = "./xml_sample_data_part.xml";
+		String DataFileName = "./xml_sample_data.xml";
 		String QueryFileName = "./queryfile.txt";
-		//String fname = "./plane.xml";
+		//String DataFileName = "./plane.xml";
 		try
 		{
 			//System.out.println("Initializing XML Test object"); 
@@ -900,9 +1111,16 @@ public class XMLTest// implements  GlobalConst
 			//System.out.println("Reading XML file lines");
 			TagParams MainTagPair = xmldvr.ReadFileLbyLStoreInHeapFile();
 
-/*			String[] schtag = new String[]{"root", "seqle", "102", "Speci", "Lycop"};
-			TagParams[] tgprs = xmldvr.ExtractTagToHeap(maintgpair, schtag);
 
+
+		//String[] schtag = new String[]{"root", "seqle", "102", "Speci", "Lycop"};
+			//TagParams[] tgprs = xmldvr.ExtractTagToHeap(MainTagPair, schtag);
+		//	List<Integer> ltfieldtoomit =  new ArrayList<Integer>() ;
+			//ltfieldtoomit.add(1);
+				//TagParams k =	xmldvr.JoinTwoFields(tgprs[0], 2, tgprs[1], 2, ltfieldtoomit, false, true);
+
+			 //xmldvr.ScanHeapFile(k);
+/*
 			TagParams a1_2 = xmldvr.JoinTwoFields(tgprs[0], 2, tgprs[1], 2, false, true);
 			TagParams a2_3 = xmldvr.JoinTwoFields(tgprs[1], 2, tgprs[2], 2, true, true);
 
@@ -912,9 +1130,20 @@ public class XMLTest// implements  GlobalConst
 			{
 				xmldvr.ScanHeapFile(tgprs[i]);
 			}*/
-			TagParams qresult = xmldvr.ReadQueryAndExecute(MainTagPair, QueryFileName);
+			//xmldvr.ScanHeapFile(MainTagPair);
+			TagParams[] qresult = xmldvr.ReadQueryAndExecute(MainTagPair, QueryFileName);
+			for(int i=0;i<qresult.length;i++)
+			{
+				if(qresult[i] != null)
+				{
+					xmldvr.ScanHeapFile(qresult[i]);
+				}
+		
+			}
+			//xmldvr.ScanHeapFile(qresult[0]);
 			//xmldvr.Sort_My_Field();
-			xmldvr.ScanHeapFile(qresult);
+			System.out.println(PCounter.getreads());
+			System.out.println(PCounter.getwrites());
 		}
 		catch (Exception e) 
 		{
@@ -924,3 +1153,71 @@ public class XMLTest// implements  GlobalConst
 		}
 	} 
 }
+
+
+
+
+
+/*	public void Sort_My_Field()
+	{
+
+	    FldSpec[] projlist = new FldSpec[3];
+	    RelSpec rel = new RelSpec(RelSpec.outer); 
+	    projlist[0] = new FldSpec(rel, 1);
+	    projlist[1] = new FldSpec(rel, 2);
+	    projlist[2] = new FldSpec(rel, 3);
+	    int sizetup;
+
+    	AttrType [] Stps = GetAttrType();
+		short [] Sszs = GetStrSizes();
+		int TupSize = GetTupleSize();
+
+    	FileScan fscan = null;
+
+		Tuple tup = new Tuple(TupSize);
+		try 
+		{
+			tup.setHdr((short) 3, Stps, Sszs);
+		}
+		catch (Exception e)
+		{
+		 	e.printStackTrace();
+		}
+		
+		try
+		{
+		  fscan = new FileScan("Entry.in", Stps, Sszs, (short) 3, 3, projlist, null);
+		}
+		catch (Exception e)
+		{
+		  	e.printStackTrace();
+		}
+
+		TupleOrder ascending = new TupleOrder(TupleOrder.Ascending);
+		Sort sort_names = null;
+		try 
+		{
+			sort_names = new Sort (Stps, (short)3, Sszs, fscan, 2, ascending, Sszs[0], 10);
+		}
+		catch (Exception e) 
+		{
+			System.err.println ("*** Error preparing for sorting");
+			System.err.println (""+e);
+			Runtime.getRuntime().exit(1);
+		}
+		try 
+		{
+			while ((tup=sort_names.get_next()) !=null) 
+			{
+				tup.print(Stps);
+			}
+		}
+		catch (Exception e) 
+		{
+			System.err.println ("*** Error preparing for get_next tuple");
+			System.err.println (""+e);
+			e.printStackTrace();
+			Runtime.getRuntime().exit(1);
+		}
+	}
+*/

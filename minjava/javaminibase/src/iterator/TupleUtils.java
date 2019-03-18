@@ -42,7 +42,7 @@ public class TupleUtils
       int   t1_i,  t2_i;
       float t1_r,  t2_r;
       String t1_s, t2_s;
-      IntervalType t1_iT, t2_iT;
+      intervaltype t1_it, t2_it;
       
       switch (fldType.attrType) 
 	{
@@ -67,33 +67,59 @@ public class TupleUtils
 	  if (t1_r == t2_r) return  0;
 	  if (t1_r <  t2_r) return -1;
 	  if (t1_r >  t2_r) return  1;
-
+	  
 	case AttrType.attrString:                // Compare two strings
-		try {
-			t1_s = t1.getStrFld(t1_fld_no);
-			t2_s = t2.getStrFld(t2_fld_no);
-		} catch (FieldNumberOutOfBoundException e) {
-			throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
-		}
-		if(t1_s.compareTo( t2_s)>0)return 1;
-		if (t1_s.compareTo( t2_s)<0)return -1;
-		return 0;
-	case AttrType.attrInterval:
-		try {
-			t1_iT = t1.getIntervalFld(t1_fld_no);
-			t2_iT = t2.getIntervalFld(t2_fld_no);
-		} catch (FieldNumberOutOfBoundException e) {
-			throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
-		}
-		if (t1_iT.getS() > t2_iT.getS() && t1_iT.getE() < t2_iT.getE())         //interval 1 contained in interval 2
-			return 1;
-		if (t1_iT.getS() < t2_iT.getS() && t1_iT.getE() > t2_iT.getE())         //interval 1 encloses interval 2
-			return 2;
-		if (t1_iT.getS() > t2_iT.getE() || t1_iT.getE() < t2_iT.getS())        //no overlap
-			return 0;
-		return 3;
-
+	  try {
+	    t1_s = t1.getStrFld(t1_fld_no);
+	    t2_s = t2.getStrFld(t2_fld_no);
+	  }catch (FieldNumberOutOfBoundException e){
+	    throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
+	  }
+	  
 	  // Now handle the special case that is posed by the max_values for strings...
+	  if(t1_s.compareTo( t2_s)>0)return 1;
+	  if (t1_s.compareTo( t2_s)<0)return -1;
+	  return 0;
+
+  case AttrType.attrInterval:
+    try{
+      t1_it = t1.getIntervalFld(t1_fld_no);
+      t2_it = t2.getIntervalFld(t2_fld_no);
+    }catch (FieldNumberOutOfBoundException e){
+      throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
+    }
+    int s1 = t1_it.get_s();
+    int e1 = t1_it.get_e();
+    int s2 = t2_it.get_s();
+    int e2 = t2_it.get_e();
+
+/*    if (s1 == s2) return  0;
+    if (s1 <  s2) return -1;
+    if (s1 >  s2) return  1;*/
+  
+    if(s1==s2 && e1==e2)
+      return 0; //equality
+
+
+    if(s1 < s2)
+    {
+      if(e1 < e2)
+      {
+        if(e1 < s2)return -2; //left non overlap
+        else return 3; //other overlap
+      }
+        else return -1; //containment
+    }
+    else 
+    {
+      if(e2 < e1)
+      {
+        if(e2 < s1) return 2; //right non overlap
+        else return 3;  //other overlap
+      }
+      else return 1; //enclosure
+    }
+
 	default:
 	  
 	  throw new UnknowAttrType(null, "Don't know how to handle attrSymbol, attrNull");
@@ -206,22 +232,20 @@ public class TupleUtils
 	    throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
 	  }
 	  break;
+  case AttrType.attrInterval:
+    try {
+      value.setIntervalFld(fld_no, tuple.getIntervalFld(fld_no));
+    }catch (FieldNumberOutOfBoundException e){
+      throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
+    }
+    break;
 	case AttrType.attrString:
-		try {
-			value.setStrFld(fld_no, tuple.getStrFld(fld_no));
-		} catch (FieldNumberOutOfBoundException e) {
-			throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
-		}
-		break;
-
-
-	case AttrType.attrInterval:
-		try {
-			value.setIntervalFld(fld_no, tuple.getIntervalFld(fld_no));
-		} catch (FieldNumberOutOfBoundException e) {
-			throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
-		}
-		break;
+	  try {
+	    value.setStrFld(fld_no, tuple.getStrFld(fld_no));
+	  }catch (FieldNumberOutOfBoundException e){
+	    throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
+	  }
+	  break;
 	default:
 	  throw new UnknowAttrType(null, "Don't know how to handle attrSymbol, attrNull");
 	  
@@ -259,12 +283,9 @@ public class TupleUtils
       int i, count = 0;
       
       for (i = 0; i < len_in1; i++)
-      {	
-	//System.out.println("Field " + i + " attribute type is : " + in[i].attrType);
         if (in1[i].attrType == AttrType.attrString)
 	  sizesT1[i] = t1_str_sizes[count++];
-      }
-
+      
       for (count = 0, i = 0; i < len_in2; i++)
 	if (in2[i].attrType == AttrType.attrString)
 	  sizesT2[i] = t2_str_sizes[count++];

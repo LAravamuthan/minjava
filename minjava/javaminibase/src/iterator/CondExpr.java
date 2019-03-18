@@ -14,14 +14,8 @@ public class CondExpr {
   /**
    * Operator like "<"
    */
+  public AttrOperator op;
 
-  public int flag;
-
-  public int pc = 0;
-  public int ad = 0;
-
-  public AttrOperator op;    
-  
   /**
    * Types of operands, Null AttrType means that operand is not a
    * literal but an attribute name
@@ -34,7 +28,10 @@ public class CondExpr {
    */ 
   public Operand operand1;
   public Operand operand2;
-  
+
+  /* flag being added for range based conditions */
+  public int flag;
+
   /**
    * Pointer to the next element in linked list
    */    
@@ -50,7 +47,7 @@ public class CondExpr {
     
     operand1.integer = 0;
     operand2.integer = 0;
-    
+    flag = 0;
     next = null;
   }
 }

@@ -211,39 +211,8 @@ public class Sort extends Iterator implements GlobalConst
       if (cur_node == null) break; 
       p_elems_curr_Q --;
 
-      /*
-   Implemented as part of Minibase changes.
-   Need to make Minibase changes. The conditions need to be set up appropriately over here. Function returns
-	– 1 for containment
-	– 2 for enclosure
-	– 3 for other types of overlap
-	– 0 for no-overlap
-  For enclosure(2) t1.start < t2.start so we are good. For 0, it could be either t1.e < t2.s || t1.s > t2.e. We will need to set it to true when t1.s < t2.s
-*/
-        IntervalType curr_val, last_val;
-        curr_val = last_val = null;
-        boolean interval_smaller = false;                //if the interval's start value is less than the other interval
-        boolean interval_larger = false;                //if the interval's start value is greater than the other interval
-        boolean is_interval = sortFldType.attrType == AttrType.attrInterval;
+      comp_res = TupleUtils.CompareTupleWithValue(sortFldType, cur_node.tuple, _sort_fld, lastElem);  // need tuple_utils.java
 
-
-        if (!is_interval)
-            comp_res = TupleUtils.CompareTupleWithValue(sortFldType, cur_node.tuple, _sort_fld, lastElem);  // need tuple_utils.java
-        else {
-            curr_val = cur_node.tuple.getIntervalFld(_sort_fld);    /*Added as part of Minibase changes. Get the intervaltype object for current element.*/
-            last_val = lastElem.getIntervalFld(_sort_fld);    /*Added as part of Minibase changes. Get the intervaltype object for last element.*/
-            int curr_s, last_s;
-            curr_s = curr_val.getS();
-            last_s = last_val.getS();
-//	System.out.println("curr_s = " + curr_s + " last_s = " + last_s);
-            if (curr_s < last_s)
-                comp_res = -1;
-            else if (curr_s == last_s)
-                comp_res = 0;
-            else
-                comp_res = 1;
-        }
-      
       if ((comp_res < 0 && order.tupleOrder == TupleOrder.Ascending) || (comp_res > 0 && order.tupleOrder == TupleOrder.Descending)) {
 	// doesn't fit in current run, put into the other queue
 	try {
@@ -507,6 +476,8 @@ public class Sort extends Iterator implements GlobalConst
     char[] c = new char[1];
     c[0] = Character.MIN_VALUE; 
     String s = new String(c);
+    IntervalType n = new IntervalType();
+    n.assign(-100000,-100000);
     //    short fld_no = 1;
     
     switch (sortFldType.attrType) {
@@ -522,15 +493,9 @@ public class Sort extends Iterator implements GlobalConst
       //      lastElem.setHdr(fld_no, junk, s_size);
       lastElem.setStrFld(_sort_fld, s);
       break;
-
-
-    case AttrType.attrInterval:
-        //      lastElem.setHdr(fld_no, junk, s_size);
-        IntervalType i_t =new IntervalType();
-        i_t.assign(-10000,-10000,0);
-        lastElem.setIntervalFld(_sort_fld, i_t);
-        break;
-
+    case AttrType.attrInterval: // create a case for attribute interval? set it to no values?
+      lastElem.setIntervalField(_sort_fld, n);
+      break;
     default:
       // don't know how to handle attrSymbol, attrNull
       //System.err.println("error in sort.java");
@@ -558,6 +523,8 @@ public class Sort extends Iterator implements GlobalConst
     char[] c = new char[1];
     c[0] = Character.MAX_VALUE; 
     String s = new String(c);
+    IntervalType n = new IntervalType();
+    n.assign(100000,100000);
     //    short fld_no = 1;
     
     switch (sortFldType.attrType) {
@@ -574,13 +541,9 @@ public class Sort extends Iterator implements GlobalConst
         lastElem.setStrFld(_sort_fld, s);
         break;
     case AttrType.attrInterval:
-        //      lastElem.setHdr(fld_no, junk, s_size);
-        IntervalType i_t = new IntervalType();
-        i_t.assign(10000, 10000, 0);
-        lastElem.setIntervalFld(_sort_fld, i_t);
-        break;
-
-        default:
+      lastElem.setIntervalField(_sort_fld, n);
+      break;
+    default:
       // don't know how to handle attrSymbol, attrNull
       //System.err.println("error in sort.java");
       throw new UnknowAttrType("Sort.java: don't know how to handle attrSymbol, attrNull");

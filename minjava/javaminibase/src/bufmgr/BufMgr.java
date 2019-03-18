@@ -315,7 +315,9 @@ class Clock extends Replacer {
  * page.
  */
 public class BufMgr implements GlobalConst{
-  
+  // Page counter - will count the access of write and read pages per query 
+  public static int pc = 0;
+
   /** The hash table, only allocated once. */
   private BufHashTbl hashTable = new BufHashTbl(); 
   
@@ -829,6 +831,8 @@ public class BufMgr implements GlobalConst{
     
     try {
       SystemDefs.JavabaseDB.read_page(pageno, page);
+      PCounter.readIncrement();
+      pc++;
     }
     catch (Exception e) {
       throw new BufMgrException(e,"BufMgr.java: read_page() failed");

@@ -378,7 +378,7 @@ public class Tuple implements GlobalConst{
     {
         if ( (fldNo > 0) && (fldNo <= fldCnt))
         {
-            Convert.setIntervalValue(val, fldOffset[fldNo -1], data);
+            Convert.setIntervalValue(val, fldNo, data);
             return this;
         }
         else
@@ -432,10 +432,6 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
         incr = 4;
         break;
 
-    case AttrType.attrInterval:
-        incr = 12;
-        break;
-
    case AttrType.attrString:
      incr = (short) (strSizes[strCount] +2);  //strlen in bytes = strlen +2
      strCount++;
@@ -455,13 +451,9 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
      incr = 4;
      break;
 
-     case AttrType.attrReal:
-         incr = 4;
-         break;
-
-     case AttrType.attrInterval:
-         incr = 12;
-         break;
+   case AttrType.attrReal:
+     incr =4;
+     break;
 
    case AttrType.attrString:
      incr =(short) ( strSizes[strCount] +2);  //strlen in bytes = strlen +2
@@ -521,7 +513,6 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
   int i, val;
   float fval;
   String sval;
-  IntervalType iVal;
 
   System.out.print("[");
   for (i=0; i< fldCnt-1; i++)
@@ -543,12 +534,6 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
         System.out.print(sval);
         break;
 
-
-    case AttrType.attrInterval:
-        iVal = Convert.getIntervalValue(fldOffset[i], data);
-        System.out.print(iVal);
-        break;
-  
    case AttrType.attrNull:
    case AttrType.attrSymbol:
      break;
@@ -571,12 +556,6 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
      case AttrType.attrString:
          sval = Convert.getStrValue(fldOffset[i], data, fldOffset[i + 1] - fldOffset[i]);
          System.out.print(sval);
-         break;
-
-
-     case AttrType.attrInterval:
-         iVal = Convert.getIntervalValue(fldOffset[i], data);
-         System.out.print(iVal);
          break;
 
    case AttrType.attrNull:
