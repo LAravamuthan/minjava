@@ -6,20 +6,20 @@ public class IntervalType {
 
     private int s;
     private int e;
-    private int l;
 
     public IntervalType(){
         //constructor for interval type.
     }
 
-    public void assign(int a, int b, int l) {
+
+
+    public void assign(int a, int b) {
         try{
             if(a > 1000000 || a < -1000000 || b < -1000000 || b > 1000000){
                 throw new ArithmeticException("either of the intervals a or b is not valid");
             }
             this.s = a;
             this.e = b;
-            this.l = l;
         }catch (ArithmeticException e){
             System.out.println(e);
         }
@@ -33,8 +33,12 @@ public class IntervalType {
         return e;
     }
 
-    public int getL() {
-        return l;
+    public void setS(int s) {
+        this.s = s;
+    }
+
+    public void setE(int e) {
+        this.e = e;
     }
 
     @Override
@@ -43,21 +47,19 @@ public class IntervalType {
         if (o == null || getClass() != o.getClass()) return false;
         IntervalType that = (IntervalType) o;
         return s == that.s &&
-                e == that.e &&
-                l == that.l;
+                e == that.e;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(s, e);
     }
 
     @Override
     public String toString() {
         return "IntervalType{" +
-                "start=" + s +
-                ", end=" + e +
-                ", level=" + l +
+                "s=" + s +
+                ", e=" + e +
                 '}';
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(s, e, l);
     }
 }

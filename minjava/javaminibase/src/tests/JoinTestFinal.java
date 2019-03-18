@@ -37,6 +37,7 @@ class IntervalTest1{
     }
 }
 
+@SuppressWarnings("ALL")
 class JoinsDriverJT1 implements GlobalConst {
 
 
@@ -69,64 +70,6 @@ class JoinsDriverJT1 implements GlobalConst {
         boats    = new Vector();
         reserves = new Vector();
         intervals = new Vector();
-
-
-
-
-
-        IntervalType A = new IntervalType();
-        A.assign(1,14,1);
-        XmlData xd = new XmlData("A", A);
-        xmlDataList.add(xd);
-
-        A = new IntervalType();
-        A.assign(2,7,2);
-        xd = new XmlData("B", A);
-        xmlDataList.add(xd);
-
-        A = new IntervalType();
-        A.assign(3,4,3);
-        xd = new XmlData("C", A);
-        xmlDataList.add(xd);
-
-        A = new IntervalType();
-        A.assign(5,6,3);
-        xd = new XmlData("B", A);
-        xmlDataList.add(xd);
-
-
-        A = new IntervalType();
-        A.assign(8,13,2);
-        xd = new XmlData("C", A);
-        xmlDataList.add(xd);
-
-        A = new IntervalType();
-        A.assign(9,10,3);
-        xd = new XmlData("B", A);
-        xmlDataList.add(xd);
-
-        A = new IntervalType();
-        A.assign(11,12,3);
-        xd = new XmlData("C", A);
-        xmlDataList.add(xd);
-
-
-
-        IntervalType B = new IntervalType();
-        B.assign(2,7,2);
-        IntervalType C = new IntervalType();
-        C.assign(3,4,3);
-        IntervalType D = new IntervalType();
-        D.assign(5,6,3);
-        IntervalType E = new IntervalType();
-        E.assign(8,9,2);
-
-        intervals.addElement(A);
-        intervals.addElement(B);
-        intervals.addElement(C);
-        intervals.addElement(D);
-        intervals.addElement(D);
-
 
         sailors.addElement(new Sailor(53, "Bob Holloway",       9, 53.6));
         sailors.addElement(new Sailor(54, "Susan Horowitz",     1, 34.2));
@@ -512,7 +455,7 @@ class JoinsDriverJT1 implements GlobalConst {
 
         //test7();
         //testSelect();
-        //testSortMerge();
+        testSortMerge();
         //Query7();
 
         System.out.println("Finished test 7 for testing interval sorting" + "\n");
@@ -533,12 +476,7 @@ class JoinsDriverJT1 implements GlobalConst {
         for(int i = 0 ; i < numintervals ; i++)
             data[i] = new IntervalType();
 
-        data[0].assign(1,12,1);
-        data[1].assign(3,4,2);
-        data[2].assign(2,5,3);
-        data[3].assign(9,10,4);
-        data[4].assign(7,8,5);
-        data[5].assign(6,11,6);
+
 
         //  int intervalobjsize = instrumentation.getObjectSize(data[0]);
         short[] attrSize = new short[1];
@@ -1047,9 +985,12 @@ class JoinsDriverJT1 implements GlobalConst {
 
 
         RID             rid;
+        RID rid2;
         Heapfile        f = null;
+        Heapfile        f2 = null;
         try {
             f = new Heapfile("sortMergeXml.in");
+            f2 = new Heapfile("sortMergeXml1.in");
         }
         catch (Exception e) {
             status = FAIL;
@@ -1082,6 +1023,7 @@ class JoinsDriverJT1 implements GlobalConst {
                 System.out.println("Inserting :  ");
                 t.print(DTypes);
                 rid = f.insertRecord(t.returnTupleByteArray());
+                rid2 = f.insertRecord(t.returnTupleByteArray());
             }
             catch (Exception e) {
                 status = FAIL;
@@ -1159,7 +1101,7 @@ class JoinsDriverJT1 implements GlobalConst {
 
         FileScan am2 = null;
         try {
-            am2 = new FileScan("sortMergeXml.in", Rtypes, Rsizes,
+            am2 = new FileScan("sortMergeXml1.in", Rtypes, Rsizes,
                     (short)2, (short) 2,
                     Rprojection, null);
         }
