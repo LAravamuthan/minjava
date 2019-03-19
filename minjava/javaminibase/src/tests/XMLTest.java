@@ -318,10 +318,12 @@ class XMLDriver implements GlobalConst
 
 		try
 		{
+			int count = 0;
 			while ((line = this.reader.readLine()) != null)
 			{
 				parsedxml = xmlobj.ParseXMLLine(line);
 				WriteFileLbyL(parsedxml);
+				count++;
 			}
 			this.reader.close();
 			tgpr = new NodeContext(this.hpfile, this.rid, this.hpfilename, GetAttrType(), GetStrSizes(), GetTupleSize());
