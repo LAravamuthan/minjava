@@ -252,7 +252,7 @@ class Clock extends Replacer {
    *
    * @return -1 if no frame is available.
    *         head of the list otherwise.
-   * @throws BufferPoolExceededException.
+   * @throws BufferPoolExceededException
    */
   public int pick_victim() 
     throws BufferPoolExceededException, 
@@ -580,7 +580,7 @@ public class BufMgr implements GlobalConst{
    * put it in a group of replacement candidates.
    * if pincount=0 before this call, return error.
    *
-   * @param globalPageId_in_a_DB page number in the minibase.
+   * @param PageId_in_a_DB global page number in the minibase.
    * @param dirty the dirty bit of the frame
    *
    * @exception ReplacerException if there is a replacer error. 
@@ -817,7 +817,7 @@ public class BufMgr implements GlobalConst{
     
     try {
       SystemDefs.JavabaseDB.write_page(pageno, page);
-           PCounter.writeIncrement();
+           PageCounter.writeIncrement();
     }
     catch (Exception e) {
       throw new BufMgrException(e,"BufMgr.java: write_page() failed");
@@ -830,7 +830,7 @@ public class BufMgr implements GlobalConst{
     
     try {
       SystemDefs.JavabaseDB.read_page(pageno, page);
-      PCounter.readIncrement();
+      PageCounter.readIncrement();
 
     }
     catch (Exception e) {

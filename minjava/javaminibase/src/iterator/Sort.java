@@ -477,7 +477,7 @@ public class Sort extends Iterator implements GlobalConst
     c[0] = Character.MIN_VALUE; 
     String s = new String(c);
     intervaltype n = new intervaltype();
-    n.assign(-400000,-400000);
+    n.assign(-500000,-500000);
     //    short fld_no = 1;
     
     switch (sortFldType.attrType) {
@@ -524,7 +524,7 @@ public class Sort extends Iterator implements GlobalConst
     c[0] = Character.MAX_VALUE; 
     String s = new String(c);
     intervaltype n = new intervaltype();
-    n.assign(400000,400000);
+    n.assign(500000,500000);
     //    short fld_no = 1;
     
     switch (sortFldType.attrType) {

@@ -47,7 +47,8 @@ public class PredEval
 	{
 	  return true;
 	}
-      
+
+      // to remove to need to put extra null character in the CondExpr Array
       while (i<p.length && p[i] != null)
 	{
 	  temp_ptr = p[i];
@@ -152,12 +153,10 @@ public class PredEval
 		  else if (comp_res > 0  && temp_ptr.flag == 1) op_res = true;
 		  break;
 		case AttrOperator.aopLT:
-		  if (comp_res == -1) op_res = true; //attrinterval
-		  //if (comp_res <  0) op_res = true;
+		  if (comp_res == -1) op_res = true; //supporting attrinterval
 		  break;
 		case AttrOperator.aopGT:
-		  if (comp_res == -1) op_res = true; //attrinterval
-		  //if (comp_res >  0) op_res = true;
+		  if (comp_res == -1) op_res = true; //supporting attrinterval
 		  break;
 		case AttrOperator.aopNE:
 		  if(temp_ptr.flag <= 1)  //if flag == 0 or flag == 1

@@ -93,32 +93,22 @@ public class TupleUtils
     int s2 = t2_it.get_s();
     int e2 = t2_it.get_e();
 
-/*    if (s1 == s2) return  0;
-    if (s1 <  s2) return -1;
-    if (s1 >  s2) return  1;*/
-  
-    if(s1==s2 && e1==e2)
-      return 0; //equality
+
+      if (s1 == s2 && e1 == e2)
+          return 0; //equality
 
 
-    if(s1 < s2)
-    {
-      if(e1 < e2)
-      {
-        if(e1 < s2)return -2; //left non overlap
-        else return 3; //other overlap
+      if (s1 < s2) {
+          if (e1 < e2) {
+              if (e1 < s2) return -2; //left non overlap
+              else return 3; //other overlap
+          } else return -1; //containment
+      } else {
+          if (e2 < e1) {
+              if (e2 < s1) return 2; //right non overlap
+              else return 3;  //other overlap
+          } else return 1; //enclosure
       }
-        else return -1; //containment
-    }
-    else 
-    {
-      if(e2 < e1)
-      {
-        if(e2 < s1) return 2; //right non overlap
-        else return 3;  //other overlap
-      }
-      else return 1; //enclosure
-    }
 
 	default:
 	  
@@ -236,7 +226,7 @@ public class TupleUtils
     try {
       value.setIntervalFld(fld_no, tuple.getIntervalFld(fld_no));
     }catch (FieldNumberOutOfBoundException e){
-      throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
+      throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught when setting interval type by TupleUtils.java");
     }
     break;
 	case AttrType.attrString:

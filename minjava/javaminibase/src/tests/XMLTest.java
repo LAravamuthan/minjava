@@ -13,113 +13,6 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 import java.nio.charset.*;
-
-
-/*
-This class keeps track of the node interval label, tag and the nodes parent
-*/
-
-class Node
-{
-	private int parent;  //store the start interval of the parent
-	private int[] nodeIntLbl; //store the interval values in an array
-	private String nodeTag;  // store the tag values
-
-	public Node(int pt, int start, String Tag)
-	{
-		this.nodeIntLbl = new int[2];
-		this.parent = pt;
-		this.nodeIntLbl[0] = start;
-		this.nodeTag = Tag;
-	}
-
-	public void SetEnd(int end)
-	{
-		this.nodeIntLbl[1] = end;
-	}
-
-	public int GetParent()
-	{
-		return this.parent;
-	}
-
-	public int GetStart()
-	{
-		return this.nodeIntLbl[0];
-	}
-
-	public int GetEnd()
-	{
-		return this.nodeIntLbl[1];
-	}
-
-	public int[] GetIntLabel()
-	{
-		return nodeIntLbl;
-	}
-
-	public String GetTag()
-	{
-		return this.nodeTag;
-	}
-}
-
-/*
-This class keeps track of a particular heap file and all its related data fields required to access the heap file
-*/
-
-class TagParams
-{
-	private Heapfile tagheapfile = null; // The heap file pointer
-	private RID tagrid = null; //RID for the heap file (record id) to access each record in the heap file
-	private String hpfilename = null; // Name of the heap file
- 
-	private AttrType[] AtrTypes = null; // Attrtypes of the heap file
-	private short[] AtrSizes = null; //Attrsize of the heap file
-	private int SizeofTuple; // Size of the tuple stored in the heap file
- 
-	public TagParams(Heapfile hfile, RID rid, String hpfname, AttrType[] atrtypes, short[] atrsizes, int sizetup)
-	{
-		this.tagheapfile = hfile;
-		this.tagrid = rid;
-		this.hpfilename = hpfname;
-		this.AtrTypes = atrtypes;
-		this.AtrSizes = atrsizes;
-		this.SizeofTuple = sizetup;
- 	}
-
-	public Heapfile GetHeapFile()
-	{
-		return this.tagheapfile;
-	}
-
-	public RID GetRID()
-	{
-		return this.tagrid;
-	}
-
-	public String GetHPFileName()
-	{
-		return this.hpfilename;
-	}
-
-	public AttrType[] GetAtrTypes()
-	{
-		return this.AtrTypes;
-	}
-
-	public short[] GetAtrSizes()
-	{
-		return this.AtrSizes;
-	}
-
-	public int GetSizeofTuple()
-	{
-		return this.SizeofTuple;
-	}
-}
-
-
 /*
 This class keeps track of a heap file and its field after a join has been made between two tables
 when we join two table we keep track of the fields which are present in the resultant table so when a new table is added we can eleminate the duplicate columns
@@ -128,16 +21,16 @@ that is why we keep track of the fields or maintain a list<Integer>
 
 class TagparamField
 {
-	private TagParams tgpr = null;
+	private NodeContext tgpr = null;
 	private List<Integer> Fldtrk = null;
 
-	public TagparamField(TagParams tagpar, List<Integer> fldtrk)
+	public TagparamField(NodeContext tagpar, List<Integer> fldtrk)
 	{
 		this.tgpr = tagpar;
 		this.Fldtrk = fldtrk;
 	}
 
-	public TagParams GetTagParams()
+	public NodeContext GetTagParams()
 	{
 		return this.tgpr;
 	}
@@ -236,13 +129,14 @@ class XMLLineParser
 }
 
 
+@SuppressWarnings("Duplicates")
 class XMLDriver implements GlobalConst
 {
 	private BufferedReader reader;
 	private XMLLineParser xmlobj;
-	private Stack<Node> stack = null;
+	private Stack<XMLNode> stack = null;
 	private int IntervalNo;
-	private Tuple tplwtr = null;
+	private Tuple xmlDriverTuple = null;
 
 	private Heapfile hpfile = null;
 	private RID rid = null;
@@ -251,7 +145,6 @@ class XMLDriver implements GlobalConst
 	private AttrType[] Stypes = null;
 	private short[] Ssizes = null;
 	private int SizeofTuple;
-	//private TagParams maintgpair = null;
 
 	public XMLDriver(String fileName)
 	{
@@ -259,7 +152,7 @@ class XMLDriver implements GlobalConst
 		{
 			this.reader = new BufferedReader(new FileReader(fileName)); //initalize the file reader
 			this.xmlobj = new XMLLineParser();	//initialize the class constructor
-			this.stack = new Stack<Node>(); //create a stack for pushing and popping the nodes of XML this will help in assigning proper interval values
+			this.stack = new Stack<XMLNode>(); //create a stack for pushing and popping the nodes of XML this will help in assigning proper interval values
 			this.IntervalNo = 1;
 			this.rid = null;
 			this.hpfilename = "XMLtags.in";
@@ -277,10 +170,10 @@ class XMLDriver implements GlobalConst
 			String logpath = "/tmp/"+System.getProperty("user.name")+".xmllog";
 			SystemDefs sysdef = new SystemDefs( dbpath, 50000, MINIBASE_BUFFER_POOL_SIZE, "Clock" );
 
-			this.tplwtr = new Tuple();
+			this.xmlDriverTuple = new Tuple();
 			try
 			{
-				this.tplwtr.setHdr((short) 3, Stypes, Ssizes);
+				this.xmlDriverTuple.setHdr((short) 3, Stypes, Ssizes);
 			}
 			catch (Exception e)
 			{
@@ -288,11 +181,11 @@ class XMLDriver implements GlobalConst
 				e.printStackTrace();
 			}
 
-	    	this.SizeofTuple = this.tplwtr.size();
-	    	this.tplwtr = new Tuple(this.SizeofTuple);
+	    	this.SizeofTuple = this.xmlDriverTuple.size();
+	    	this.xmlDriverTuple = new Tuple(this.SizeofTuple);
 			try
 			{
-				this.tplwtr.setHdr((short) 3, Stypes, Ssizes); //set the header for the tuple to be stored in heap file
+				this.xmlDriverTuple.setHdr((short) 3, Stypes, Ssizes); //set the header for the tuple to be stored in heap file
 			}
 			catch (Exception e)
 			{
@@ -335,26 +228,26 @@ class XMLDriver implements GlobalConst
 	//push node on the stack , push when we get an opening node for a XML
 	private void PushOnStack(String nodename)
 	{
-		Node nd;
+		XMLNode xmlNode;
 		if(this.stack.empty())
 		{
-			nd = new Node(-1, this.IntervalNo, nodename);		//if it is the root then parent value should be -1
+			xmlNode = new XMLNode(-1, this.IntervalNo, nodename);		//if it is the root then parent value should be -1
 		}
 		else
 		{
-			nd = new Node(this.stack.peek().GetStart(), this.IntervalNo, nodename); //otherwise get everyone parent and store it
+			xmlNode = new XMLNode(this.stack.peek().getStartOfInterval(), this.IntervalNo, nodename); //otherwise get everyone parent and store it
 		}
-		this.stack.push(nd);
+		this.stack.push(xmlNode);
 		this.IntervalNo+=1;
 	}
 
 	//pop a node from the stack, when you pop a node you get the end interval of the tag and you can now write it to the heap file
 	private void PopFromStackWriteFile() throws IOException, EmptyStackException
 	{
-		Node nd = stack.pop();
-		nd.SetEnd(this.IntervalNo);
+		XMLNode xmlNode = stack.pop();
+		xmlNode.setEndOfInterval(this.IntervalNo);
 		this.IntervalNo+=1;
-		PushNodeToHeapFile(nd);
+		PushNodeToHeapFile(xmlNode);
 	}
 
 	//Write all the tags of an XML line into the heap file (either push it or pop it from the stack)
@@ -384,19 +277,19 @@ class XMLDriver implements GlobalConst
 
 	//When a node is popped from the stack it has to be pushed in the heap file (now we can actually store it in a heap file becuase we have all the 
 	//information of the tag, start , end parent and tag
-	private void PushNodeToHeapFile(Node nd)
+	private void PushNodeToHeapFile(XMLNode xmlNode)
 	{
 		try
 		{
-			int parent = nd.GetParent();
+			int parent = xmlNode.getParentStartId();
 			intervaltype val = new intervaltype();
-			String tag = nd.GetTag();
+			String tag = xmlNode.getNodeString();
 
-			val.assign(nd.GetStart(), nd.GetEnd());
+			val.assign(xmlNode.getStartOfInterval(), xmlNode.getEndOfInterval());
 
-			tplwtr.setIntFld(1, parent);
-			tplwtr.setIntervalFld(2, val);
-			tplwtr.setStrFld(3, tag);	
+			xmlDriverTuple.setIntFld(1, parent);
+			xmlDriverTuple.setIntervalFld(2, val);
+			xmlDriverTuple.setStrFld(3, tag);
 		}
 		catch(Exception e)
 		{
@@ -406,7 +299,7 @@ class XMLDriver implements GlobalConst
 
 		try
 		{
-			this.rid = this.hpfile.insertRecord(this.tplwtr.returnTupleByteArray()); //store it in the heap file
+			this.rid = this.hpfile.insertRecord(this.xmlDriverTuple.returnTupleByteArray()); //store it in the heap file
 		}
 		catch (Exception e) 
 		{
@@ -417,11 +310,11 @@ class XMLDriver implements GlobalConst
 
 
 	//This function reads each line of an XML and passes the data to the parsing function and at the end it stores it in the heap file
-	public TagParams ReadFileLbyLStoreInHeapFile()
+	public NodeContext ReadFileLbyLStoreInHeapFile()
 	{
 		String line;
 		List<String> parsedxml = null;
-		TagParams tgpr = null;
+		NodeContext tgpr = null;
 
 		try
 		{
@@ -431,7 +324,7 @@ class XMLDriver implements GlobalConst
 				WriteFileLbyL(parsedxml);
 			}
 			this.reader.close();
-			tgpr = new TagParams(this.hpfile, this.rid, this.hpfilename, GetAttrType(), GetStrSizes(), GetTupleSize());
+			tgpr = new NodeContext(this.hpfile, this.rid, this.hpfilename, GetAttrType(), GetStrSizes(), GetTupleSize());
 
 		}
 		catch(IOException e)
@@ -557,19 +450,19 @@ class XMLDriver implements GlobalConst
   	//parentchildflag == true check parent child or else check ancester descendant
   	//ContainOrEquality == true check containment or else check equality
 
-	public TagParams JoinTwoFields(TagParams tag1, int joinfieldno1, TagParams tag2, int joinfieldno2, List<Integer> ltfieldtoomit, boolean parentchildflag, boolean ContainOrEquality)
+	public NodeContext JoinTwoFields(NodeContext tag1, int joinfieldno1, NodeContext tag2, int joinfieldno2, List<Integer> ltfieldtoomit, boolean parentchildflag, boolean ContainOrEquality)
 	{
 
-    	AttrType [] tagattrtype1  = tag1.GetAtrTypes();
-		short    [] tagattrsize1  = tag1.GetAtrSizes();
-		int      tagtupsize1      = tag1.GetSizeofTuple();
-		String   taghpfilename1   = tag1.GetHPFileName();
+    	AttrType [] tagattrtype1  = tag1.getTupleAtrTypes();
+		short    [] tagattrsize1  = tag1.getTupleStringSizes();
+		int      tagtupsize1      = tag1.getNodeSizeofTuple();
+		String   taghpfilename1   = tag1.getNodeHeapFileName();
 		int      outer            = tagattrtype1.length;
 
-    	AttrType [] tagattrtype2  = tag2.GetAtrTypes();
-		short    [] tagattrsize2  = tag2.GetAtrSizes();
-		int      tagtupsize2      = tag2.GetSizeofTuple();
-		String   taghpfilename2   = tag2.GetHPFileName();
+    	AttrType [] tagattrtype2  = tag2.getTupleAtrTypes();
+		short    [] tagattrsize2  = tag2.getTupleStringSizes();
+		int      tagtupsize2      = tag2.getNodeSizeofTuple();
+		String   taghpfilename2   = tag2.getNodeHeapFileName();
 		int      inner            = tagattrtype2.length;
 
 
@@ -678,7 +571,7 @@ class XMLDriver implements GlobalConst
 			e.printStackTrace();
 			Runtime.getRuntime().exit(1);
 		}
-		return new TagParams(JoinedTaghpfile, JoinedTagRID, JoinedTaghpfilename, JoinedTagAttrtype, JoinedTagsize, JoinedTagTupSize);
+		return new NodeContext(JoinedTaghpfile, JoinedTagRID, JoinedTaghpfilename, JoinedTagAttrtype, JoinedTagsize, JoinedTagTupSize);
 	}
 
 
@@ -686,11 +579,11 @@ class XMLDriver implements GlobalConst
 //basically this function creates new heap files where each individual heap file contains only a particular tag value
 
 
-	public TagParams[] ExtractTagToHeap(TagParams tag_params, String[] tagnames)
+	public NodeContext[] ExtractTagToHeap(NodeContext tag_params, String[] tagnames)
 	{
 
-		Heapfile heaptosearch = tag_params.GetHeapFile();
-		RID ridtosearch = tag_params.GetRID();
+		Heapfile heaptosearch = tag_params.getNodeHeapFile();
+		RID ridtosearch = tag_params.getNodeRID();
 
 		int tot_len = tagnames.length;
 
@@ -698,7 +591,7 @@ class XMLDriver implements GlobalConst
 		RID[] ridtostore = new RID[tot_len];
 		String[] hpfilenm = new String[tot_len];
 
-		TagParams[] tag_pars = new TagParams[tot_len];
+		NodeContext[] tag_pars = new NodeContext[tot_len];
 
 		for(int i=0;i<tot_len;i++)
 		{
@@ -784,92 +677,10 @@ class XMLDriver implements GlobalConst
 
 		for(int i=0;i<tot_len;i++)
 		{
-			tag_pars[i] =  new TagParams(heaptostore[i], ridtostore[i], hpfilenm[i], Stps, Sszs, TupSize); //generate tag pars data type for each of the heap file
+			tag_pars[i] =  new NodeContext(heaptostore[i], ridtostore[i], hpfilenm[i], Stps, Sszs, TupSize); //generate tag pars data type for each of the heap file
 		}
 		return tag_pars;
 	}
-
-
-/*
-
-	public void Sort_My_Field()
-	{
-
-	    FldSpec[] projlist = new FldSpec[3];
-	    RelSpec rel = new RelSpec(RelSpec.outer); 
-	    projlist[0] = new FldSpec(rel, 1);
-	    projlist[1] = new FldSpec(rel, 2);
-	    projlist[2] = new FldSpec(rel, 3);
-	    int sizetup;
-
-    	AttrType [] Stps = GetAttrType();
-		short [] Sszs = GetStrSizes();
-		int TupSize = GetTupleSize();
-
-    	FileScan fscan = null;
-
-		Tuple tup = new Tuple(TupSize);
-		try 
-		{
-			tup.setHdr((short) 3, Stps, Sszs);
-		}
-		catch (Exception e)
-		{
-		 	e.printStackTrace();
-		}
-		
-		try
-		{
-		  fscan = new FileScan("Entry.in", Stps, Sszs, (short) 3, 3, projlist, null);
-		}
-		catch (Exception e)
-		{
-		  	e.printStackTrace();
-		}
-
-		TupleOrder ascending = new TupleOrder(TupleOrder.Ascending);
-		Sort sort_names = null;
-		try 
-		{
-			sort_names = new Sort (Stps, (short)3, Sszs, fscan, 2, ascending, Sszs[0], 10);
-		}
-		catch (Exception e) 
-		{
-			System.err.println ("*** Error preparing for sorting");
-			System.err.println (""+e);
-			Runtime.getRuntime().exit(1);
-		}
-		try 
-		{
-			while ((tup=sort_names.get_next()) !=null) 
-			{
-				tup.print(Stps);
-			}
-		}
-		catch (Exception e) 
-		{
-			System.err.println ("*** Error preparing for get_next tuple");
-			System.err.println (""+e);
-			e.printStackTrace();
-			Runtime.getRuntime().exit(1);
-		}
-	}
-*/
-
-
-/*	public void ReverseArray(String[] arr)
-	{
-		String temp;
-		int len = arr.length;
-
-		for(int i=0;i<(len/2);i++)
-		{
-			temp = arr[i];
-			arr[i] = arr[len-1-i];
-			arr[len-1-i] = temp;
-		}
-	}*/
-
 
 	public void AddField(List<Integer> FieldTracker, int num)
 	{
@@ -919,10 +730,10 @@ class XMLDriver implements GlobalConst
   	//parentchildflag == true check parent child or else check ancester descendant
   	//ContainOrEquality == true check containment or else check equality
 
-	public TagparamField Query(TagParams[] ExtractTags, String[] Joins)
+	public TagparamField Query(NodeContext[] ExtractTags, String[] Joins)
 	{
-		TagParams ResultTagPar = null;
-		TagParams TempTagPar = null;
+		NodeContext ResultTagPar = null;
+		NodeContext TempTagPar = null;
 		List<Integer> FieldTracker = new ArrayList<Integer>();
 		List<Integer> ltfieldtoomit = new ArrayList<Integer>();
 
@@ -974,10 +785,10 @@ class XMLDriver implements GlobalConst
 	} 
 
 	// This function joins the two tables obtained from two queires and finally gives you result which we print as query result obtained
-	public TagParams JoinQuery(TagparamField query1,TagparamField query2)
+	public NodeContext JoinQuery(TagparamField query1,TagparamField query2)
 	{
-		TagParams tagpar1 = query1.GetTagParams();
-		TagParams tagpar2 = query2.GetTagParams();
+		NodeContext tagpar1 = query1.GetTagParams();
+		NodeContext tagpar2 = query2.GetTagParams();
 		List<Integer> fldtrk1 = query1.GetFldtrk();
 		List<Integer> fldtrk2 =query2.GetFldtrk();
 
@@ -1004,7 +815,7 @@ class XMLDriver implements GlobalConst
 		}
 
 
-		TagParams ResQueryJoin = JoinTwoFields(tagpar1, fields[0], tagpar2, fields[1], ltfieldtoomit, false, false);
+		NodeContext ResQueryJoin = JoinTwoFields(tagpar1, fields[0], tagpar2, fields[1], ltfieldtoomit, false, false);
 		return ResQueryJoin;
 
 	}
@@ -1073,18 +884,18 @@ class XMLDriver implements GlobalConst
 	}
 
 	//this just executes the three queries
-	public TagParams[] MakeQueryPlanner(TagParams[] AllTags, String[] NumberofJoins)
+	public NodeContext[] MakeQueryPlanner(NodeContext[] AllTags, String[] NumberofJoins)
 	{
 		TagparamField tf1 = null;
 		TagparamField tf2 = null;
 
-		TagParams[] tgprarr = new TagParams[3];
+		NodeContext[] tgprarr = new NodeContext[3];
 
 		//PCounter.initialize();
 
 		tgprarr[0] = Query(AllTags, NumberofJoins).GetTagParams();  //query 1
 		System.out.println("Query 1 executed");
-		System.out.printf("reads = %s writes = %s\n", PCounter.getreads(), PCounter.getwrites());
+		System.out.printf("reads = %s writes = %s\n", PageCounter.getreads(), PageCounter.getwrites());
 
 		int[] spliter = querypossible(NumberofJoins);
 
@@ -1097,7 +908,7 @@ class XMLDriver implements GlobalConst
 				tf2 = Query(AllTags, GetJoins(NumberofJoins, spliter[i], NumberofJoins.length));
 				tgprarr[i+1] = JoinQuery(tf1, tf2);		
 
-				System.out.printf("reads = %s writes = %s\n", PCounter.getreads(), PCounter.getwrites());
+				System.out.printf("reads = %s writes = %s\n", PageCounter.getreads(), PageCounter.getwrites());
 				System.out.printf("Query %s executed\n", i+2);
 
 			}
@@ -1112,9 +923,9 @@ class XMLDriver implements GlobalConst
 	}
 
 	//Get the main heap file and the query file and fire queries
-	public TagParams[] ReadQueryAndExecute(TagParams MainTagpair, String Queryfilename) 
+	public NodeContext[] ReadQueryAndExecute(NodeContext MainTagpair, String Queryfilename)
 	{
-		TagParams QueryResult = null;
+		NodeContext QueryResult = null;
 		List<String> querylinelist = null;
 		try
 		{
@@ -1143,7 +954,7 @@ class XMLDriver implements GlobalConst
 		{
 			NumberofJoins[i] = querylinelist.get(numberofnodes+1+i);
 		}
-		TagParams[] AllTags = ExtractTagToHeap(MainTagpair, searchtags);  //get all the heap file for each tag
+		NodeContext[] AllTags = ExtractTagToHeap(MainTagpair, searchtags);  //get all the heap file for each tag
 
 		System.out.println("File Parsing Completed");
 /*		try
@@ -1157,25 +968,23 @@ class XMLDriver implements GlobalConst
 
 
 		//ReverseArray(NumberofJoins);
-		TagParams[] finalresult = MakeQueryPlanner(AllTags, NumberofJoins);
+		NodeContext[] finalresult = MakeQueryPlanner(AllTags, NumberofJoins);
 		//QueryResult = Query(AllTags, NumberofJoins);
 		return finalresult;
 	}
 
 //scan a heap file and print all the values of each
-	public void ScanHeapFile(TagParams tgprms)
+	public void ScanHeapFile(NodeContext tgprms)
 	{
 		boolean done = false;
 		int count_records = 0;
-		Heapfile hpfl       = tgprms.GetHeapFile();
-		RID filerid         = tgprms.GetRID();
-		AttrType [] Atrtyps = tgprms.GetAtrTypes();
-		short [] Strsizes   = tgprms.GetAtrSizes();
-		int TupSize         = tgprms.GetSizeofTuple();
+		Heapfile hpfl       = tgprms.getNodeHeapFile();
+		RID filerid         = tgprms.getNodeRID();
+		AttrType [] Atrtyps = tgprms.getTupleAtrTypes();
+		short [] Strsizes   = tgprms.getTupleStringSizes();
+		int TupSize         = tgprms.getNodeSizeofTuple();
 		int numoffields     = Atrtyps.length;
-
 		Tuple temptup = null;
-
 		Scan scan = null;
 		try
 		{
@@ -1186,7 +995,6 @@ class XMLDriver implements GlobalConst
 			e.printStackTrace();
 			Runtime.getRuntime().exit(1);
 		}
-
 		while (!done)
 		{ 
 			try 
@@ -1221,35 +1029,15 @@ public class XMLTest// implements  GlobalConst
 	{
 		String DataFileName = "./xml_sample_data.xml";
 		String QueryFileName = "./queryfile.txt";
-		//String DataFileName = "./plane.xml";
 		try
 		{
-			//System.out.println("Initializing XML Test object"); 
 			XMLDriver xmldvr = new XMLDriver(DataFileName);
-			//System.out.println("Reading XML file lines");
-			TagParams MainTagPair = xmldvr.ReadFileLbyLStoreInHeapFile();
+
+			NodeContext MainTagPair = xmldvr.ReadFileLbyLStoreInHeapFile();
 
 
 
-		//String[] schtag = new String[]{"root", "seqle", "102", "Speci", "Lycop"};
-			//TagParams[] tgprs = xmldvr.ExtractTagToHeap(MainTagPair, schtag);
-		//	List<Integer> ltfieldtoomit =  new ArrayList<Integer>() ;
-			//ltfieldtoomit.add(1);
-				//TagParams k =	xmldvr.JoinTwoFields(tgprs[0], 2, tgprs[1], 2, ltfieldtoomit, false, true);
-
-			 //xmldvr.ScanHeapFile(k);
-/*
-			TagParams a1_2 = xmldvr.JoinTwoFields(tgprs[0], 2, tgprs[1], 2, false, true);
-			TagParams a2_3 = xmldvr.JoinTwoFields(tgprs[1], 2, tgprs[2], 2, true, true);
-
-			TagParams a1_2_3 = xmldvr.JoinTwoFields(a1_2, 5, a2_3, 2, false ,false);*/
-			//TagParams newj = xmldvr.JoinTwoFields(firjoin, 2, tgprs[2], 2);
-/*			for(int i=0;i<3;i++)
-			{
-				xmldvr.ScanHeapFile(tgprs[i]);
-			}*/
-			//xmldvr.ScanHeapFile(MainTagPair);
-			TagParams[] qresult = xmldvr.ReadQueryAndExecute(MainTagPair, QueryFileName);
+			NodeContext[] qresult = xmldvr.ReadQueryAndExecute(MainTagPair, QueryFileName);
 			for(int i=0;i<qresult.length;i++)
 			{
 				if(qresult[i] != null)
@@ -1258,10 +1046,8 @@ public class XMLTest// implements  GlobalConst
 				}
 		
 			}
-			//xmldvr.ScanHeapFile(qresult[0]);
-			//xmldvr.Sort_My_Field();
-			System.out.println(PCounter.getreads());
-			System.out.println(PCounter.getwrites());
+			System.out.println(PageCounter.getreads());
+			System.out.println(PageCounter.getwrites());
 		}
 		catch (Exception e) 
 		{

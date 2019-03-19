@@ -373,8 +373,8 @@ public class Tuple implements GlobalConst{
     * setHdr will set the header of this tuple.   
     *
     * @param	numFlds	  number of fields
-    * @param	types[]	  contains the types that will be in this tuple
-    * @param	strSizes[]      contains the sizes of the string 
+    * @param	types	  contains the types that will be in this tuple
+    * @param	strSizes      contains the sizes of the string
     *				
     * @exception IOException I/O errors
     * @exception InvalidTypeException Invalid tupe type
@@ -504,7 +504,7 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
   int i, val;
   float fval;
   String sval;
-  intervaltype itval;
+  intervaltype interval;
 
   System.out.print("[");
   for (i=0; i< fldCnt-1; i++)
@@ -527,8 +527,8 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
      break;
 
   case AttrType.attrInterval:
-     itval = Convert.getIntervalValue(fldOffset[i], data);
-     System.out.printf("%s %s", itval.get_s(), itval.get_e());
+      interval = Convert.getIntervalValue(fldOffset[i], data);
+     System.out.println(interval.get_s() +  " " + interval.get_e());
      break;
   
    case AttrType.attrNull:
@@ -551,8 +551,8 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
      break;
 
   case AttrType.attrInterval:
-     itval = Convert.getIntervalValue(fldOffset[i], data);
-     System.out.printf("%s %s ", itval.get_s(), itval.get_e());
+      interval = Convert.getIntervalValue(fldOffset[i], data);
+      System.out.println(interval.get_s() +  " " + interval.get_e());
      break;
 
    case AttrType.attrString:

@@ -1,29 +1,29 @@
 package bufmgr;
-//package diskmgr;
-public class PCounter {
+
+public class PageCounter {
 	
-	public static int rcounter;
-	public static int wcounter;
+	public static int readCounter;
+	public static int writeCounter;
 
 	public static void initialize() {
-		rcounter =0;
-		wcounter =0;
+		readCounter =0;
+		writeCounter =0;
 	}
 
 	public static void readIncrement() {
-		rcounter++;
+		readCounter++;
 	}
 
 	public static int getreads(){
-		return rcounter;
+		return readCounter;
 	}
 
 	public static void writeIncrement() {
-		wcounter++;
+		writeCounter++;
 	}
 
 	public static int getwrites(){
-		return wcounter;
+		return writeCounter;
 	}
 
 }
