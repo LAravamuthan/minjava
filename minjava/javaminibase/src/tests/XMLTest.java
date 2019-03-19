@@ -1029,8 +1029,8 @@ public class XMLTest// implements  GlobalConst
 {
 	public static void main(String [] argvs) 
 	{
-		String DataFileName = "./xml_sample_data.xml";
-		String QueryFileName = "./queryfile.txt";
+		String DataFileName = "/home/aravamuthan/Documents/codebase/minjava/javaminibase/xml_sample_data.xml";
+		String QueryFileName = "/home/aravamuthan/Documents/codebase/minjava/javaminibase/queryfile.txt";
 		try
 		{
 			XMLDriver xmldvr = new XMLDriver(DataFileName);
