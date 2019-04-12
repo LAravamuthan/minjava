@@ -18,7 +18,7 @@ import btree.*;
 
 class BTDriver  implements GlobalConst
 {
-
+  public IntervalTreeFile intfile;
   public BTreeFile file;
   public int postfix=0;
   public int keyType;
@@ -126,13 +126,15 @@ class BTDriver  implements GlobalConst
    
    
    System.out.println("\n[19]  Quit!");
+   System.out.println("\n[20] Insert into interval tree!");
    System.out.print("Hi, make your choice :");
  } 
   
   
   protected void runAllTests (){
     PageId pageno=new PageId();
-    int  key, n,m, num, choice, lowkeyInt, hikeyInt;    
+    int  key, n,m, num, choice, lowkeyInt, hikeyInt;
+    IntervalType interkey;
     KeyClass lowkey, hikey;
     KeyDataEntry entry;
     RID rid;
@@ -145,8 +147,16 @@ class BTDriver  implements GlobalConst
     catch(Exception e) {
       e.printStackTrace();
       return;
-    }    
-    postfix=0;
+    }
+      try{
+          System.out.println(" ***************** The file name is: "+ "AAA"+postfix +"  **********");
+          intfile=new IntervalTreeFile("AAA"+postfix, keyType, 4, 1);//full delete
+      }
+      catch(Exception e) {
+          e.printStackTrace();
+          return;
+      }
+      postfix=0;
     while(choice!=19) { 
       menu(); 
       
@@ -308,6 +318,25 @@ class BTDriver  implements GlobalConst
 	  break;         
 	case 19:
 	  break;
+    case 20:
+        Scanner reader = new Scanner(System.in);
+//        Integer keyS= 0;
+//        Integer keyE= 0;
+        int keyS= GetStuff.getChoice();
+        int keyE= GetStuff.getChoice();
+        keyType=AttrType.attrInterval;
+        System.out.println("Please input the interval key to insert: ");
+//        keyS = reader.nextInt();
+//        keyE=reader.nextInt();
+
+        IntervalType keyint= new IntervalType();
+        keyint.assign(keyS,keyE);
+        pageno.pid=keyS;
+        rid=new RID(pageno, keyS);
+        intfile.insert(new IntervalKey(keyint), rid);
+        intervalT.printAllLeafPages(intfile.getHeaderPage());
+        break;
+
 	}
 	
 	
@@ -325,7 +354,7 @@ class BTDriver  implements GlobalConst
   
   
   
-  void test1(int n) 
+  void test1(int n)
     throws Exception
     {
       try {
@@ -523,7 +552,8 @@ class BTDriver  implements GlobalConst
     try {
 
        System.out.println(" ***************** The file name is: "+ "AAA"+postfix +"  **********"); 
-       file=new BTreeFile("AAA"+postfix, keyType, 20, deleteFashion); 
+       file=new BTreeFile("AAA"+postfix, keyType, 20, deleteFashion);
+       intfile = new IntervalTreeFile("Arpan");
        file.traceFilename("TRACE");
 
        int[] k=new int[n];
@@ -636,14 +666,15 @@ class GetStuff {
       String ret = in.readLine();
     }
     catch (IOException e) {}
-  } 
+  }
 }
 
 public class BTTest implements  GlobalConst{
 
   public static void main(String [] argvs) {
  
-    try{ 
+    try
+    {
       BTDriver bttest = new BTDriver();
       bttest.runTests();	
     }

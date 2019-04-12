@@ -14,4 +14,7 @@ public class NodeType {
    /**Define a type for header page of BTFile*/
    public static final short BTHEAD=13;
 
+   static short intervalTHEAD = 14;
+   static short NODE = 15;
+
 } 

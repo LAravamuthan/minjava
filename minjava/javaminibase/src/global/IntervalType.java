@@ -33,7 +33,8 @@ public class IntervalType {
         return e;
     }
 
-    public void setS(int s) {
+    public void setS(int s)
+    {
         this.s = s;
     }
 

@@ -323,6 +323,9 @@ class QueryPlanDriver implements GlobalConst {
             fields[0] = (3 * FieldTracker.indexOf(ftfld)) + 2;
             fields[1] = 2;
         } else if (FieldTracker.indexOf(scfld) > -1) {
+            System.out.println(ftfld);
+            System.out.println(scfld);
+            System.out.println(FieldTracker.indexOf(scfld));
             fields[0] = (3 * FieldTracker.indexOf(scfld)) + 2;
             fields[1] = 5;
         } else {
