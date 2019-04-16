@@ -506,7 +506,7 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
   String sval;
   intervaltype interval;
 
-  System.out.print("[");
+  System.out.print("{");
   for (i=0; i< fldCnt-1; i++)
    {
     switch(type[i].attrType) {
@@ -528,7 +528,7 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
 
   case AttrType.attrInterval:
       interval = Convert.getIntervalValue(fldOffset[i], data);
-     System.out.println(interval.get_s() +  " " + interval.get_e());
+     System.out.print(" s: " + interval.get_s() +  " " + " e: " + +  interval.get_e() + " ");
      break;
   
    case AttrType.attrNull:
@@ -552,7 +552,7 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
 
   case AttrType.attrInterval:
       interval = Convert.getIntervalValue(fldOffset[i], data);
-      System.out.println(interval.get_s() +  " " + interval.get_e());
+      System.out.print(" s: " + interval.get_s() +  " " + " e: " + +  interval.get_e() + " ");
      break;
 
    case AttrType.attrString:
@@ -564,7 +564,7 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
    case AttrType.attrSymbol:
      break;
    }
-   System.out.println("]");
+   System.out.println("}");
 
  }
 

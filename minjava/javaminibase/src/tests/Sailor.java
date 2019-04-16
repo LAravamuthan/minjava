@@ -1,7 +1,7 @@
 package tests;
 
 //Define the Sailor schema
-class Sailor {
+public class Sailor {
     public int    sid;
     public String sname;
     public int    rating;

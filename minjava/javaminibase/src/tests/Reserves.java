@@ -1,7 +1,7 @@
 package tests;
 
 //Define the Reserves schema
-class Reserves {
+public class Reserves {
     public int    sid;
     public int    bid;
     public String date;

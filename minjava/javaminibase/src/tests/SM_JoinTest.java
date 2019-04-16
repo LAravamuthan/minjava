@@ -22,7 +22,7 @@ import btree.*;
 
 
 
-class JoinsDriver implements GlobalConst {
+class JoinsDriverJT implements GlobalConst {
   
   private boolean OK = true;
   private boolean FAIL = false;
@@ -31,7 +31,7 @@ class JoinsDriver implements GlobalConst {
   private Vector reserves;
   /** Constructor
    */
-  public JoinsDriver() {
+  public JoinsDriverJT() {
     
     //build Sailor, Boats, Reserves table
     sailors  = new Vector();
