@@ -16,6 +16,7 @@ import btree.*;
 
 //watching point: RID rid, some of them may not have to be newed.
 
+@SuppressWarnings("ALL")
 class BTDriver  implements GlobalConst
 {
   public IntervalTreeFile intfile;
@@ -136,7 +137,7 @@ class BTDriver  implements GlobalConst
   protected void runAllTests (){
     PageId pageno=new PageId();
     int  key, n,m, num, choice, lowkeyInt, hikeyInt;    
-    IntervalType interkey;
+    intervaltype interkey;
     KeyClass lowkey, hikey;
     KeyDataEntry entry;
     RID rid;
@@ -329,7 +330,7 @@ class BTDriver  implements GlobalConst
 //        keyS = reader.nextInt();
 //        keyE=reader.nextInt();
 
-        IntervalType keyint= new IntervalType();
+        intervaltype keyint= new intervaltype();
         keyint.assign(keyS,keyE);
         pageno.pid=keyS;
         rid=new RID(pageno, keyS);
@@ -342,7 +343,7 @@ class BTDriver  implements GlobalConst
             keyS = GetStuff.getChoice();
             keyE = GetStuff.getChoice();
             int condition = 0;               //before or equal.
-            IntervalType target = new IntervalType();
+            intervaltype target = new intervaltype();
             target.assign(keyS,keyE);
             IntervalKey targetkey = new IntervalKey(target);
             intscan = intfile.new_scan(targetkey, condition);

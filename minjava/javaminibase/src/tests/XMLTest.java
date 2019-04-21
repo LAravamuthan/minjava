@@ -608,10 +608,10 @@ class XMLDriver implements GlobalConst {
 								tup.print(Stypes);
 								System.out.println();
 							}
-							IntervalType keyint= tup.getIntervalFld(2);              //the second field is the interval in our data files.
-							int keys = keyint.getS();
-							int keye = keyint.getE();
-							keyint.assign(keyint.getS(), keyint.getE());			//assign the interval values.
+							intervaltype keyint= tup.getIntervalFld(2);              //the second field is the interval in our data files.
+							int keys = keyint.get_s();
+							int keye = keyint.get_e();
+							keyint.assign(keyint.get_s(), keyint.get_e());			//assign the interval values.
 							rid = ridtostore[i];
 							intervaltreefile[i].insert(new IntervalKey(keyint), rid); //nserting interval key and rid for each tag.
                             break;
@@ -738,7 +738,7 @@ class XMLDriver implements GlobalConst {
 				count_records+=1;
 //				System.out.println("Filerid pageno = " + filerid.pageNo + " slot no : " + filerid.slotNo);
 				//inserting the given key into the corresponding heap file as well.
-				IntervalType keyint= temptup.getIntervalFld(joinfield);              //the second field is the interval in our data files.
+				intervaltype keyint= temptup.getIntervalFld(joinfield);              //the second field is the interval in our data files.
 				int keys = keyint.getS();
 				int keye = keyint.getE();
 				keyint.assign(keyint.getS(), keyint.getE());			//assign the interval values.
@@ -882,7 +882,7 @@ class XMLDriver implements GlobalConst {
 
 		Tuple temptup;
 		int parent;
-		IntervalType intval;
+		intervaltype intval;
 
 		try
 		{

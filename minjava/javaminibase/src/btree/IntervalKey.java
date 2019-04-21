@@ -1,15 +1,16 @@
 package btree;
-import global.*;
+
+import global.intervaltype;
 public class IntervalKey extends KeyClass {
 
-    public IntervalType key;
+    public intervaltype key;
 
     public String toString(){
         return key.toString();
     }
 
     /** Class constructor
-     *  @param     value   the value of the integer key to be set
+     *
      */
     public IntervalKey()
     {
@@ -18,17 +19,17 @@ public class IntervalKey extends KeyClass {
 //        key.setS(0);
 //        key.setE(0);
     }
-    public IntervalKey(IntervalType value)
+    public IntervalKey(intervaltype value)
     {
-        key = new IntervalType();
-        key.assign(value.getS(),value.getE());
+        key = new intervaltype();
+        key.assign(value.get_s(),value.get_e());
 
     }
 
     /** Class constructor
-     *  @param     value   the value of the integer key to be set
+     *
      */
-    public IntervalType getKey() {return  key;}
+    public intervaltype getKey() {return  key;}
 
 
 
@@ -38,8 +39,8 @@ public class IntervalKey extends KeyClass {
 
     /** set the integer key value
      */
-    public void setKey(IntervalType value)
+    public void setKey(intervaltype value)
     {
-        key.assign(value.getS(),value.getE());
+        key.assign(value.get_s(),value.get_e());
     }
 }

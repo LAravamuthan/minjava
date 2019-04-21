@@ -1,7 +1,5 @@
 package global;
 
-import java.io.*;
-
 public class intervaltype {
 	
 	private int s ;
