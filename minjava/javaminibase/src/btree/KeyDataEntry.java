@@ -23,7 +23,11 @@ public class KeyDataEntry {
      this.data = new IndexData(pageNo);
   }; 
 
-
+    public KeyDataEntry(IntervalType key, PageId pageNo)
+    {
+        this.key = new IntervalKey(key);
+        this.data = new IndexData(pageNo);
+    }
 
   /** Class constructor.
    */
@@ -34,6 +38,10 @@ public class KeyDataEntry {
         this.key= new IntegerKey(((IntegerKey)key).getKey());
      else if ( key instanceof StringKey ) 
         this.key= new StringKey(((StringKey)key).getKey());    
+     else if (key instanceof IntervalKey)
+     {
+        this.key= new IntervalKey(((IntervalKey) key).getKey());
+     }
   };
 
 
@@ -59,6 +67,8 @@ public class KeyDataEntry {
         this.key= new IntegerKey(((IntegerKey)key).getKey());
      else if ( key instanceof StringKey ) 
         this.key= new StringKey(((StringKey)key).getKey());    
+     else if ( key instanceof IntervalKey)
+         this.key= new IntervalKey(((IntervalKey)key).getKey());
   };
 
 
@@ -77,6 +87,8 @@ public class KeyDataEntry {
      else if ( key instanceof StringKey ) 
         this.key= new StringKey(((StringKey)key).getKey()); 
 
+     else if ( key instanceof IntervalKey)
+         this.key= new IntervalKey(((IntervalKey)key).getKey());
      if ( data instanceof IndexData ) 
         this.data= new IndexData(((IndexData)data).getData());
      else if ( data instanceof LeafData ) 
@@ -93,6 +105,8 @@ public class KeyDataEntry {
       if ( key instanceof IntegerKey )
          st1= ((IntegerKey)key).getKey().equals
                   (((IntegerKey)entry.key).getKey());
+      else if (key instanceof IntervalKey)
+          st1= ((IntervalKey)key).getKey().equals(((IntervalKey)entry.key).getKey());
       else 
          st1= ((StringKey)key).getKey().equals
                   (((StringKey)entry.key).getKey());

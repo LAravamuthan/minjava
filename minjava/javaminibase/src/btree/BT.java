@@ -79,6 +79,7 @@ public class BT  implements GlobalConst{
 	OutputStream out = new ByteArrayOutputStream();
 	DataOutputStream outstr = new DataOutputStream (out);
 	outstr.writeUTF(((StringKey)key).getKey()); 
+	System.out.println(outstr.size());
 	return  outstr.size();
     }
       else if ( key instanceof IntegerKey)
@@ -172,6 +173,10 @@ public class BT  implements GlobalConst{
 	  //System.out.println(" offset  "+ offset + "  " + length + "  "+n);
           key= new StringKey( Convert.getStrValue(offset, from, length-n));
 	} 
+	else if (keyType == AttrType.attrInterval)
+    {
+        key= new IntervalKey(Convert.getIntervalValue(offset, from));
+    }
 	else 
           throw new KeyNotMatchException(null, "key types do not match");
 	
@@ -360,6 +365,29 @@ public class BT  implements GlobalConst{
       System.out.println("");
       System.out.println("");
     }
+    public static void printBTree(intervalTreeHeaderPage header)
+            throws IOException,
+            ConstructPageException,
+            IteratorException,
+            HashEntryNotFoundException,
+            InvalidFrameNumberException,
+            PageUnpinnedException,
+            ReplacerException
+    {
+        if(header.get_rootId().pid == INVALID_PAGE) {
+            System.out.println("The Tree is Empty!!!");
+            return;
+        }
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");
+        System.out.println("---------------The B+ Tree Structure---------------");
+        System.out.println(1+ "     "+header.get_rootId());
+        _printTree(header.get_rootId(), "     ", 1, header.get_keyType());
+        System.out.println("--------------- End ---------------");
+        System.out.println("");
+        System.out.println("");
+    }
   
   private static void _printTree(PageId currentPageId, String prefix, int i, 
 				 int keyType) 
@@ -430,6 +458,34 @@ public class BT  implements GlobalConst{
       System.out.println("------------- All Leaf Pages Have Been Printed --------");
       System.out.println("");
       System.out.println("");
+    }
+    public static void printAllLeafPages(intervalTreeHeaderPage header)
+            throws IOException,
+            ConstructPageException,
+            IteratorException,
+            HashEntryNotFoundException,
+            InvalidFrameNumberException,
+            PageUnpinnedException,
+            ReplacerException
+    {
+        if(header.get_rootId().pid == INVALID_PAGE) {
+            System.out.println("The Tree is Empty!!!");
+            return;
+        }
+
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");
+        System.out.println("---------------The B+ Tree Leaf Pages---------------");
+
+
+        _printAllLeafPages(header.get_rootId(), header.get_keyType());
+
+        System.out.println("");
+        System.out.println("");
+        System.out.println("------------- All Leaf Pages Have Been Printed --------");
+        System.out.println("");
+        System.out.println("");
     }
   
   private static void _printAllLeafPages(PageId currentPageId,  int keyType) 
