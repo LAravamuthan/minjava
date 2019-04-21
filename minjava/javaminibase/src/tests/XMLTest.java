@@ -132,6 +132,14 @@ class XMLDriver implements GlobalConst {
     private short[] Ssizes = null;
     private int SizeofTuple;
 
+	Heapfile[] heaptostore;
+	NodeContext[] AllTags;
+	IntervalTreeFile[] intervaltreefile;
+	String indexjoinfile = "indexjoinfile";			//to track filles created by index join
+	String joinfile = "file";
+	int indexfilecount = 0;				//keep track of how many files have been created using index join
+	int filecount = 0;                 //keep track of how many files created using nested loop join.
+	int test = 0;
     public XMLDriver(String fileName) {
         try {
             this.reader = new BufferedReader(new FileReader(fileName)); //initalize the file reader
@@ -524,7 +532,7 @@ class XMLDriver implements GlobalConst {
 
         int tot_len = tagnames.length;
 
-        Heapfile[] heaptostore = new Heapfile[tot_len];
+		heaptostore = new Heapfile[tot_len];
         RID[] ridtostore = new RID[tot_len];
         String[] hpfilenm = new String[tot_len];
 
