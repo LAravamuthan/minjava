@@ -310,13 +310,6 @@ class XMLDriver1 implements GlobalConst {
         String JoinedTaghpfilename = new String(array, Charset.forName("UTF-8"));
         Heapfile JoinedTaghpfile = null;
 
-        try {
-            JoinedTaghpfile = new Heapfile(JoinedTaghpfilename);
-        } catch (Exception e) {
-            System.err.println("*** error in Heapfile constructor ***");
-            e.printStackTrace();
-        }
-
         RID JoinedTagRID = new RID();
 
         FldSpec[] projlist_tag1 = null, projlist_tag2 = null;
@@ -395,7 +388,18 @@ class XMLDriver1 implements GlobalConst {
 
     public NodeContext[] ExtractTagToHeap(NodeContext tag_params, String[] tagnames) {
 
-        Heapfile heaptosearch = tag_params.getNodeHeapFile();
+        Heapfile heaptosearch = null;
+        try {
+            heaptosearch = new Heapfile(tag_params.getNodeHeapFileName());
+        } catch (HFException e) {
+            e.printStackTrace();
+        } catch (HFBufMgrException e) {
+            e.printStackTrace();
+        } catch (HFDiskMgrException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         RID ridtosearch = tag_params.getNodeRID();
 
         int tot_len = tagnames.length;
@@ -719,7 +723,21 @@ class XMLDriver1 implements GlobalConst {
     public void ScanHeapFile(NodeContext tgprms) {
         boolean done = false;
         int count_records = 0;
-        Heapfile hpfl = tgprms.getNodeHeapFile();
+
+        Heapfile hpfl = null;
+        try {
+            hpfl = new Heapfile(tgprms.getNodeHeapFileName());
+        } catch (HFException e) {
+            e.printStackTrace();
+        } catch (HFBufMgrException e) {
+            e.printStackTrace();
+        } catch (HFDiskMgrException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         RID filerid = tgprms.getNodeRID();
         AttrType[] Atrtyps = tgprms.getTupleAtrTypes();
         short[] Strsizes = tgprms.getTupleStringSizes();
@@ -769,7 +787,7 @@ class XMLDriver1 implements GlobalConst {
             while ((temptup = itr.get_next()) != null) {
                 temptup.setHdr((short) numoffields, Atrtyps, Strsizes);
                 temptup.print(Atrtyps);
-                //System.out.println();
+                System.out.println("Tuple Size :" + temptup.size());
                 count_records += 1;
             }
 
@@ -787,16 +805,32 @@ class XMLDriver1 implements GlobalConst {
 //parentchildflag == true check parent child or else check ancester descendant
 //ContainOrEquality == true check containment or else check equality
 
+@SuppressWarnings("Duplicates")
 public class XMLTest1// implements  GlobalConst
 {
     public static void main(String[] argvs) {
+        long startTime = System.currentTimeMillis();
         String DataFileName = "/home/aravamuthan/Documents/codebase/minjava/javaminibase/xml_sample_data.xml";
         String QueryFileName = "/home/aravamuthan/Documents/codebase/minjava/javaminibase/queryfile.txt";
+
         try {
             XMLDriver1 xmldvr = new XMLDriver1(DataFileName);
+            NodeContext MainTagPair = null;
+            if((new File("myXMLTableContext.txt").exists())){
+                MainTagPair = xmldvr.ReadFileLbyLStoreInHeapFile();
 
-            NodeContext MainTagPair = xmldvr.ReadFileLbyLStoreInHeapFile();
-
+                FileOutputStream f = new FileOutputStream(new File("myXMLTableContext.txt"));
+                ObjectOutputStream o = new ObjectOutputStream(f);
+                o.writeObject(MainTagPair);
+                o.close();
+                f.close();
+            }else{
+                FileInputStream fi = new FileInputStream(new File("myXMLTableContext.txt"));
+                ObjectInputStream oi = new ObjectInputStream(fi);
+                MainTagPair = (NodeContext) oi.readObject();
+                oi.close();
+                fi.close();
+            }
 
             NodeContext[] qresult = xmldvr.ReadQueryAndExecute(MainTagPair, QueryFileName);
             for (int i = 0; i < qresult.length; i++) {
@@ -807,6 +841,9 @@ public class XMLTest1// implements  GlobalConst
             }
             System.out.println(PageCounter.getreads());
             System.out.println(PageCounter.getwrites());
+            long stopTime = System.currentTimeMillis();
+            long elapsedTime = stopTime - startTime;
+            System.out.println("TIme taken to execute " + elapsedTime);
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Error encountered during XML tests:\n");

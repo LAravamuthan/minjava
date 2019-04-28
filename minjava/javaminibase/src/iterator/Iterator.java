@@ -9,7 +9,7 @@ import java.io.*;
 /**
  *All the relational operators and access methods are iterators.
  */
-public abstract class Iterator implements Flags {
+public abstract class Iterator implements Flags, Serializable {
   
   /**
    * a flag to indicate whether this iterator has been closed.

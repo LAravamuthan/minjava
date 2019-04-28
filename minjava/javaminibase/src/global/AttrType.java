@@ -1,10 +1,12 @@
 package global;
 
+import java.io.Serializable;
+
 /**
  * Enumeration class for AttrType
  */
 
-public class AttrType {
+public class AttrType implements Serializable {
 
     public static final int attrString = 0;
     public static final int attrInteger = 1;
