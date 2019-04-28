@@ -14,6 +14,7 @@ import java.io.*;
  * information about the tuples and the index are passed to the constructor,
  * then the user calls <code>get_next()</code> to get the tuples.
  */
+@SuppressWarnings("Duplicates")
 public class IntervalIndexScan extends Iterator {
 
     /**
@@ -96,25 +97,7 @@ public class IntervalIndexScan extends Iterator {
 
         switch(index.indexType) {
             // linear hashing is not yet implemented
-            case IndexType.B_Index:
-                // error check the select condition
-                // must be of the type: value op symbol || symbol op value
-                // but not symbol op symbol || value op value
-                try {
-                    indFile = new BTreeFile(indName);
-                }
-                catch (Exception e) {
-                    throw new IndexException(e, "IndexScan.java: BTreeFile exceptions caught from BTreeFile constructor");
-                }
 
-                try {
-                    indScan = (BTFileScan) IndexUtils.BTree_scan(selects, indFile);
-                }
-                catch (Exception e) {
-                    throw new IndexException(e, "IndexScan.java: BTreeFile exceptions caught from IndexUtils.BTree_scan().");
-                }
-
-                break;
             case IndexType.Interval:
                 // error check the select condition
                 // must be of the type: value op symbol || symbol op value
@@ -127,7 +110,7 @@ public class IntervalIndexScan extends Iterator {
                 }
 
                 try {
-                    indScan = (BTFileScan) IndexUtils.BTree_scan(selects, indFile);
+                    indScan = (IntervalTFileScan) IndexUtils.intervaltypeBTtreee_scan(selects, indFile);
                 }
                 catch (Exception e) {
                     throw new IndexException(e, "IndexScan.java: BTreeFile exceptions caught from IndexUtils.BTree_scan().");

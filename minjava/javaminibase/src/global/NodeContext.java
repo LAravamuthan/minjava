@@ -1,5 +1,6 @@
 package global;
 
+import btree.IntervalTreeFile;
 import heap.Heapfile;
 import iterator.Iterator;
 
@@ -17,6 +18,8 @@ public class NodeContext implements Serializable {
     private RID nodeRid = null; //record id for the heap file (record id) to access each record in the heap file
     private String nodeHeapFileName = null; // Name of the heap file pointed by the instance of this class
     private Iterator itr = null;
+    private IntervalTreeFile btf;
+    private String intervalTreeIndexString;
 
     public NodeContext(){
 
@@ -73,6 +76,22 @@ public class NodeContext implements Serializable {
         this.itr = itr;
     }
 
+    public IntervalTreeFile getBtf() {
+        return btf;
+    }
+
+    public void setBtf(IntervalTreeFile btf) {
+        this.btf = btf;
+    }
+
+    public String getIntervalTreeIndexString() {
+        return intervalTreeIndexString;
+    }
+
+    public void setIntervalTreeIndexString(String intervalTreeIndexString) {
+        this.intervalTreeIndexString = intervalTreeIndexString;
+    }
+
     @Override
     public String toString() {
         return "NodeContext{" +
@@ -82,6 +101,7 @@ public class NodeContext implements Serializable {
                 ", nodeRid=" + nodeRid +
                 ", nodeHeapFileName='" + nodeHeapFileName + '\'' +
                 ", itr=" + itr +
+                ", btf=" + btf +
                 '}';
     }
 }

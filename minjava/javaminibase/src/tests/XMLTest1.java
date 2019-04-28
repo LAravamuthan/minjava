@@ -157,6 +157,7 @@ class XMLDriver1 implements GlobalConst {
 
         try {
             this.rid = this.hpfile.insertRecord(this.xmlDriverTuple.returnTupleByteArray()); //store it in the heap file
+            intervaltype temp = this.xmlDriverTuple.getIntervalFld(2);
         } catch (Exception e) {
             System.err.println("*** error in Heapfile.insertRecord() ***");
             e.printStackTrace();
@@ -222,6 +223,11 @@ class XMLDriver1 implements GlobalConst {
         }
         return projections;
     }
+
+
+
+
+
     public CondExpr[] GenerateCondExpr(int opersymbfld1, int opersymbfld2, boolean ContainOrEquality) {
         CondExpr[] outFilter = new CondExpr[1];
 
@@ -345,7 +351,18 @@ class XMLDriver1 implements GlobalConst {
 		}*/
 
         Iterator fscan = null;
-        if(taghpfilename1 != null){
+
+
+        if(tag1.getBtf() != null){
+            try {
+                fscan = new IntervalIndexScan(new IndexType(IndexType.Interval), taghpfilename1, tag1.getIntervalTreeIndexString(),
+                        tagattrtype1, tagattrsize1, tagattrtype1.length, projlist_tag1.length, projlist_tag1, null, 2, false);  //file scan pointer
+            } catch (Exception e) {
+                System.err.println("" + e);
+                e.printStackTrace();
+            }
+        }
+        else if(taghpfilename1 != null){
             try {
                 fscan = new FileScan(taghpfilename1, tagattrtype1, tagattrsize1, (short) outer, outer, projlist_tag1, null);  //file scan pointer
             } catch (Exception e) {
@@ -354,12 +371,13 @@ class XMLDriver1 implements GlobalConst {
             }
         }
 
+
         Iterator nlj = null;
         try {
             if(fscan == null){
                 fscan = tag1.getItr();
             }
-            if(taghpfilename2 != null){
+            if(taghpfilename2 != null || tag1.getBtf() != null){
                 nlj = new NestedLoopsJoins(tagattrtype1, outer, tagattrsize1, tagattrtype2, inner, tagattrsize2, 10, fscan, taghpfilename2, outFilter, null, projlist_tag2, outer + inner - (3 * ltfieldtoomit.size()));
             }else{
                 nlj = new SortMerge(tagattrtype1, outer, tagattrsize1, tagattrtype2, inner, tagattrsize2, joinfieldno1, 8, joinfieldno2, 8, 10, fscan, tag2.getItr(), false, false,
@@ -405,6 +423,7 @@ class XMLDriver1 implements GlobalConst {
         int tot_len = tagnames.length;
 
         Heapfile[] heaptostore = new Heapfile[tot_len];
+        IntervalTreeFile[] intervalTreeFiles = new IntervalTreeFile[tot_len];
         RID[] ridtostore = new RID[tot_len];
         String[] hpfilenm = new String[tot_len];
 
@@ -431,6 +450,7 @@ class XMLDriver1 implements GlobalConst {
         try {
             for (int i = 0; i < tot_len; i++) {
                 heaptostore[i] = new Heapfile(hpfilenm[i]);
+                intervalTreeFiles[i] = new IntervalTreeFile("IntervalTreeIndex" + tagnames[i], AttrType.attrInterval, 8, 1);
             }
         } catch (Exception e) {
             System.err.println("*** error in Heapfile constructor ***");
@@ -444,6 +464,7 @@ class XMLDriver1 implements GlobalConst {
             e.printStackTrace();
             Runtime.getRuntime().exit(1);
         }
+
 
         while (!done) {
             try {
@@ -459,6 +480,7 @@ class XMLDriver1 implements GlobalConst {
                     if (tag.equals(tagnames[i])) {
                         try {
                             ridtostore[i] = heaptostore[i].insertRecord(tup.returnTupleByteArray()); //inset the data into a separate heap file
+                            intervalTreeFiles[i].insert(new IntervalKey(tup.getIntervalFld(2)), ridtostore[i]);
                             break;
                         } catch (Exception e) {
                             System.err.println("*** error in Heapfile.insertRecord() ***");
@@ -472,7 +494,10 @@ class XMLDriver1 implements GlobalConst {
         }
 
         for (int i = 0; i < tot_len; i++) {
-            tag_pars[i] = new NodeContext(heaptostore[i], ridtostore[i], hpfilenm[i], Stps, Sszs, TupSize); //generate tag pars data type for each of the heap file
+            NodeContext nodeContext = new NodeContext(heaptostore[i], ridtostore[i], hpfilenm[i], Stps, Sszs, TupSize);
+            nodeContext.setBtf(intervalTreeFiles[i]);
+            nodeContext.setIntervalTreeIndexString("IntervalTreeIndex" + tagnames[i]);
+            tag_pars[i] = nodeContext; //generate tag pars data type for each of the heap file
         }
         return tag_pars;
     }

@@ -14,6 +14,7 @@ import java.io.*;
  * information about the tuples and the index are passed to the constructor,
  * then the user calls <code>get_next()</code> to get the tuples.
  */
+@SuppressWarnings("Duplicates")
 public class IndexScan extends Iterator {
 
   /**
