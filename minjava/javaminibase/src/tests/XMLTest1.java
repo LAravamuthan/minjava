@@ -835,13 +835,13 @@ public class XMLTest1// implements  GlobalConst
 {
     public static void main(String[] argvs) {
         long startTime = System.currentTimeMillis();
-        String DataFileName = "/home/aravamuthan/Documents/codebase/minjava/javaminibase/xml_sample_data.xml";
-        String QueryFileName = "/home/aravamuthan/Documents/codebase/minjava/javaminibase/queryfile.txt";
+        String DataFileName = System.getProperty("user.dir") + "/xml_sample_data.xml";
+        String QueryFileName = System.getProperty("user.dir") + "/queryfile.txt";
 
         try {
             XMLDriver1 xmldvr = new XMLDriver1(DataFileName);
             NodeContext MainTagPair = null;
-            if((new File("myXMLTableContext.txt").exists())){
+            /*if((new File("myXMLTableContext.txt").exists())){
                 MainTagPair = xmldvr.ReadFileLbyLStoreInHeapFile();
 
                 FileOutputStream f = new FileOutputStream(new File("myXMLTableContext.txt"));
@@ -855,7 +855,9 @@ public class XMLTest1// implements  GlobalConst
                 MainTagPair = (NodeContext) oi.readObject();
                 oi.close();
                 fi.close();
-            }
+            }*/
+
+            MainTagPair = xmldvr.ReadFileLbyLStoreInHeapFile();
 
             NodeContext[] qresult = xmldvr.ReadQueryAndExecute(MainTagPair, QueryFileName);
             for (int i = 0; i < qresult.length; i++) {
