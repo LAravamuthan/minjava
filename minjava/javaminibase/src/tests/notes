@@ -1,0 +1,14 @@
+Notes:
+
+Note that when we pass the column names on which to join  -> JoinTwoFields() => Then index is 1 based. 
+But, when we are storing in the fieldtracker => we store which field is stored at what position. 
+So if 
+1
+2
+3
+A
+B
+C
+
+And table is like B A C => Field Tracker is : [2 1 3]
+B's columns are stored, then A's columns and Then C's columns. 

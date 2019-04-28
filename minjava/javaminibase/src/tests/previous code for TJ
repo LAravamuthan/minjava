@@ -1,0 +1,56 @@
+	/*
+						//Get the target field index for the corresponding tag.
+						for(int i = 0 ; i < tagnames1.length ; i++)
+							if(tagnames1[i].equalsIgnoreCase(tag))
+							{
+								node1 = i;
+								break;
+							}
+						if(node1 == -1){
+							System.out.println("Please enter a valid tag name from pattern tree 1. Aborting..");
+						}
+
+						for(int i = 0 ; i < tagnames2.length ; i++)
+							if(tagnames2[i].equalsIgnoreCase(tag))
+							{
+								node2 = i;
+								break;
+							}
+						if(node2 == -1){
+							System.out.println("Please enter a valid tag name from pattern tree 2. Aborting..");
+						}
+
+
+                        //Now in the below code, we compute all the common nodes on which we will need to join, given a certain node.
+                        List<Integer> fieldsin1 = new ArrayList<Integer>();
+                        ad1 = xmldvr.GetADMatrix(filepath1);				//get the ancestor descendent matrix.
+                        ad2 = xmldvr.GetADMatrix(filepath2);
+                        int[] joinfields = GetCommonFields(ad1, ad2, node1, node2, tagnames1, tagnames2);
+
+						//get the indexes where those target fields are now stored, in the two field trackers!
+
+						for(int i = 0 ; i < joinfields.length ; i++)
+						{
+							if (joinfields[i] == -1)
+								continue;
+
+							fld1 = tagparams1.GetFldtrk().indexOf(i);                //get the index where the node is stored in both files.
+							fld2 = tagparams2.GetFldtrk().indexOf(joinfields[i]);
+							System.out.println("We will now be joining on index " + fld1 + " " + fld2);
+
+							if (fld1 == -1 || fld2 == -1) {
+								System.out.println("Join not possible as one of the fields does not exist in the table! Aborting...");
+								System.exit(1);
+							}
+							if (tagnames1[i].equalsIgnoreCase(tagnames2[joinfields[i]]) == false) {
+								System.out.println("Can't join on two different tags. Aborting...");
+								System.exit(1);
+							}
+						}
+						ltfieldtoomit = new ArrayList<Integer>();
+						xmldvr.GetOmitList(fldtrk1,fldtrk2,ltfieldtoomit);
+						NodeContext result = xmldvr.JoinTwoFieldsMultiple(tagparams1,tagparams2,joinfields,ltfieldtoomit,false,false);
+						System.out.println("Checking results obtained from join...");
+						xmldvr.ScanHeapFile(result, false);
+						System.out.println("Deleting files now...");
+						*/
