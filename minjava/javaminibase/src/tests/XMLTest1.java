@@ -441,7 +441,7 @@ class XMLDriver1 implements GlobalConst {
         try {
             for (int i = 0; i < tot_len; i++) {
                 heaptostore[i] = new Heapfile(hpfilenm[i]);
-                intervalTreeFiles[i] = new IntervalTreeFile("IntervalTreeIndex" + tagnames[i], AttrType.attrInterval, 8, 1);
+                intervalTreeFiles[i] = new IntervalTreeFile("IntervalTreeIndex" + tagnames[i] + queryplancount, AttrType.attrInterval, 8, 1);
             }
         } catch (Exception e) {
             System.err.println("*** error in Heapfile constructor ***");
@@ -487,7 +487,7 @@ class XMLDriver1 implements GlobalConst {
         for (int i = 0; i < tot_len; i++) {
             NodeContext nodeContext = new NodeContext(heaptostore[i], ridtostore[i], hpfilenm[i], Stps, Sszs, TupSize);
             nodeContext.setBtf(intervalTreeFiles[i]);
-            nodeContext.setIntervalTreeIndexString("IntervalTreeIndex" + tagnames[i]);
+            nodeContext.setIntervalTreeIndexString("IntervalTreeIndex" + tagnames[i] + queryplancount);
             tag_pars[i] = nodeContext; //generate tag pars data type for each of the heap file
         }
         return tag_pars;
