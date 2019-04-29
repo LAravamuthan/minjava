@@ -688,22 +688,26 @@ class XMLDriver1 implements GlobalConst {
         System.out.println("Query plan 1 Executed");
         System.out.println("reads : " +  PageCounter.getreads() + " writes  : " +  PageCounter.getwrites());
 
-        tgprarr[1] = Query(AllTags, NumberofJoins);  //query plan 2
-        System.out.println("Query plan 2 Executed");
-        System.out.println("reads : " +  PageCounter.getreads() + " writes  : " +  PageCounter.getwrites());
+        if(noOfPlans > 1){
+            tgprarr[1] = Query(AllTags, NumberofJoins);  //query plan 2
+            System.out.println("Query plan 2 Executed");
+            System.out.println("reads : " +  PageCounter.getreads() + " writes  : " +  PageCounter.getwrites());
+        }
 
-        int[] spliter = querypossible(NumberofJoins);
+        if(noOfPlans > 2){
+            int[] spliter = querypossible(NumberofJoins);
 
-        //loop for second and the third query
-        for (int i = 0; i < spliter.length; i++) {
-            if (spliter[i] != -1) {
-                tf1 = Query(AllTags, GetJoins(NumberofJoins, 0, spliter[i]));
-                tf2 = Query(AllTags, GetJoins(NumberofJoins, spliter[i], NumberofJoins.length));
-                tgprarr[i + 2] = JoinQuery(tf1, tf2);
-                System.out.println("reads : " +  PageCounter.getreads() + " writes : " +  PageCounter.getwrites());
-                System.out.printf("Query Plan " +  (i + 2) + " Executed ");
-            } else {
-                System.out.printf("Query plan : " + (i + 2) + " Not avaiable");
+            //loop for second and the third query
+            for (int i = 0; i < spliter.length; i++) {
+                if (spliter[i] != -1) {
+                    tf1 = Query(AllTags, GetJoins(NumberofJoins, 0, spliter[i]));
+                    tf2 = Query(AllTags, GetJoins(NumberofJoins, spliter[i], NumberofJoins.length));
+                    tgprarr[i + 2] = JoinQuery(tf1, tf2);
+                    System.out.println("reads : " +  PageCounter.getreads() + " writes : " +  PageCounter.getwrites());
+                    System.out.printf("Query Plan " +  (i + 2) + " Executed ");
+                } else {
+                    System.out.printf("Query plan : " + (i + 2) + " Not avaiable");
+                }
             }
         }
         return tgprarr;
