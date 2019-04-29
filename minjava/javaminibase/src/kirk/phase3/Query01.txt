@@ -1,0 +1,4 @@
+ptree_1: pattern_tree1
+ptree_2: pattern_tree2
+operation: TJ 2 3
+buf_size: 5,10,50,100,1000
