@@ -1185,12 +1185,12 @@ public class XMLTest1// implements  GlobalConst
 
                 TagparamField tagparams1, tagparams2;
                 String[] tagnames1, tagnames2;
-                tagparams1 = xmldvr.ExecuteQueryPlan1(MainTagPair,filepath1);
+                tagparams1 = xmldvr.ReadQueryAndExecute(MainTagPair,filepath1, 1)[0];
                 tagnames1 = xmldvr.tagnames;
 
                 xmldvr.queryplancount++;			//indicates we are starting query plan for second file.
 
-                tagparams2 = xmldvr.ExecuteQueryPlan1(MainTagPair,filepath2);
+                tagparams2 = xmldvr.ReadQueryAndExecute(MainTagPair,filepath2, 1)[0];
                 tagnames2 = xmldvr.tagnames;
 
                 System.out.println("Join on Tag executed successfully!");
