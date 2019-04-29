@@ -121,7 +121,7 @@ public class SortByFld {
             tuple.setHdr(numcolumns, attrtypes, strsizes);
             int count = 0;
             while ((tuple = sort.get_next()) != null) {
-                System.out.println("Tuple number : " + count);
+                //System.out.println("Tuple number : " + count);
                 tuple.print(attrtypes);
                 count++;
             }

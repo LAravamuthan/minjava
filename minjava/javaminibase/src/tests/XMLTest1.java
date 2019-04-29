@@ -814,7 +814,7 @@ class XMLDriver1 implements GlobalConst {
             while ((temptup = itr.get_next()) != null) {
                 temptup.setHdr((short) numoffields, Atrtyps, Strsizes);
                 temptup.print(Atrtyps);
-                System.out.println("Tuple Size :" + temptup.size());
+                //System.out.println("Tuple Size :" + temptup.size());
                 count_records += 1;
             }
 
@@ -1051,16 +1051,23 @@ public class XMLTest1// implements  GlobalConst
 
         try {
             resfile = new Heapfile("distinct.in");
-            tuple.setHdr((short)1,resultattrtypes,resultstrsizes);
+            tuple.setHdr((short)numflds,attrtypes,strsizes);
             while((tuple = itr.get_next()) != null) {
                 String val = tuple.getStrFld(fld);
                 if(set.contains(val) == false) {
                     set.add(val);
-                    rid = resfile.insertRecord(tuple.returnTupleByteArray());
+                    Tuple t = new Tuple();
+                    t.setHdr((short) 1, resultattrtypes, resultstrsizes);
+                    int size = t.size();
+                    t = new Tuple(size);
+                    t.setHdr((short) 1, resultattrtypes, resultstrsizes);
+                    t.setStrFld(1, val);
+                    rid = resfile.insertRecord(t.returnTupleByteArray());
                 }
             }
             NodeContext context = new NodeContext(resfile,rid,"distinct.in",resultattrtypes,resultstrsizes,1);
             result = new TagparamField(context,tracker);
+            System.out.println("set values are " + set);
         }
         catch(Exception e){
             e.printStackTrace();
@@ -1257,6 +1264,7 @@ public class XMLTest1// implements  GlobalConst
             int pos = 3*result.GetFldtrk().indexOf(node) + 3;				//get the position of string column for given node.
             List<Integer> ltfieldtoomit = new ArrayList<Integer>();
             System.out.println("node = " + node + " pos = " + pos);
+            result = xmldvr.ReadQueryAndExecute(MainTagPair, filepath, 1)[0];
             NodeContext joinresult = xmldvr.JoinTwoFields(tagvalues.GetTagParams(), 1, result.GetTagParams(), pos, ltfieldtoomit, false, false);
             System.out.println("\n\nFinal results after the join....");
             xmldvr.printItr(joinresult);
