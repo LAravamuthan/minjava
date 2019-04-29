@@ -1051,7 +1051,7 @@ public class XMLTest1// implements  GlobalConst
 
         try {
             resfile = new Heapfile("distinct.in");
-            tuple.setHdr((short)numflds,attrtypes,strsizes);
+            tuple.setHdr(numflds,attrtypes,strsizes);
             while((tuple = itr.get_next()) != null) {
                 String val = tuple.getStrFld(fld);
                 if(set.contains(val) == false) {
@@ -1077,6 +1077,39 @@ public class XMLTest1// implements  GlobalConst
     }
 
 
+    static void selectionOperator(TagparamField table,int index){
+
+        int fld1 = 3*table.GetFldtrk().indexOf(index) + 1;
+        int fld2 = 3*table.GetFldtrk().indexOf(index) + 2;
+        int fld3 = 3*table.GetFldtrk().indexOf(index) + 3;
+        //GET STRING FIELD. POSITION WITHIN ORIGINAL HEAP FILE,
+        Iterator itr = table.GetTagParams().getItr();
+        AttrType[] attrtypes = table.GetTagParams().getTupleAtrTypes();
+        short[] strsizes = table.GetTagParams().getTupleStringSizes();
+        short numflds = (short)attrtypes.length;
+
+        Tuple tuple = new Tuple();
+
+        try {
+            tuple.setHdr(numflds,attrtypes,strsizes);
+            while((tuple = itr.get_next()) != null) {
+                Integer parent = tuple.getIntFld(fld1);
+                intervaltype intervaltype = tuple.getIntervalFld(fld2);
+                String val = tuple.getStrFld(fld3);
+                System.out.print("{");
+                System.out.print(parent + ",");
+                System.out.print("SI: " + intervaltype.get_s() + " ");
+                System.out.print("EI: " + intervaltype.get_e() + " ,");
+                System.out.print(" "+ val + " }");
+                System.out.println();
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
     public static void main(String [] argvs) {
         System.out.println("---------------------MENU------------------------");
         System.out.println("What would you like to do? ");
@@ -1084,6 +1117,7 @@ public class XMLTest1// implements  GlobalConst
         System.out.println("2. Do a tag join between two heap files based on node id : (TJ tag)");
         System.out.println("3. Sort a file based on a given tag : (SRT i)");
         System.out.println("4. Group a file based on a given tag : (GRP i)");
+        System.out.println("5. Select a node on a given tag : (GRP i)");
         System.out.println("Enter your choice : ");
 
         int choice = 0;
@@ -1268,6 +1302,34 @@ public class XMLTest1// implements  GlobalConst
             NodeContext joinresult = xmldvr.JoinTwoFields(tagvalues.GetTagParams(), 1, result.GetTagParams(), pos, ltfieldtoomit, false, false);
             System.out.println("\n\nFinal results after the join....");
             xmldvr.printItr(joinresult);
+        }
+
+
+        else if(choice == 5){
+            br = new BufferedReader(new InputStreamReader(System.in));
+            System.out.println("Enter the name of pattern tree file (Please ensure its in the src/tests folder ): ");
+
+            String file = "";
+            try {
+                file = br.readLine();
+            }
+            catch(IOException ie){
+                ie.printStackTrace();
+            }
+            TagparamField result;
+            String filepath =inputPatternTreeFilesFolder+file;
+            result = xmldvr.ReadQueryAndExecute(MainTagPair, filepath, 1)[0];
+            System.out.println("Please enter the node id which you want to select");
+
+            int node = -1;
+            try {
+                node = Integer.parseInt(br.readLine()) - 1;
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+
+            selectionOperator(result,node);  //get the distinct values for this node.
         }
 
         else {
