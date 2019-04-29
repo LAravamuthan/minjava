@@ -911,6 +911,7 @@ class XMLDriver1 implements GlobalConst {
         short numcolumns = (short)attrtypes.length;
         int sortfldlen = 8;            //the length of interval field.
         TupleOrder sortorder = new TupleOrder(TupleOrder.Ascending);
+        TupleOrder sortorder1 = new TupleOrder(TupleOrder.Descending);
         int npages = 10;
         int outer = numcolumns;
         List<Integer> fieldstoomit = new ArrayList<Integer>();
@@ -926,7 +927,7 @@ class XMLDriver1 implements GlobalConst {
 
         Sort sort = null;
         try {
-            sort = new Sort(attrtypes, numcolumns, strsizes, context.getItr(), fieldtosort, sortorder, sortfldlen, npages);
+            sort = new Sort(attrtypes, numcolumns, strsizes, context.getItr(), fieldtosort, sortorder1, sortfldlen, npages);
         }
         catch (Exception e) {
 
@@ -939,7 +940,7 @@ class XMLDriver1 implements GlobalConst {
             tuple.setHdr(numcolumns, attrtypes, strsizes);
             int count = 0;
             while ((tuple = sort.get_next()) != null) {
-                System.out.println("Tuple number : " + count);
+                //System.out.println("Tuple number : " + count);
                 tuple.print(attrtypes);
                 count++;
             }
@@ -1253,7 +1254,6 @@ public class XMLTest1// implements  GlobalConst
             }
 
             TagparamField tagvalues = GetDistinctValues1(result,node);  //get the distinct values for this node.
-            xmldvr.ScanHeapFile(tagvalues.GetTagParams(),false);
             int pos = 3*result.GetFldtrk().indexOf(node) + 3;				//get the position of string column for given node.
             List<Integer> ltfieldtoomit = new ArrayList<Integer>();
             System.out.println("node = " + node + " pos = " + pos);
