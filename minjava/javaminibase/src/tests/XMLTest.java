@@ -6,35 +6,19 @@ import bufmgr.PageCounter;
 import global.*;
 import heap.*;
 import iterator.*;
+import iterator.Iterator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.*;
 /*
 This class keeps track of a heap file and its field after a join has been made between two tables
 when we join two table we keep track of the fields which are present in the resultant table so when a new table is added we can eleminate the duplicate columns
 that is why we keep track of the fields or maintain a list<Integer>
 */
-
-class TagparamField {
-    private NodeContext tgpr = null;
-    private List<Integer> Fldtrk = null;
-
-    public TagparamField(NodeContext tagpar, List<Integer> fldtrk) {
-        this.tgpr = tagpar;
-        this.Fldtrk = fldtrk;
-    }
-
-    public NodeContext GetTagParams() {
-        return this.tgpr;
-    }
-
-    public List<Integer> GetFldtrk() {
-        return this.Fldtrk;
-    }
-}
-
 
 /*
 This class contains parsing function which are responsible for parsing the XML into tags
@@ -282,7 +266,7 @@ class XMLDriver implements GlobalConst {
 		try
 		{
 			int parent = xmlNode.getParentStartId();
-			IntervalType val = new IntervalType();
+			intervaltype val = new intervaltype();
 			String tag = xmlNode.getNodeString();
 
 			val.assign(xmlNode.getStartOfInterval(), xmlNode.getEndOfInterval());
@@ -503,7 +487,7 @@ class XMLDriver implements GlobalConst {
 		Heapfile JoinedTaghpfile = null;
 
 		System.out.println("Heapfile being constructed : " + JoinedTaghpfilename);
-		System.out.println("Heap file address for tag1 : " + tag1.getNodeHeapFile());
+		//System.out.println("Heap file address for tag1 : " + tag1.getNodeHeapFile());
 
 //		ScanHeapFile(tag1,true);
 //		ScanHeapFile(tag2,true);
@@ -526,20 +510,8 @@ class XMLDriver implements GlobalConst {
 		System.out.println("outer = " + outer + " inner = " + inner);     //inner = 3*3 = 9.
 		projlist_tag1 = GetProjections(outer, 0, ftoO1);			//generate projections for the left table
 
-	//	System.out.println("Proj list tag 1 : ");
-	//	for(int i = 0 ; i < projlist_tag1.length ; i++)
-	//		System.out.println("relation : "+ projlist_tag1[i].relation + " offset : " + projlist_tag1[i].offset);
 		projlist_tag2 = GetProjections(outer, inner, ftoO2);		//generate projections for the right table
 
-//		System.out.println("Proj list tag 2 : ");
-//		for(int i = 0 ; i < projlist_tag2.length ; i++)
-//			System.out.println("relation : "+ projlist_tag2[i].relation + " offset : " + projlist_tag2[i].offset);
-
-		/*
-		for(int i=0;i<projlist_tag2.length;i++)
-		{
-			System.out.println(projlist_tag2[i].offset);
-		}*/
 
 		CondExpr[] outFilter = null;
 		outFilter = GenerateCondExpr(joinfieldno1, joinfieldno2, ContainOrEquality);	//generate condexpr for the two joining fields
@@ -547,19 +519,6 @@ class XMLDriver implements GlobalConst {
 		JoinedTagAttrtype = JoinAttrtype(tagattrtype1, tagattrtype2, outer, projlist_tag2);
 		JoinedTagsize     = JoinAttrsize(tagattrsize1, tagattrsize2, ltfieldtoomit);
 		JoinedTagTupSize  = JoinedTupSize(JoinedTagAttrtype, JoinedTagsize);
-	/*
-		System.out.println("jere");
-		System.out.printf("%s %s\n", joinfieldno1, joinfieldno2);
-	for(int i=0;i<JoinedTagsize.length;i++)
-		{
-			System.out.println(JoinedTagsize[i]);
-		}
-
-
-		for(int i=0;i<JoinedTagAttrtype.length;i++)
-		{
-			System.out.println(JoinedTagAttrtype[i].toString());
-		}*/
 
 		FileScan fscan = null;
 		try 
@@ -589,7 +548,7 @@ class XMLDriver implements GlobalConst {
 //	    System.out.println("Nested loop join object created successfully");
 		Tuple temptup;
 		int parent;
-		IntervalType intval;
+		intervaltype intval;
 
 		try 
 		{
@@ -597,7 +556,7 @@ class XMLDriver implements GlobalConst {
 			{
 				if(parentchildflag)
 				{
-					if(temptup.getIntervalFld(2).getS() == temptup.getIntFld(4))
+					if(temptup.getIntervalFld(2).get_s() == temptup.getIntFld(4))
 					{
 						JoinedTagRID = JoinedTaghpfile.insertRecord(temptup.returnTupleByteArray());	//insert the joined record into a new heap file	
 					}
@@ -743,12 +702,6 @@ class XMLDriver implements GlobalConst {
 						try
 						{
 							ridtostore[i] = heaptostore[i].insertRecord(tup.returnTupleByteArray()); //insert the data into a separate heap file
-							if(i == 0 || i == 1) {
-			//					System.out.print("Storing ");
-			//					tup.print(Stypes);
-			//					System.out.printf(" in page no : " + ridtostore[i].pageNo + " slot no : " + ridtostore[i].slotNo);
-			//					System.out.println();
-							}
 							//inserting the given key into the corresponding heap file as well.
 							intervaltype keyint= tup.getIntervalFld(2);              //the second field is the interval in our data files.
 							int keys = keyint.get_s();
@@ -779,18 +732,7 @@ class XMLDriver implements GlobalConst {
 		{
 			System.out.println("Looking at i = " + i + " tag : " + tagnames[i]);
 			tag_pars[i] =  new NodeContext(heaptostore[i], ridtostore[i], hpfilenm[i], Stps, Sszs, TupSize); //generate tag pars data type for each of the heap file
-		//	ScanFile(heaptostore[i],Stps, Sszs);
-			//		System.out.println("Printing data for Interval Tree file : " + tagnames[i]);
-			//		if(i == 0 || i == 1)	f		//only for first two tags, print contents of the interval tree file.
-			//			IntervalScanTest(intervaltreefile[i]);
 		}
-
-		/*
-		System.out.println("printing out addresses of created heap files");
-		for(int i = 0 ; i < heaptostore.length ; i++)
-			System.out.println("Address of file " + i + " : " + heaptostore[i]);
-		System.out.println("\n\n");
-*/
 		return tag_pars;
 	}
 
@@ -914,8 +856,6 @@ class XMLDriver implements GlobalConst {
 				temptup.setHdr((short) numoffields, Atrtyps, Strsizes);
 				//		temptup.print(Atrtyps);
 				count_records+=1;
-//				System.out.println("Filerid pageno = " + filerid.pageNo + " slot no : " + filerid.slotNo);
-				//inserting the given key into the corresponding heap file as well.
 				intervaltype keyint= temptup.getIntervalFld(joinfield);              //the second field is the interval in our data files.
 				int keys = keyint.get_s();
 				int keye = keyint.get_e();
@@ -977,15 +917,6 @@ class XMLDriver implements GlobalConst {
             e.printStackTrace();
         }
 
-/*
-		System.out.println("Tag1 attribute types ");
-		for(int  i = 0 ; i < tagattrtype1.length ; i++)
-			System.out.printf(tagattrtype1[i].toString() + " ");         //what kind of fields are present in both tables?
-		System.out.println("Tag2 attribute types ");
-		for(int  i = 0 ; i < tagattrtype2.length ; i++)
-			System.out.println(tagattrtype2[i].toString() + " ");         //what kind of fields are present in both tables?
-*/
-
 		AttrType[] JoinedTagAttrtype = null;
 		short [] JoinedTagsize = null;
 		int JoinedTagTupSize = 0;
@@ -1015,39 +946,11 @@ class XMLDriver implements GlobalConst {
 		projlist_tag1 = GetProjections(outer, 0, ftoO1);			//generate projections for the left table
 		projlist_tag2 = GetProjections(outer, inner, ftoO2);		//generate projections for the right table
 
-		/*
-		for(int i=0;i<projlist_tag2.length;i++)
-		{
-			System.out.println(projlist_tag2[i].offset);
-		}*/
-
 		CondExpr[] outFilter = null;
 		outFilter = GenerateCondExpr(joinfieldno1, joinfieldno2, ContainOrEquality);	//generate condexpr for the two joining fields
-
 		JoinedTagAttrtype = JoinAttrtype(tagattrtype1, tagattrtype2, outer, projlist_tag2);
 		JoinedTagsize     = JoinAttrsize(tagattrsize1, tagattrsize2, ltfieldtoomit);
 		JoinedTagTupSize  = JoinedTupSize(JoinedTagAttrtype, JoinedTagsize);
-	/*
-		System.out.println("jere");
-		System.out.printf("%s %s\n", joinfieldno1, joinfieldno2);
-	for(int i=0;i<JoinedTagsize.length;i++)
-		{
-			System.out.println(JoinedTagsize[i]);
-		}
-
-
-		for(int i=0;i<JoinedTagAttrtype.length;i++)
-		{
-			System.out.println(JoinedTagAttrtype[i].toString());
-		}*/
-
-
-/*
-		System.out.println("Printing out data for outer file: ");
-		ScanFile(outerfile, tagattrtype1);
-		System.out.println("Printing out data for inner file: ");
-		ScanFile(innerfile, tagattrtype2);
-*/
 		IndexNestedLoopsJoins inlj = null;
 		IntervalTreeFile intervalfile = null;
 		try
@@ -1060,8 +963,6 @@ class XMLDriver implements GlobalConst {
 				intervalfile = CreateIntervalTreeFile(tag1, joinfieldno1);  //if it is a complex join, we will need to create an index on the inner file, which corresponds to tag1.
 			}
 
-//			for(int i = 0 ; i < projlist_tag2.length ; i++)
-//				System.out.println(projlist_tag2[i].relation.key + " offset = " + projlist_tag2[i].offset);
 			inlj = new IndexNestedLoopsJoins(tagattrtype2, inner, tagattrsize2, tagattrtype1, outer, tagattrsize1, 10, intervalfile, outerfile, innerfile, outFilter, null, projlist_tag2, outer+inner-(3*(ltfieldtoomit).size()), joinfieldno2, joinfieldno1);
 		}
 		catch (Exception e)
@@ -1084,15 +985,11 @@ class XMLDriver implements GlobalConst {
 				{
 					if(temptup.getIntervalFld(2).get_s() == temptup.getIntFld(4))
 					{
-						//				System.out.println("Inserting folllowing record into the file");
-						//				temptup.print(JoinedTagAttrtype);
 						JoinedTagRID = JoinedTaghpfile.insertRecord(temptup.returnTupleByteArray());	//insert the joined record into a new heap file
 					}
 				}
 				else
 				{
-					//			System.out.println("Inserting folllowing record into the file");
-					//			temptup.print(JoinedTagAttrtype);
 					JoinedTagRID = JoinedTaghpfile.insertRecord(temptup.returnTupleByteArray());  //get the tag RID of the resulting tuple
 				}
 			}
@@ -1152,22 +1049,17 @@ class XMLDriver implements GlobalConst {
 			//Note that initially field to omit list would be empty. This field to omit thing is mainly being done to create projections.
 			TempTagPar = null;
 			if(tagnames[ftfld].equalsIgnoreCase("*")) {												//not a star query
-			//	TempTagPar = JoinTwoFields(GlobalMainTagPair, 2, ExtractTags[scfld], 2, ltfieldtoomit, relflag, true); //create a join of two tags
 				TempTagPar = JoinTwoFieldsNonBlock(GlobalMainTagPair, 2, ExtractTags[scfld], 2, ltfieldtoomit, relflag, true);
 			}
 			else if(tagnames[scfld].equalsIgnoreCase("*")){
 					System.out.println("Entered here for * based join");
-			//	TempTagPar = JoinTwoFields(ExtractTags[ftfld], 2, GlobalMainTagPair, 2, ltfieldtoomit, relflag, true);
 				TempTagPar = JoinTwoFieldsNonBlock(ExtractTags[ftfld], 2, GlobalMainTagPair, 2, ltfieldtoomit, relflag, true);
 			}
 			else {
-				//	TempTagPar = JoinTwoFields(ExtractTags[ftfld], 2, ExtractTags[scfld], 2, ltfieldtoomit, relflag, true);
 				TempTagPar =  JoinTwoFieldsNonBlock(ExtractTags[ftfld], 2, ExtractTags[scfld], 2, ltfieldtoomit, relflag, true);
 			}
 
-//			TempTagPar = JoinTwoFieldsIndexJoin(ExtractTags[ftfld], 2, ExtractTags[scfld], 2, ltfieldtoomit, relflag, true, ftfld, scfld, true);
 			System.out.println("Heapfile for TempTagPar (smaller table with 2 columns only) : " + TempTagPar.getNodeHeapFileName() + " created ");
-	//		ScanHeapFile(TempTagPar,true);
 
 			if(ResultTagPar != null)
 			{
@@ -1178,28 +1070,9 @@ class XMLDriver implements GlobalConst {
 				boolean countonly = true;
 
 				System.out.println("Heapfile for ResultTagPar before the join : ");
-		//		ScanHeapFile(ResultTagPar,countonly);
-
-//				ResultTagPar = JoinTwoFieldsIndexJoin(ResultTagPar, fields[0], TempTagPar, fields[1], ltfieldtoomit, false, false, ftfld, scfld, false);
-//				ResultTagPar = JoinTwoFields(ResultTagPar, fields[0], TempTagPar, fields[1], ltfieldtoomit, false, false); //join the tags to a resultant table
 				ResultTagPar = JoinTwoFieldsNonBlock(ResultTagPar, fields[0], TempTagPar, fields[1], ltfieldtoomit, false, false);
 				System.out.println("Heapfile for ResultTagPar : " + ResultTagPar.getNodeHeapFileName() + " created after the join. ");
-//				ScanHeapFile(ResultTagPar,countonly);
-		//		ScanHeapFile(TempTagPar,countonly);
-				/*
-				IntervalTreeFile intervalfile = CreateIntervalTreeFile(TempTagPar,fields[1]);
-				System.out.println("File created successfullly! Deleting it now...");
-				try {
-					intervalfile.destroyFile();
-				}
-				catch(Exception e){
-					e.printStackTrace();
-				}
-				*
-				 */
-/*
-				System.out.println("No of records in ResultTagPar : " + ResultTagPar.getNodeHeapFileName());
-*/
+
 				AddField(FieldTracker, ftfld);       //takes care of this! only adds those fields where the index is -1, that is field is not in list. :D
 				AddField(FieldTracker, scfld);
 				System.out.println("Field tracker is now...");
@@ -1276,7 +1149,6 @@ class XMLDriver implements GlobalConst {
 		int numoffields = Atrtyps.length;
 		Tuple temptup = null;
 		Iterator itr = tgprms.getItr();
-
 
 		try {
 			System.out.println("Printing results now...");
@@ -1370,8 +1242,6 @@ class XMLDriver implements GlobalConst {
 		for(int i = 0 ; i < 3 ; i++)
 			tgprarr[i] = null;
 
-		//PCounter.initialize();
-
 		tgprarr[0] = Query(AllTags, NumberofJoins).GetTagParams();  //query 1
         System.out.println("Query plan 1 Executed");
         System.out.println("reads : " +  PageCounter.getreads() + " writes  : " +  PageCounter.getwrites());
@@ -1385,16 +1255,12 @@ class XMLDriver implements GlobalConst {
 				tf1 = Query(AllTags, GetJoins(NumberofJoins, 0, spliter[i]));
 				tf2 = Query(AllTags, GetJoins(NumberofJoins, spliter[i], NumberofJoins.length));
 				tgprarr[i+1] = JoinQuery(tf1, tf2);
-
                 System.out.println("reads : " +  PageCounter.getreads() + " writes : " +  PageCounter.getwrites());
                 System.out.printf("Query Plan " +  (i + 2) + " Executed ");
-
             } else {
                 System.out.printf("Query plan : " + (i + 2) + " Not avaiable");
 			}
-
 		}
-
 		return tgprarr;
 	}
 
@@ -1677,7 +1543,6 @@ class XMLDriver implements GlobalConst {
 		Scan scanobj = null;
 
 		try{
-//            System.out.println("Heap file name is : " + context.getNodeHeapFileName());
 			scanobj = context.getNodeHeapFile().openScan();
 			if(scanobj == null) {
 				//               System.out.println("scan object i null!");
@@ -1704,8 +1569,6 @@ class XMLDriver implements GlobalConst {
 			status = false;
 			e.printStackTrace();
 		}
-		//     System.out.println("Filescan created successfully!");
-
 
 		Sort sort = null;
 		try {
@@ -1730,7 +1593,6 @@ class XMLDriver implements GlobalConst {
 		catch(Exception e){
 			e.printStackTrace();
 		}
-
 		fscan.close();
 	}
 
@@ -1763,12 +1625,7 @@ class XMLDriver implements GlobalConst {
 		String JoinedTaghpfilename = new String(array, Charset.forName("UTF-8"));
 		Heapfile JoinedTaghpfile = null;
 
-		try {
-			JoinedTaghpfile = new Heapfile(JoinedTaghpfilename);
-		} catch (Exception e) {
-			System.err.println("*** error in Heapfile constructor ***");
-			e.printStackTrace();
-		}
+
 
 		RID JoinedTagRID = new RID();
 
@@ -1778,11 +1635,7 @@ class XMLDriver implements GlobalConst {
 		projlist_tag1 = GetProjections(outer, 0, ftoO1);            //generate projections for the left table
 		projlist_tag2 = GetProjections(outer, inner, ftoO2);        //generate projections for the right table
 
-		/*
-		for(int i=0;i<projlist_tag2.length;i++)
-		{
-			System.out.println(projlist_tag2[i].offset);
-		}*/
+
 
 		CondExpr[] outFilter = null;
 		outFilter = GenerateCondExpr(joinfieldno1, joinfieldno2, ContainOrEquality);    //generate condexpr for the two joining fields
@@ -1790,19 +1643,7 @@ class XMLDriver implements GlobalConst {
 		JoinedTagAttrtype = JoinAttrtype(tagattrtype1, tagattrtype2, outer, projlist_tag2);
 		JoinedTagsize = JoinAttrsize(tagattrsize1, tagattrsize2, ltfieldtoomit);
 		JoinedTagTupSize = JoinedTupSize(JoinedTagAttrtype, JoinedTagsize);
-	/*
-		System.out.println("jere");
-		System.out.printf("%s %s\n", joinfieldno1, joinfieldno2);
-	for(int i=0;i<JoinedTagsize.length;i++)
-		{
-			System.out.println(JoinedTagsize[i]);
-		}
 
-
-		for(int i=0;i<JoinedTagAttrtype.length;i++)
-		{
-			System.out.println(JoinedTagAttrtype[i].toString());
-		}*/
 
 		iterator.Iterator fscan = null;
 		if(taghpfilename1 != null){
@@ -1831,11 +1672,9 @@ class XMLDriver implements GlobalConst {
 			e.printStackTrace();
 			Runtime.getRuntime().exit(1);
 		}
-
 		Tuple temptup;
 		int parent;
-		IntervalType intval;
-
+		intervaltype intval;
 		NodeContext nodeContext = new NodeContext(JoinedTaghpfile, JoinedTagRID, null, JoinedTagAttrtype, JoinedTagsize, JoinedTagTupSize);
 		nodeContext.setItr(nlj);
 		return nodeContext;
@@ -1847,6 +1686,7 @@ class XMLDriver implements GlobalConst {
   	//parentchildflag == true check parent child or else check ancestor descendant
   	//ContainOrEquality == true check containment or else check equality
 
+@SuppressWarnings("Duplicates")
 public class XMLTest// implements  GlobalConst
 {
 
@@ -1918,7 +1758,7 @@ public class XMLTest// implements  GlobalConst
 			e.printStackTrace();
 		}
 
-		//These 2 lines read the data, and then store it into a heap file which has a NodeContext object.
+
 		String DataFileName = System.getProperty("user.dir") + "/tests/xml_sample_data.xml"; //initializing the data file name.
 		XMLDriver xmldvr = new XMLDriver(DataFileName);
 		NodeContext	MainTagPair = xmldvr.ReadFileLbyLStoreInHeapFile();
@@ -1966,14 +1806,6 @@ public class XMLTest// implements  GlobalConst
 					tagnames2 = xmldvr.tagnames;
 
 					//Now in the below code, we compute all the common nodes on which we will need to join, given a certain node.
-					/*
-					List<Integer> fieldsin1 = new ArrayList<Integer>();
-					int[][] ad1 = xmldvr.GetADMatrix(filepath1);
-					int[][] ad2 = xmldvr.GetADMatrix(filepath2);
-					int[] joinfields = GetCommonFields(ad1, ad2, node1, node2, tagnames1, tagnames2);
-
-//					commonfields = GetCommonFields(ad1, ad2, node1, node2);1
-					*/
 
 					System.out.println();
 
@@ -1987,29 +1819,17 @@ public class XMLTest// implements  GlobalConst
 					System.out.println("\nChecking the data for heap file 2");
 					xmldvr.ScanHeapFile(tagparams2.GetTagParams(),countonly);
 
-					//Join the two heap files obtained, based on the node given
-//					TagparamField result = null;
 
-//					for(int i = 0 ; i < commonfields.length ; i++){
-
-//						if(commonfields[i] == -1)
-//							continue;
 
 					NodeContext result = null;
 					List<Integer> ltfieldtoomit  = new ArrayList<Integer>();
-//					xmldvr.GetOmitList(tagparams1.GetFldtrk(),tagparams2.GetFldtrk(),ltfieldtoomit);
 
 					System.out.println("Field to omit list will now be : ");
 					for(int i = 0 ; i < ltfieldtoomit.size() ; i++)
 						System.out.print(ltfieldtoomit.get(i) + " ");
 					System.out.println();
 
-					/*
-					System.out.println("Choice 1 : fields to be joined on are");
-					for(int i = 0 ; i < joinfields.length ; i++)
-						if(joinfields[i] != -1)
-							System.out.println("i = " + i +" joinfields[i] = " + joinfields[i]);
-					*/
+
 					List<Integer> fldtrk1 = tagparams1.GetFldtrk();
 					List<Integer> fldtrk2 = tagparams2.GetFldtrk();
 					int joinfield1 = 3*fldtrk1.indexOf(node1)+2;
@@ -2161,27 +1981,11 @@ public class XMLTest// implements  GlobalConst
 					NodeContext[] result;
 					result = xmldvr.ReadQueryAndExecute(MainTagPair, QueryFileName);
 					System.out.println("results for query file 1 have been obtained");
-		//			xmldvr.printItr(result);  //print all the heap file query results
-
 					System.out.println(PageCounter.getreads());
 					System.out.println(PageCounter.getwrites());
-
-		//			System.out.println("Count of xml tags file in query file 1 : ");
-		//			xmldvr.ScanHeapFile(MainTagPair,true);
-
 					xmldvr.queryplancount++;			//indicates we are starting query plan for second file.
-
-	//				result = xmldvr.ExecuteQueryPlan1(MainTagPair, QueryFileName2);
-	//				System.out.println("Computation for query file 2 has been completed ");
-		//			xmldvr.ScanHeapFile(MainTagPair,true);
-		//			System.out.println("Count of xml tags file in query file 2 : ");
-		//			xmldvr.ScanHeapFile(MainTagPair,true);
-
-		//			xmldvr.ScanHeapFile(result, countonly);
-		//			System.out.println("Query 2 computations have been completed");
 					xmldvr.printItr(result[0]);
 					System.out.println("Calling clean up...");
-		//			xmldvr.cleanup();
 				}
 				catch (Exception e) {
 				e.printStackTrace();
