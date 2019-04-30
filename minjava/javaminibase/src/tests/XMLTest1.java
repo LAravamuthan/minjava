@@ -1,21 +1,21 @@
 package tests;
 
-import iterator.*;
-import heap.*;
+import btree.IntervalKey;
+import btree.IntervalTFileScan;
+import btree.IntervalTreeFile;
+import bufmgr.PageCounter;
 import global.*;
-import index.*;
-import diskmgr.*;
-import bufmgr.*;
-import btree.*;
-import catalog.*;
+import heap.*;
+import index.IntervalIndexScan;
 import iterator.Iterator;
+import iterator.*;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.*;
-import java.lang.*;
-import java.nio.charset.*;
-
-import static tests.XMLTest.GetDistinctValues;
 /*
 This class keeps track of a heap file and its field after a join has been made between two tables
 when we join two table we keep track of the fields which are present in the resultant table so when a new table is added we can eleminate the duplicate columns
@@ -31,6 +31,8 @@ class XMLDriver1 implements GlobalConst {
     private Tuple xmlDriverTuple = null;
 
     private Heapfile hpfile = null;
+    private IntervalTreeFile btIntervalTreeFile = null;
+    private String intervalTreeFileName;
     private RID rid = null;
     private String hpfilename;
     public String[] tagnames;
@@ -49,6 +51,7 @@ class XMLDriver1 implements GlobalConst {
             this.IntervalNo = 1;
             this.rid = null;
             this.hpfilename = "XMLtags.in";
+            this.intervalTreeFileName = "XMLtagsBTIndex";
 
             //Attrtypes , these are used for the sethdr function which helps set the offset to where the data is stored
             this.Stypes = new AttrType[3];
@@ -82,6 +85,7 @@ class XMLDriver1 implements GlobalConst {
 
             try {
                 this.hpfile = new Heapfile(this.hpfilename);
+                this.btIntervalTreeFile = new IntervalTreeFile(this.intervalTreeFileName, AttrType.attrInterval, 8, 1);
             } catch (Exception e) {
                 System.err.println("*** error in Heapfile constructor ***");
                 e.printStackTrace();
@@ -161,7 +165,8 @@ class XMLDriver1 implements GlobalConst {
         }
 
         try {
-            this.rid = this.hpfile.insertRecord(this.xmlDriverTuple.returnTupleByteArray()); //store it in the heap file
+            this.rid = this.hpfile.insertRecord(this.xmlDriverTuple.returnTupleByteArray()); //store it in the heap file'
+            //this.btIntervalTreeFile.insert(new IntervalKey(this.xmlDriverTuple.getIntervalFld(2)), this.rid);
             intervaltype temp = this.xmlDriverTuple.getIntervalFld(2);
         } catch (Exception e) {
             System.err.println("*** error in Heapfile.insertRecord() ***");
@@ -185,7 +190,8 @@ class XMLDriver1 implements GlobalConst {
             }
             this.reader.close();
             tgpr = new NodeContext(this.hpfile, this.rid, this.hpfilename, GetAttrType(), GetStrSizes(), GetTupleSize());
-
+            //tgpr.setBtf(this.btIntervalTreeFile);
+            //tgpr.setIntervalTreeIndexString(this.intervalTreeFileName);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -366,16 +372,27 @@ class XMLDriver1 implements GlobalConst {
             }
         }
 
+        if(tag2.getBtf() != null && indexToBeUsed){
+            try {
+                IntervalIndexScan temp = new IntervalIndexScan(new IndexType(IndexType.Interval), taghpfilename2, tag2.getIntervalTreeIndexString(),
+                        tagattrtype2, tagattrsize2, tagattrtype2.length, projlist_tag1.length, projlist_tag1, null, 2, false);  //file scan pointer
+                tag2.setItr(temp);
+            } catch (Exception e) {
+                System.err.println("" + e);
+                e.printStackTrace();
+            }
+        }
+
 
         Iterator nlj = null;
         try {
             if(fscan == null){
                 fscan = tag1.getItr();
             }
-            if(taghpfilename2 != null || tag1.getBtf() != null){
-                nlj = new NestedLoopsJoins(tagattrtype1, outer, tagattrsize1, tagattrtype2, inner, tagattrsize2, 10, fscan, taghpfilename2, outFilter, null, projlist_tag2, outer + inner - (3 * ltfieldtoomit.size()));
+            if((taghpfilename2 != null && tag2.getItr() == null) || tag1.getBtf() != null){
+                nlj = new NestedLoopsJoins(tagattrtype1, outer, tagattrsize1, tagattrtype2, inner, tagattrsize2, 2000, fscan, taghpfilename2, outFilter, null, projlist_tag2, outer + inner - (3 * ltfieldtoomit.size()));
             }else{
-                nlj = new SortMerge(tagattrtype1, outer, tagattrsize1, tagattrtype2, inner, tagattrsize2, joinfieldno1, 8, joinfieldno2, 8, 10, fscan, tag2.getItr(), false, false,
+                nlj = new SortMerge(tagattrtype1, outer, tagattrsize1, tagattrtype2, inner, tagattrsize2, joinfieldno1, 8, joinfieldno2, 8, 2000, fscan, tag2.getItr(), false, false,
                         ascending, outFilter, projlist_tag2, outer + inner - (3 * ltfieldtoomit.size()));
             }
         } catch (Exception e) {
@@ -531,10 +548,10 @@ class XMLDriver1 implements GlobalConst {
     //ContainOrEquality == true check containment or else check equality
 
     public TagparamField Query(NodeContext[] ExtractTags, String[] Joins) {
-        return Query(ExtractTags, Joins, true);
+        return Query(ExtractTags, Joins, true, new StringBuilder());
     }
 
-    public TagparamField Query(NodeContext[] ExtractTags, String[] Joins, boolean toBeIndexed) {
+    public TagparamField Query(NodeContext[] ExtractTags, String[] Joins, boolean toBeIndexed, StringBuilder as) {
         NodeContext ResultTagPar = null;
         NodeContext TempTagPar = null;
         List<Integer> FieldTracker = new ArrayList<Integer>();
@@ -555,18 +572,49 @@ class XMLDriver1 implements GlobalConst {
 
             //Note that initially field to omit list would be empty. This field to omit thing is mainly being done to create projections.
             TempTagPar = null;
-            if (tagnames[ftfld].equalsIgnoreCase("*")) {                                                //not a star query
+            if (tagnames[ftfld].equalsIgnoreCase("*")) {
+
+                if (toBeIndexed) {
+                    as.append("Indexed ");
+                }
+                as.append("NLJ join * with " + tagnames[scfld] + " : ");
+                as.append("\n");
+
                 TempTagPar = JoinTwoFields(GlobalMainTagPair, 2, ExtractTags[scfld], 2, ltfieldtoomit, relflag, true, toBeIndexed);
             } else if (tagnames[scfld].equalsIgnoreCase("*")) {
-                System.out.println("Entered here for * based join");
+
+                if (toBeIndexed) {
+                    as.append("Indexed ");
+                }
+                as.append("NLJ join " + tagnames[ftfld] + " with * : ");
+                as.append("\n");
                 TempTagPar = JoinTwoFields(ExtractTags[ftfld], 2, GlobalMainTagPair, 2, ltfieldtoomit, relflag, true, toBeIndexed);
             } else {
+                if (toBeIndexed) {
+                    as.append("Indexed ");
+                }
+                as.append("NLJ join " + tagnames[ftfld] + " with " + tagnames[scfld] + " : ");
+                as.append("\n");
+
                 TempTagPar = JoinTwoFields(ExtractTags[ftfld], 2, ExtractTags[scfld], 2, ltfieldtoomit, relflag, true, toBeIndexed);
+
             }
             if (ResultTagPar != null) {
                 fields = GetFieldsToJoin(FieldTracker, ftfld, scfld); //get which fields need to be joined
                 ltfieldtoomit = GetMyOmitList(FieldTracker, ltfieldtoomit, ftfld, scfld); //get which fields need to be omitted
                 boolean countonly = true;
+
+                StringBuilder str = new StringBuilder();
+
+                for(int index = 0; index < FieldTracker.size(); index++){
+                    if(index == 0){
+                        str.append(tagnames[FieldTracker.get(index)]);
+                    }else{
+                        str.append(", " + tagnames[FieldTracker.get(index)]);
+                    }
+                }
+                as.append("SORT MERGE join " + str + " with " + tagnames[ftfld ] + ", " + tagnames[scfld] + " : ");
+                as.append("\n");
                 ResultTagPar = JoinTwoFields(ResultTagPar, fields[0], TempTagPar, fields[1], ltfieldtoomit, false, false);
                 AddField(FieldTracker, ftfld);
                 AddField(FieldTracker, scfld);
@@ -683,14 +731,19 @@ class XMLDriver1 implements GlobalConst {
         TagparamField[] tgprarr = new TagparamField[noOfPlans];
 
         //PCounter.initialize();
-
-        tgprarr[0] = Query(AllTags, NumberofJoins);  //query 1
+        StringBuilder queryPlanDescription = new StringBuilder();
+        tgprarr[0] = Query(AllTags, NumberofJoins, true, queryPlanDescription);  //query 1
         System.out.println("Query plan 1 Executed");
+        System.out.println("Query plan 1 Description is as Follows");
+        System.out.println(queryPlanDescription);
         System.out.println("reads : " +  PageCounter.getreads() + " writes  : " +  PageCounter.getwrites());
 
         if(noOfPlans > 1){
-            tgprarr[1] = Query(AllTags, NumberofJoins);  //query plan 2
+            queryPlanDescription = new StringBuilder();
+            tgprarr[1] = Query(AllTags, NumberofJoins, false, queryPlanDescription);  //query plan 2
             System.out.println("Query plan 2 Executed");
+            System.out.println("Query plan 2 Description is as Follows");
+            System.out.println(queryPlanDescription);
             System.out.println("reads : " +  PageCounter.getreads() + " writes  : " +  PageCounter.getwrites());
         }
 
@@ -904,15 +957,15 @@ class XMLDriver1 implements GlobalConst {
 
     void SortByFld(NodeContext context, int node)
     {
-        System.out.println("Entered the sort function...");
-        System.out.println("name of file : " + context.getNodeHeapFileName());
+        System.out.println("Sort function...");
+        //System.out.println("name of file : " + context.getNodeHeapFileName());
         AttrType[] attrtypes = context.getTupleAtrTypes();
         short[] strsizes = context.getTupleStringSizes();
         short numcolumns = (short)attrtypes.length;
         int sortfldlen = 8;            //the length of interval field.
         TupleOrder sortorder = new TupleOrder(TupleOrder.Ascending);
         TupleOrder sortorder1 = new TupleOrder(TupleOrder.Descending);
-        int npages = 10;
+        int npages = 2000;
         int outer = numcolumns;
         List<Integer> fieldstoomit = new ArrayList<Integer>();
 
@@ -949,67 +1002,6 @@ class XMLDriver1 implements GlobalConst {
             e.printStackTrace();
         }
     }
-
-
-    //This function executes ONLY query plan 1, and instead of returning the NodeContext object, it returns the TagParam object which has the field tracker information.
-    //This woud be needed for joining the two files, as we need to know where a given field is in the table.
-    public TagparamField ExecuteQueryPlan1(NodeContext MainTagpair, String Queryfilename)
-    {
-        NodeContext QueryResult = null;
-        List<String> querylinelist = null;
-        try
-        {
-            String line;
-            querylinelist = new ArrayList<String>();
-            BufferedReader queryreader = new BufferedReader(new FileReader(Queryfilename));
-            while ((line = queryreader.readLine()) != null)
-            {
-                querylinelist.add(line);
-            }
-        }
-
-        catch(IOException e)
-        {
-            e.printStackTrace();
-        }
-
-        int numberofnodes = Integer.parseInt(querylinelist.get(0));
-
-        //populate ancestor descendant matrix for a given pattern tree.
-        String[] searchtags = new String[numberofnodes];
-        for(int i=1;i<=numberofnodes;i++)
-        {
-            searchtags[i-1] = querylinelist.get(i).length() > 5 ? querylinelist.get(i).substring(0, 5) : querylinelist.get(i);
-        }
-
-        String[] NumberofJoins = new String[querylinelist.size()-numberofnodes-1];
-        for(int i=0;i<NumberofJoins.length;i++)
-        {
-            NumberofJoins[i] = querylinelist.get(numberofnodes+1+i);
-            String[] anc_desc = NumberofJoins[i].split(" ");
-            int anc = Integer.parseInt(anc_desc[0])-1;
-            int desc = Integer.parseInt(anc_desc[1])-1;
-            System.out.println("Ancestor is " + anc + " It's descendant is : " + desc);
-        }
-
-        NodeContext[] AllTags = ExtractTagToHeap(MainTagpair, searchtags);  //get all the heap file for each tag
-        System.out.println("File Parsing Completed");
-        TagparamField tagparams = QueryPlan1(AllTags, NumberofJoins);
-        return tagparams;
-    }
-
-    //This function just runs one query plan, instead of the 3 as seen in the MakeQueryPlanner
-    public TagparamField QueryPlan1(NodeContext[] AllTags, String[] NumberofJoins)
-    {
-        TagparamField tf1 = null;
-        tf1 = Query(AllTags, NumberofJoins);  //query 1
-        System.out.println("Query 1 executed");
-        System.out.printf("reads = %s writes = %s\n", PageCounter.getreads(), PageCounter.getwrites());
-        return tf1;
-    }
-
-
-
 
 }
 //parentchildflag == true check parent child or else check ancester descendant
@@ -1110,256 +1102,245 @@ public class XMLTest1// implements  GlobalConst
     }
 
 
-    public static void main(String [] argvs) {
-        System.out.println("---------------------MENU------------------------");
-        System.out.println("What would you like to do? ");
-        System.out.println("1. Do a node join between two heap files based on node id : (NJ i j)");
-        System.out.println("2. Do a tag join between two heap files based on node id : (TJ tag)");
-        System.out.println("3. Sort a file based on a given tag : (SRT i)");
-        System.out.println("4. Group a file based on a given tag : (GRP i)");
-        System.out.println("5. Select a node on a given tag : (GRP i)");
-        System.out.println("Enter your choice : ");
-
-        int choice = 0;
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-        try {
-            choice = Integer.parseInt(br.readLine());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+    public static void main(String[] argvs) {
 
         String DataFileName = codeBaseFolder + "xml_sample_data.xml"; //initializing the data file name.
         XMLDriver1 xmldvr = new XMLDriver1(DataFileName);
-        NodeContext	MainTagPair = xmldvr.ReadFileLbyLStoreInHeapFile();
+        NodeContext MainTagPair = xmldvr.ReadFileLbyLStoreInHeapFile();
         xmldvr.GlobalMainTagPair = MainTagPair;
 
-        if (choice == 1) {
-
-            String file1, file2;
-            int fld1, fld2;
-
-            try{
-                System.out.println("Enter the name of first pattern tree file (Please ensure its in the src/tests folder ): ");
-                file1 = br.readLine();
-                System.out.println("Enter the name of second pattern tree file (Please ensure its in the src/tests folder ): ");
-                file2 = br.readLine();
-
-                System.out.println("Enter node ID from first table : ");
-                int node1 = Integer.parseInt(br.readLine())-1;
-                System.out.println("Enter node ID from second table : ");
-                String s = br.readLine();
-                int node2 = Integer.parseInt(s) - 1;
 
 
-                String filepath1 = inputPatternTreeFilesFolder + file1;
-                String filepath2 = inputPatternTreeFilesFolder + file2;
-                boolean countonly = false;
 
-                TagparamField tagparams1, tagparams2;
-                String[] tagnames1, tagnames2;						//the tag names MAY change every time a new query file is provided!!
+        while (true) {
+            System.out.println("---------------------MENU------------------------");
+            System.out.println("What would you like to do? ");
+            System.out.println("1. Do a node join between two heap files based on node id : (NJ i j)");
+            System.out.println("2. Do a tag join between two heap files based on node id : (TJ tag)");
+            System.out.println("3. Sort a file based on a given tag : (SRT i)");
+            System.out.println("4. Group a file based on a given tag : (GRP i)");
+            System.out.println("5. Select a node on a given tag : (GRP i)");
+            System.out.println("Enter your choice : ");
 
-                //get result table for pattern tree 1.
-                int numberofnodes1 = xmldvr.GetNumberOfNodes(filepath1);
-                int numberofnodes2 = xmldvr.GetNumberOfNodes(filepath2);
+            int choice = 0;
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-                System.out.println("Number of nodes 1 : " + numberofnodes1 + " Number of nodes 2:  " + numberofnodes2);
-
-                tagparams1 = xmldvr.ReadQueryAndExecute(MainTagPair,filepath1, 1)[0];
-                tagnames1 = xmldvr.tagnames;
-
-                //get result table for pattern tree 2.
-                xmldvr.queryplancount++;			//indicates we are starting query plan for second file.
-
-                tagparams2 = xmldvr.ReadQueryAndExecute(MainTagPair,filepath2, 1)[0];
-                tagnames2 = xmldvr.tagnames;
-
-                //Now in the below code, we compute all the common nodes on which we will need to join, given a certain node.
-
-                System.out.println();
-
-                System.out.println("Query plans executed successfully!");
-
-                NodeContext result = null;
-                List<Integer> ltfieldtoomit  = new ArrayList<Integer>();
-
-                System.out.println("Field to omit list will now be : ");
-                for(int i = 0 ; i < ltfieldtoomit.size() ; i++)
-                    System.out.print(ltfieldtoomit.get(i) + " ");
-                System.out.println();
-
-
-                List<Integer> fldtrk1 = tagparams1.GetFldtrk();
-                List<Integer> fldtrk2 = tagparams2.GetFldtrk();
-                int joinfield1 = 3*fldtrk1.indexOf(node1)+2;
-                int joinfield2 = 3*fldtrk2.indexOf(node2)+2;
-                System.out.println("join field 1 = " + joinfield1 + " join field 2 = " + joinfield2);
-                result = xmldvr.JoinTwoFields(tagparams1.GetTagParams(),joinfield1,tagparams2.GetTagParams(),joinfield2,ltfieldtoomit,false,false);
-                xmldvr.printItr(result);
-
-            }
-            catch(Exception e){
-                e.printStackTrace();
-            }
-
-        }
-
-        else if (choice == 2) {
-
-            String file1, file2;
-            int fld1, fld2;
-
-            try{
-                System.out.println("Enter the name of first pattern tree file (Please ensure its in the src/tests folder ): ");
-                file1 = br.readLine();
-                System.out.println("Enter the name of second pattern tree file (Please ensure its in the src/tests folder ): ");
-                file2 = br.readLine();
-
-                int node1, node2;
-                System.out.println("Enter the first node ID : ");
-                node1 = Integer.parseInt(br.readLine())-1;
-                System.out.println("Enter the second node ID : ");
-                node2 = Integer.parseInt(br.readLine())-1;
-
-                String filepath1 = inputPatternTreeFilesFolder + file1;
-                String filepath2 = inputPatternTreeFilesFolder + file2;
-
-                TagparamField tagparams1, tagparams2;
-                String[] tagnames1, tagnames2;
-                tagparams1 = xmldvr.ReadQueryAndExecute(MainTagPair,filepath1, 1)[0];
-                tagnames1 = xmldvr.tagnames;
-
-                xmldvr.queryplancount++;			//indicates we are starting query plan for second file.
-
-                tagparams2 = xmldvr.ReadQueryAndExecute(MainTagPair,filepath2, 1)[0];
-                tagnames2 = xmldvr.tagnames;
-
-                System.out.println("Join on Tag executed successfully!");
-
-                //Join the two heap files obtained, based on the node given
-                List<Integer> ltfieldtoomit = new ArrayList<Integer>();
-
-                List<Integer> fldtrk1 = tagparams1.GetFldtrk();				//get the index where the node is stored in both files.
-                List<Integer> fldtrk2 = tagparams2.GetFldtrk();
-                int pos1 = 3*fldtrk1.indexOf(node1) + 3;				//string based join this time
-                int pos2 = 3*fldtrk2.indexOf(node2) + 3;
-
-                NodeContext result = xmldvr.JoinTwoFields(tagparams1.GetTagParams(),pos1,tagparams2.GetTagParams(),pos2,ltfieldtoomit,false,false);
-                System.out.println("results from node based join are : \n");
-                xmldvr.printItr(result);
-            }
-            catch(Exception e){
-                e.printStackTrace();
-            }
-        }
-
-        else if(choice == 3) {
-            TagparamField result;
             try {
+                choice = Integer.parseInt(br.readLine());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            if (choice == 1) {
+
+                String file1, file2;
+                int fld1, fld2;
+
+                try {
+                    System.out.println("Enter the name of first pattern tree file (Please ensure its in the src/tests folder ): ");
+                    file1 = br.readLine();
+                    System.out.println("Enter the name of second pattern tree file (Please ensure its in the src/tests folder ): ");
+                    file2 = br.readLine();
+
+                    System.out.println("Enter node ID from first table : ");
+                    int node1 = Integer.parseInt(br.readLine()) - 1;
+                    System.out.println("Enter node ID from second table : ");
+                    String s = br.readLine();
+                    int node2 = Integer.parseInt(s) - 1;
+
+
+                    String filepath1 = inputPatternTreeFilesFolder + file1;
+                    String filepath2 = inputPatternTreeFilesFolder + file2;
+                    boolean countonly = false;
+
+                    TagparamField tagparams1, tagparams2;
+                    String[] tagnames1, tagnames2;                        //the tag names MAY change every time a new query file is provided!!
+
+                    //get result table for pattern tree 1.
+                    int numberofnodes1 = xmldvr.GetNumberOfNodes(filepath1);
+                    int numberofnodes2 = xmldvr.GetNumberOfNodes(filepath2);
+
+                    System.out.println("Number of nodes 1 : " + numberofnodes1 + " Number of nodes 2:  " + numberofnodes2);
+
+                    tagparams1 = xmldvr.ReadQueryAndExecute(MainTagPair, filepath1, 1)[0];
+                    tagnames1 = xmldvr.tagnames;
+
+                    //get result table for pattern tree 2.
+                    xmldvr.queryplancount++;            //indicates we are starting query plan for second file.
+
+                    tagparams2 = xmldvr.ReadQueryAndExecute(MainTagPair, filepath2, 1)[0];
+                    tagnames2 = xmldvr.tagnames;
+
+                    //Now in the below code, we compute all the common nodes on which we will need to join, given a certain node.
+
+                    System.out.println();
+
+                    System.out.println("Query plans executed successfully!");
+
+                    NodeContext result = null;
+                    List<Integer> ltfieldtoomit = new ArrayList<Integer>();
+
+                    System.out.println("Field to omit list will now be : ");
+                    for (int i = 0; i < ltfieldtoomit.size(); i++)
+                        System.out.print(ltfieldtoomit.get(i) + " ");
+                    System.out.println();
+                    List<Integer> fldtrk1 = tagparams1.GetFldtrk();
+                    List<Integer> fldtrk2 = tagparams2.GetFldtrk();
+                    int joinfield1 = 3 * fldtrk1.indexOf(node1) + 2;
+                    int joinfield2 = 3 * fldtrk2.indexOf(node2) + 2;
+                    System.out.println("join field 1 = " + joinfield1 + " join field 2 = " + joinfield2);
+                    result = xmldvr.JoinTwoFields(tagparams1.GetTagParams(), joinfield1, tagparams2.GetTagParams(), joinfield2, ltfieldtoomit, false, false);
+                    xmldvr.printItr(result);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else if (choice == 2) {
+
+                String file1, file2;
+                int fld1, fld2;
+
+                try {
+                    System.out.println("Enter the name of first pattern tree file (Please ensure its in the src/tests folder ): ");
+                    file1 = br.readLine();
+                    System.out.println("Enter the name of second pattern tree file (Please ensure its in the src/tests folder ): ");
+                    file2 = br.readLine();
+
+                    int node1, node2;
+                    System.out.println("Enter the first node ID : ");
+                    node1 = Integer.parseInt(br.readLine()) - 1;
+                    System.out.println("Enter the second node ID : ");
+                    node2 = Integer.parseInt(br.readLine()) - 1;
+
+                    String filepath1 = inputPatternTreeFilesFolder + file1;
+                    String filepath2 = inputPatternTreeFilesFolder + file2;
+
+                    TagparamField tagparams1, tagparams2;
+                    String[] tagnames1, tagnames2;
+                    tagparams1 = xmldvr.ReadQueryAndExecute(MainTagPair, filepath1, 1)[0];
+                    tagnames1 = xmldvr.tagnames;
+
+                    xmldvr.queryplancount++;            //indicates we are starting query plan for second file.
+
+                    tagparams2 = xmldvr.ReadQueryAndExecute(MainTagPair, filepath2, 1)[0];
+                    tagnames2 = xmldvr.tagnames;
+
+                    System.out.println("Join on Tag executed successfully!");
+
+                    //Join the two heap files obtained, based on the node given
+                    List<Integer> ltfieldtoomit = new ArrayList<Integer>();
+
+                    List<Integer> fldtrk1 = tagparams1.GetFldtrk();                //get the index where the node is stored in both files.
+                    List<Integer> fldtrk2 = tagparams2.GetFldtrk();
+                    int pos1 = 3 * fldtrk1.indexOf(node1) + 3;                //string based join this time
+                    int pos2 = 3 * fldtrk2.indexOf(node2) + 3;
+
+                    NodeContext result = xmldvr.JoinTwoFields(tagparams1.GetTagParams(), pos1, tagparams2.GetTagParams(), pos2, ltfieldtoomit, false, false);
+                    System.out.println("results from node based join are : \n");
+                    xmldvr.printItr(result);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (choice == 3) {
+                TagparamField result;
+                try {
+                    System.out.println("Enter the name of pattern tree file (Please ensure its in the src/tests folder ): ");
+                    String file = br.readLine();
+                    int[][] ad1 = null;
+                    String filepath = inputPatternTreeFilesFolder + file;
+                    result = xmldvr.ReadQueryAndExecute(MainTagPair, filepath, 1)[0];
+                    System.out.println("Please enter the tag on which you want to sort");
+                    int node = Integer.parseInt(br.readLine()) - 1;
+                    xmldvr.SortByFld(result.GetTagParams(), node);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (choice == 4) {
+                br = new BufferedReader(new InputStreamReader(System.in));
                 System.out.println("Enter the name of pattern tree file (Please ensure its in the src/tests folder ): ");
-                String file = br.readLine();
-                int[][] ad1 = null;
-                String filepath = inputPatternTreeFilesFolder+file;
+
+                String file = "";
+                try {
+                    file = br.readLine();
+                } catch (IOException ie) {
+                    ie.printStackTrace();
+                }
+                TagparamField result;
+                String filepath = inputPatternTreeFilesFolder + file;
                 result = xmldvr.ReadQueryAndExecute(MainTagPair, filepath, 1)[0];
-                System.out.println("Please enter the tag on which you want to sort");
-                int node = Integer.parseInt(br.readLine())-1;
-                xmldvr.SortByFld(result.GetTagParams(),node);
-            }
-            catch(Exception e){
-                e.printStackTrace();
-            }
-        }
-        else if(choice == 4){
-            br = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("Enter the name of pattern tree file (Please ensure its in the src/tests folder ): ");
+                System.out.println("Please enter the node id on which to join");
 
-            String file = "";
-            try {
-                file = br.readLine();
-            }
-            catch(IOException ie){
-                ie.printStackTrace();
-            }
-            TagparamField result;
-            String filepath =inputPatternTreeFilesFolder+file;
-            result = xmldvr.ReadQueryAndExecute(MainTagPair, filepath, 1)[0];
-            System.out.println("Please enter the node id on which to join");
+                int node = -1;
+                try {
+                    node = Integer.parseInt(br.readLine()) - 1;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-            int node = -1;
-            try {
-                node = Integer.parseInt(br.readLine()) - 1;
-            }
-            catch(Exception e){
-                e.printStackTrace();
-            }
+                TagparamField tagvalues = GetDistinctValues1(result, node);  //get the distinct values for this node.
+                int pos = 3 * result.GetFldtrk().indexOf(node) + 3;                //get the position of string column for given node.
+                List<Integer> ltfieldtoomit = new ArrayList<Integer>();
+                System.out.println("node = " + node + " pos = " + pos);
+                result = xmldvr.ReadQueryAndExecute(MainTagPair, filepath, 1)[0];
+                NodeContext joinresult = xmldvr.JoinTwoFields(tagvalues.GetTagParams(), 1, result.GetTagParams(), pos, ltfieldtoomit, false, false);
+                System.out.println("\n\nFinal results after the join....");
+                xmldvr.printItr(joinresult);
+            } else if (choice == 5) {
+                br = new BufferedReader(new InputStreamReader(System.in));
+                System.out.println("Enter the name of pattern tree file (Please ensure its in the src/tests folder ): ");
 
-            TagparamField tagvalues = GetDistinctValues1(result,node);  //get the distinct values for this node.
-            int pos = 3*result.GetFldtrk().indexOf(node) + 3;				//get the position of string column for given node.
-            List<Integer> ltfieldtoomit = new ArrayList<Integer>();
-            System.out.println("node = " + node + " pos = " + pos);
-            result = xmldvr.ReadQueryAndExecute(MainTagPair, filepath, 1)[0];
-            NodeContext joinresult = xmldvr.JoinTwoFields(tagvalues.GetTagParams(), 1, result.GetTagParams(), pos, ltfieldtoomit, false, false);
-            System.out.println("\n\nFinal results after the join....");
-            xmldvr.printItr(joinresult);
-        }
+                String file = "";
+                try {
+                    file = br.readLine();
+                } catch (IOException ie) {
+                    ie.printStackTrace();
+                }
+                TagparamField result;
+                String filepath = inputPatternTreeFilesFolder + file;
+                result = xmldvr.ReadQueryAndExecute(MainTagPair, filepath, 1)[0];
+                System.out.println("Please enter the node id which you want to select");
 
+                int node = -1;
+                try {
+                    node = Integer.parseInt(br.readLine()) - 1;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-        else if(choice == 5){
-            br = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("Enter the name of pattern tree file (Please ensure its in the src/tests folder ): ");
+                selectionOperator(result, node);  //get the distinct values for this node.
+            } else if (choice == 0) {
+                break;
+            } else {
+                br = new BufferedReader(new InputStreamReader(System.in));
+                System.out.println("Which pattern tree you want to use ");
+                String filename = "";
+                try {
+                    filename = br.readLine();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-            String file = "";
-            try {
-                file = br.readLine();
-            }
-            catch(IOException ie){
-                ie.printStackTrace();
-            }
-            TagparamField result;
-            String filepath =inputPatternTreeFilesFolder+file;
-            result = xmldvr.ReadQueryAndExecute(MainTagPair, filepath, 1)[0];
-            System.out.println("Please enter the node id which you want to select");
+                String QueryFileName = inputPatternTreeFilesFolder + filename;
+                try {
+                    boolean countonly = false;
 
-            int node = -1;
-            try {
-                node = Integer.parseInt(br.readLine()) - 1;
-            }
-            catch(Exception e){
-                e.printStackTrace();
-            }
-
-            selectionOperator(result,node);  //get the distinct values for this node.
-        }
-
-        else {
-            br = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("Which pattern tree you want to use ");
-            String filename = "";
-            try {
-                filename = br.readLine();
-            }
-            catch(Exception e){
-                e.printStackTrace();
-            }
-
-            String QueryFileName = inputPatternTreeFilesFolder + filename;
-            try {
-                boolean countonly = false;
-
-                TagparamField[] result;
-                result = xmldvr.ReadQueryAndExecute(MainTagPair, QueryFileName, 3);
-                System.out.println("results for query file 1 have been obtained");
-                System.out.println(PageCounter.getreads());
-                System.out.println(PageCounter.getwrites());
-                xmldvr.queryplancount++;			//indicates we are starting query plan for second file.
-                xmldvr.printItr(result[0].GetTagParams());
-                System.out.println("Calling clean up...");
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-                System.err.println("Error encountered during XML tests:\n");
-                Runtime.getRuntime().exit(1);
+                    TagparamField[] result;
+                    result = xmldvr.ReadQueryAndExecute(MainTagPair, QueryFileName, 3);
+                    System.out.println("results for query file 1 have been obtained");
+                    System.out.println(PageCounter.getreads());
+                    System.out.println(PageCounter.getwrites());
+                    xmldvr.queryplancount++;            //indicates we are starting query plan for second file.
+                    xmldvr.printItr(result[0].GetTagParams());
+                    xmldvr.printItr(result[1].GetTagParams());
+                    xmldvr.printItr(result[2].GetTagParams());
+                    System.out.println("Calling clean up...");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.err.println("Error encountered during XML tests:\n");
+                    Runtime.getRuntime().exit(1);
+                }
             }
         }
     }

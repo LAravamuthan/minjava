@@ -1526,7 +1526,7 @@ class XMLDriver implements GlobalConst {
 	void SortByFld(NodeContext context, int node)
 	{
 		System.out.println("Entered the sort function...");
-		System.out.println("name of file : " + context.getNodeHeapFileName());
+		//System.out.println("name of file : " + context.getNodeHeapFileName());
 		AttrType[] attrtypes = context.getTupleAtrTypes();
 		short[] strsizes = context.getTupleStringSizes();
 		short numcolumns = (short)attrtypes.length;
@@ -1741,6 +1741,12 @@ public class XMLTest// implements  GlobalConst
 
 
 	public static void main(String [] argvs) {
+
+
+
+
+
+
 		System.out.println("---------------------MENU------------------------");
 		System.out.println("What would you like to do? ");
 		System.out.println("1. Do a node join between two heap files based on node id : (NJ i j)");
@@ -1966,17 +1972,6 @@ public class XMLTest// implements  GlobalConst
 			String QueryFileName2 = System.getProperty("user.dir") + "/tests/input_files/pattern_tree2.txt";
 			try {
 				boolean countonly = false;
-
-				/*
-				NodeContext[] qresult = xmldvr.ReadQueryAndExecute(MainTagPair, QueryFileName);
-				for (int i = 0; i < qresult.length; i++) {
-					System.out.println("results for query plan : " + i + 1);
-					if (qresult[i] != null) {
-						xmldvr.ScanHeapFile(qresult[i], countonly);  //print all the heap file query results
-					}
-
-					xmldvr.cleanup();
-*/
 					int[][] ad = null;
 					NodeContext[] result;
 					result = xmldvr.ReadQueryAndExecute(MainTagPair, QueryFileName);

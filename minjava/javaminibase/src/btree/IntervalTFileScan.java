@@ -50,7 +50,6 @@ public class IntervalTFileScan  extends IndexFileScan
         PageId nextpage;
         try {
             if (leafPage == null) {
-                System.out.println("Leaf page is null");
                 return null;
             }
 
