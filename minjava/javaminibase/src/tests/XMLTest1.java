@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.util.*;
 /*
@@ -43,6 +44,16 @@ class XMLDriver1 implements GlobalConst {
     NodeContext GlobalMainTagPair;
     public int queryplancount = 0;
     public int amt_of_mem = 100;
+    public HashMap<String, ArrayList<NodeContext>> ptToNodeContextList= new HashMap<String, ArrayList<NodeContext>>();
+
+
+    public HashMap<String, ArrayList<NodeContext>> getPtToNodeContextList() {
+        return ptToNodeContextList;
+    }
+
+    public void setPtToNodeContextList(HashMap<String, ArrayList<NodeContext>> ptToNodeContextList) {
+        this.ptToNodeContextList = ptToNodeContextList;
+    }
 
     public int getAmt_of_mem() {
         return amt_of_mem;
@@ -800,7 +811,26 @@ class XMLDriver1 implements GlobalConst {
         for (int i = 0; i < NumberofJoins.length; i++) {
             NumberofJoins[i] = querylinelist.get(numberofnodes + 1 + i);
         }
-        NodeContext[] AllTags = ExtractTagToHeap(MainTagpair, searchtags);  //get all the heap file for each tag
+
+
+        NodeContext[] AllTags = new NodeContext[numberofnodes];
+
+        if(getPtToNodeContextList().get(Queryfilename) != null){
+            System.out.println("Retrieved ho ho !!");
+            ArrayList<NodeContext> arrayListNC = getPtToNodeContextList().get(Queryfilename);
+            int i = 0;
+            for (NodeContext nc : arrayListNC){
+                AllTags[i] = nc;
+                i++;
+            }
+        }else{
+            AllTags = ExtractTagToHeap(MainTagpair, searchtags);  //get all the heap file for each tag
+            ArrayList<NodeContext> arNc = new ArrayList<NodeContext>();
+            for(int l = 0; l < AllTags.length; l++){
+                arNc.add(AllTags[l]);
+            }
+            getPtToNodeContextList().put(Queryfilename, arNc);
+        }
 
         System.out.println("XML File Read");
 
@@ -1024,6 +1054,7 @@ public class XMLTest1// implements  GlobalConst
     public static String codeBaseTestsFolder = "/home/aravamuthan/Documents/codebase/minjava/javaminibase/src/tests/";
     public static String codeBaseFolder = "/home/aravamuthan/Documents/codebase/minjava/javaminibase/";
 
+
     static TagparamField GetDistinctValues1(TagparamField table,int index){
 
 
@@ -1113,7 +1144,7 @@ public class XMLTest1// implements  GlobalConst
 
     public static void main(String[] argvs) {
 
-        String DataFileName = codeBaseFolder + "xml_sample_data.xml"; //initializing the data file name.
+        String DataFileName = codeBaseFolder + "test.xml"; //initializing the data file name.
         XMLDriver1 xmldvr = new XMLDriver1(DataFileName);
         NodeContext MainTagPair = xmldvr.ReadFileLbyLStoreInHeapFile();
         xmldvr.GlobalMainTagPair = MainTagPair;
