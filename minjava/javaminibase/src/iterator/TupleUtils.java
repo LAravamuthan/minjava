@@ -43,6 +43,7 @@ public class TupleUtils
       float t1_r,  t2_r;
       String t1_s, t2_s;
       intervaltype t1_it, t2_it;
+      int parentid;
       
       switch (fldType.attrType) 
 	{
@@ -85,9 +86,11 @@ public class TupleUtils
     try{
       t1_it = t1.getIntervalFld(t1_fld_no);
       t2_it = t2.getIntervalFld(t2_fld_no);
+      parentid = t2.getIntFld(t2_fld_no-1);
     }catch (FieldNumberOutOfBoundException e){
       throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
     }
+
     int s1 = t1_it.get_s();
     int e1 = t1_it.get_e();
     int s2 = t2_it.get_s();
@@ -102,7 +105,11 @@ public class TupleUtils
           if (e1 < e2) {
               if (e1 < s2) return -2; //left non overlap
               else return 3; //other overlap
-          } else return -1; //containment
+          } else if (parentid == s1) {
+          	      return -3;
+		  }else{
+				  return -1;
+          }
       } else {
           if (e2 < e1) {
               if (e2 < s1) return 2; //right non overlap

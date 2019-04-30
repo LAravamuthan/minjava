@@ -170,8 +170,11 @@ public class PredEval
 		  if (comp_res >= 0) op_res = true;
 		  break;
 		case AttrOperator.aopNOT:
-		  if (comp_res != 0) op_res = true;
-		  break;
+			if (comp_res != 0) op_res = true;
+			break;
+		case AttrOperator.aopPC:
+			if (comp_res == -3) op_res = true;
+			break;
 		default:
 		  break;
 		}

@@ -16,6 +16,7 @@ public class AttrOperator {
   public static final int aopNOT  = 6;
   public static final int aopNOP  = 7;
   public static final int opRANGE = 8; //defined this way in C++
+  public static final int aopPC = 9;
 
   public int attrOperator;
 

@@ -256,18 +256,17 @@ class XMLDriver1 implements GlobalConst {
     }
 
 
-
-
-
-    public CondExpr[] GenerateCondExpr(int opersymbfld1, int opersymbfld2, boolean ContainOrEquality) {
+    public CondExpr[] GenerateCondExpr(int opersymbfld1, int opersymbfld2, boolean ContainOrEquality , boolean relflag) {
         CondExpr[] outFilter = new CondExpr[1];
-
         outFilter[0] = new CondExpr();
         outFilter[0].next = null;
 
         if (ContainOrEquality) {
             outFilter[0].op = new AttrOperator(AttrOperator.aopLT);            //if you need to check containment
-        } else {
+        } else if(relflag){
+            outFilter[0].op = new AttrOperator(AttrOperator.aopPC);         //introduce a PC flag for comparing interval columns.
+        }
+        else {
             outFilter[0].flag = 0;
             outFilter[0].op = new AttrOperator(AttrOperator.aopEQ);        //if you need to check equality
         }
@@ -278,6 +277,13 @@ class XMLDriver1 implements GlobalConst {
         outFilter[0].operand2.symbol = new FldSpec(new RelSpec(RelSpec.innerRel), opersymbfld2);
 
         return outFilter;
+    }
+
+
+
+
+    public CondExpr[] GenerateCondExpr(int opersymbfld1, int opersymbfld2, boolean ContainOrEquality) {
+        return GenerateCondExpr(opersymbfld1, opersymbfld2, ContainOrEquality, false);
     }
 
     //This funtion joins the attr type of two table depending upon the projection specified
@@ -365,7 +371,7 @@ class XMLDriver1 implements GlobalConst {
 
 
         CondExpr[] outFilter = null;
-        outFilter = GenerateCondExpr(joinfieldno1, joinfieldno2, ContainOrEquality);    //generate condexpr for the two joining fields
+        outFilter = GenerateCondExpr(joinfieldno1, joinfieldno2, ContainOrEquality, parentchildflag);    //generate condexpr for the two joining fields
 
         JoinedTagAttrtype = JoinAttrtype(tagattrtype1, tagattrtype2, outer, projlist_tag2);
         JoinedTagsize = JoinAttrsize(tagattrsize1, tagattrsize2, ltfieldtoomit);
