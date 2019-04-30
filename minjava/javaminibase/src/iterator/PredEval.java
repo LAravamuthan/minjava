@@ -153,7 +153,7 @@ public class PredEval
 		  else if (comp_res > 0  && temp_ptr.flag == 1) op_res = true;
 		  break;
 		case AttrOperator.aopLT:
-		  if (comp_res == -1) op_res = true; //supporting attrinterval
+		  if (comp_res == -1 || comp_res == -3) op_res = true; //supporting attrinterval
 		  break;
 		case AttrOperator.aopGT:
 		  if (comp_res == -1) op_res = true; //supporting attrinterval
