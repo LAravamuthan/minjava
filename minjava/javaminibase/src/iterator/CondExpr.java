@@ -11,7 +11,7 @@ import global.*;
 
 public class CondExpr {
   
-  public int flag;
+  public int flag=0;
   /**
    * Operator like "<"
    */
