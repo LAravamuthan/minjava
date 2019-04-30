@@ -11,6 +11,7 @@ public class PageCounter {
 	}
 
 	public static void readIncrement() {
+		System.out.println("readCounter : "+ readCounter);
 		readCounter++;
 	}
 
@@ -19,6 +20,7 @@ public class PageCounter {
 	}
 
 	public static void writeIncrement() {
+		System.out.println("writeCounter : "+ writeCounter);
 		writeCounter++;
 	}
 

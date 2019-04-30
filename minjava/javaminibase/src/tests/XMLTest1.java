@@ -41,7 +41,19 @@ class XMLDriver1 implements GlobalConst {
     private int SizeofTuple;
     NodeContext GlobalMainTagPair;
     public int queryplancount = 0;
-    public int amt_of_mem = 100;
+    public int amt_of_mem = 1000;
+    public int filecount = 0;
+    public int operationcount = 0;
+    public String currentPt = "";
+
+    public String getCurrentPt() {
+        return currentPt;
+    }
+
+    public void setCurrentPt(String currentPt) {
+        this.currentPt = currentPt;
+    }
+
     public HashMap<String, ArrayList<NodeContext>> ptToNodeContextList= new HashMap<String, ArrayList<NodeContext>>();
 
 
@@ -326,12 +338,12 @@ class XMLDriver1 implements GlobalConst {
 
     public NodeContext JoinTwoFields(NodeContext tag1, int joinfieldno1, NodeContext tag2, int joinfieldno2, List<Integer> ltfieldtoomit,
                                      boolean parentchildflag, boolean ContainOrEquality) {
-        return JoinTwoFields(tag1, joinfieldno1, tag2, joinfieldno2, ltfieldtoomit, parentchildflag, ContainOrEquality, false);
+        return JoinTwoFields(tag1, joinfieldno1, tag2, joinfieldno2, ltfieldtoomit, parentchildflag, ContainOrEquality, false, true);
     }
 
 
     public NodeContext JoinTwoFields(NodeContext tag1, int joinfieldno1, NodeContext tag2, int joinfieldno2, List<Integer> ltfieldtoomit,
-                                     boolean parentchildflag, boolean ContainOrEquality, boolean indexToBeUsed) {
+                                     boolean parentchildflag, boolean ContainOrEquality, boolean indexToBeUsed, boolean heapFileTobeUSed) {
 
 
         TupleOrder ascending = new TupleOrder(TupleOrder.Ascending);
@@ -356,8 +368,18 @@ class XMLDriver1 implements GlobalConst {
         byte[] array = new byte[10];
         new Random().nextBytes(array);
 
-        String JoinedTaghpfilename = new String(array, Charset.forName("UTF-8"));
+        String JoinedTaghpfilename = "file"+filecount+operationcount;
         Heapfile JoinedTaghpfile = null;
+
+        try
+        {
+            JoinedTaghpfile = new Heapfile(JoinedTaghpfilename);
+        }
+        catch (Exception e)
+        {
+            System.err.println("*** error in Heapfile constructor ***");
+            e.printStackTrace();
+        }
 
         RID JoinedTagRID = new RID();
 
@@ -378,7 +400,7 @@ class XMLDriver1 implements GlobalConst {
         Iterator fscan = null;
 
 
-        if(tag1.getBtf() != null && indexToBeUsed){
+        if(tag1.getBtf() != null && indexToBeUsed && !heapFileTobeUSed){
             try {
                 fscan = new IntervalIndexScan(new IndexType(IndexType.Interval), taghpfilename1, tag1.getIntervalTreeIndexString(),
                         tagattrtype1, tagattrsize1, tagattrtype1.length, projlist_tag1.length, projlist_tag1, null, 2, false);  //file scan pointer
@@ -396,7 +418,7 @@ class XMLDriver1 implements GlobalConst {
             }
         }
 
-        if(tag2.getBtf() != null && indexToBeUsed){
+        if(tag2.getBtf() != null && indexToBeUsed && !heapFileTobeUSed){
             try {
                 IntervalIndexScan temp = new IntervalIndexScan(new IndexType(IndexType.Interval), taghpfilename2, tag2.getIntervalTreeIndexString(),
                         tagattrtype2, tagattrsize2, tagattrtype2.length, projlist_tag1.length, projlist_tag1, null, 2, false);  //file scan pointer
@@ -413,7 +435,7 @@ class XMLDriver1 implements GlobalConst {
             if(fscan == null){
                 fscan = tag1.getItr();
             }
-            if((taghpfilename2 != null && tag2.getItr() == null) || tag1.getBtf() != null){
+            if((taghpfilename2 != null) || tag1.getBtf() != null){
                 nlj = new NestedLoopsJoins(tagattrtype1, outer, tagattrsize1, tagattrtype2, inner, tagattrsize2, this.amt_of_mem, fscan, taghpfilename2, outFilter, null, projlist_tag2, outer + inner - (3 * ltfieldtoomit.size()));
             }else{
                 nlj = new SortMerge(tagattrtype1, outer, tagattrsize1, tagattrtype2, inner, tagattrsize2, joinfieldno1, 8, joinfieldno2, 8, this.amt_of_mem, fscan, tag2.getItr(), false, false,
@@ -430,8 +452,29 @@ class XMLDriver1 implements GlobalConst {
         int parent;
         intervaltype intval;
 
-        NodeContext nodeContext = new NodeContext(JoinedTaghpfile, JoinedTagRID, null, JoinedTagAttrtype, JoinedTagsize, JoinedTagTupSize);
-        nodeContext.setItr(nlj);
+        if(heapFileTobeUSed){
+            try {
+                while ((temptup = nlj.get_next()) != null) {
+                    if (parentchildflag) {
+                        if (temptup.getIntervalFld(2).get_s() == temptup.getIntFld(4)) {
+                            JoinedTagRID = JoinedTaghpfile.insertRecord(temptup.returnTupleByteArray());    //insert the joined record into a new heap file
+                        }
+                    } else {
+                        JoinedTagRID = JoinedTaghpfile.insertRecord(temptup.returnTupleByteArray());  //get the tag RID of the resulting tuple
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("*** Error preparing for get_next tuple");
+                e.printStackTrace();
+                Runtime.getRuntime().exit(1);
+            }
+        }
+        filecount++;
+        NodeContext nodeContext = new NodeContext(JoinedTaghpfile, JoinedTagRID, JoinedTaghpfilename, JoinedTagAttrtype, JoinedTagsize, JoinedTagTupSize);
+        if(!heapFileTobeUSed) {
+            nodeContext.setNodeHeapFile(null);
+            nodeContext.setItr(nlj);
+        }
         return nodeContext;
     }
 
@@ -464,7 +507,7 @@ class XMLDriver1 implements GlobalConst {
         String[] hpfilenm = new String[tot_len];
         NodeContext[] tag_pars = new NodeContext[tot_len];
         for (int i = 0; i < tot_len; i++) {
-            hpfilenm[i] = tagnames[i] + queryplancount + ".in";
+            hpfilenm[i] = tagnames[i] + currentPt.split("\\.")[0] + ".in";
         }
         boolean done = false;
         String tag;
@@ -604,7 +647,7 @@ class XMLDriver1 implements GlobalConst {
                 as.append("NLJ join * with " + tagnames[scfld] + " : ");
                 as.append("\n");
 
-                TempTagPar = JoinTwoFields(GlobalMainTagPair, 2, ExtractTags[scfld], 2, ltfieldtoomit, relflag, true, toBeIndexed);
+                TempTagPar = JoinTwoFields(GlobalMainTagPair, 2, ExtractTags[scfld], 2, ltfieldtoomit, relflag, true, toBeIndexed, true);
             } else if (tagnames[scfld].equalsIgnoreCase("*")) {
 
                 if (toBeIndexed) {
@@ -612,7 +655,7 @@ class XMLDriver1 implements GlobalConst {
                 }
                 as.append("NLJ join " + tagnames[ftfld] + " with * : ");
                 as.append("\n");
-                TempTagPar = JoinTwoFields(ExtractTags[ftfld], 2, GlobalMainTagPair, 2, ltfieldtoomit, relflag, true, toBeIndexed);
+                TempTagPar = JoinTwoFields(ExtractTags[ftfld], 2, GlobalMainTagPair, 2, ltfieldtoomit, relflag, true, toBeIndexed, true);
             } else {
                 if (toBeIndexed) {
                     as.append("Indexed ");
@@ -620,7 +663,7 @@ class XMLDriver1 implements GlobalConst {
                 as.append("NLJ join " + tagnames[ftfld] + " with " + tagnames[scfld] + " : ");
                 as.append("\n");
 
-                TempTagPar = JoinTwoFields(ExtractTags[ftfld], 2, ExtractTags[scfld], 2, ltfieldtoomit, relflag, true, toBeIndexed);
+                TempTagPar = JoinTwoFields(ExtractTags[ftfld], 2, ExtractTags[scfld], 2, ltfieldtoomit, relflag, true, toBeIndexed, true);
 
             }
             if (ResultTagPar != null) {
@@ -1148,7 +1191,7 @@ public class XMLTest1// implements  GlobalConst
 
     public static void main(String[] argvs) {
 
-        String DataFileName = codeBaseFolder + "test.xml"; //initializing the data file name.
+        String DataFileName = codeBaseFolder + "xml_sample_data.xml"; //initializing the data file name.
         XMLDriver1 xmldvr = new XMLDriver1(DataFileName);
         NodeContext MainTagPair = xmldvr.ReadFileLbyLStoreInHeapFile();
         xmldvr.GlobalMainTagPair = MainTagPair;
@@ -1208,13 +1251,13 @@ public class XMLTest1// implements  GlobalConst
                     int numberofnodes2 = xmldvr.GetNumberOfNodes(filepath2);
 
                     System.out.println("Number of nodes 1 : " + numberofnodes1 + " Number of nodes 2:  " + numberofnodes2);
-
+                    xmldvr.setCurrentPt(file1);
                     tagparams1 = xmldvr.ReadQueryAndExecute(MainTagPair, filepath1, 1)[0];
                     tagnames1 = xmldvr.tagnames;
 
                     //get result table for pattern tree 2.
                     xmldvr.queryplancount++;            //indicates we are starting query plan for second file.
-
+                    xmldvr.setCurrentPt(file2);
                     tagparams2 = xmldvr.ReadQueryAndExecute(MainTagPair, filepath2, 1)[0];
                     tagnames2 = xmldvr.tagnames;
 
@@ -1268,11 +1311,13 @@ public class XMLTest1// implements  GlobalConst
 
                     TagparamField tagparams1, tagparams2;
                     String[] tagnames1, tagnames2;
+                    xmldvr.setCurrentPt(file1);
                     tagparams1 = xmldvr.ReadQueryAndExecute(MainTagPair, filepath1, 1)[0];
+
                     tagnames1 = xmldvr.tagnames;
 
                     xmldvr.queryplancount++;            //indicates we are starting query plan for second file.
-
+                    xmldvr.setCurrentPt(file2);
                     tagparams2 = xmldvr.ReadQueryAndExecute(MainTagPair, filepath2, 1)[0];
                     tagnames2 = xmldvr.tagnames;
 
@@ -1297,6 +1342,7 @@ public class XMLTest1// implements  GlobalConst
                 try {
                     System.out.println("Enter the name of pattern tree file (Please ensure its in the src/tests folder ): ");
                     String file = br.readLine();
+                    xmldvr.setCurrentPt(file);
                     int[][] ad1 = null;
                     String filepath = inputPatternTreeFilesFolder + file;
                     result = xmldvr.ReadQueryAndExecute(MainTagPair, filepath, 1)[0];
@@ -1315,6 +1361,7 @@ public class XMLTest1// implements  GlobalConst
                 String file = "";
                 try {
                     file = br.readLine();
+                    xmldvr.setCurrentPt(file);
                 } catch (IOException ie) {
                     ie.printStackTrace();
                 }
@@ -1347,6 +1394,7 @@ public class XMLTest1// implements  GlobalConst
                 String file = "";
                 try {
                     file = br.readLine();
+                    xmldvr.setCurrentPt(file);
                 } catch (IOException ie) {
                     ie.printStackTrace();
                 }
@@ -1373,6 +1421,9 @@ public class XMLTest1// implements  GlobalConst
                 String filename = "";
                 try {
                     filename = br.readLine();
+                    xmldvr.setCurrentPt(filename);
+                    System.out.println("no. of buffer to be used : ");
+                    xmldvr.setAmt_of_mem(Integer.parseInt(br.readLine()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1380,14 +1431,13 @@ public class XMLTest1// implements  GlobalConst
                 String QueryFileName = inputPatternTreeFilesFolder + filename;
                 try {
                     boolean countonly = false;
-
                     TagparamField[] result;
-                    result = xmldvr.ReadQueryAndExecute(MainTagPair, QueryFileName, 3);
+                    result = xmldvr.ReadQueryAndExecute(MainTagPair, QueryFileName, 1);
                     System.out.println("results for query file 1 have been obtained");
                     System.out.println(PageCounter.getreads());
                     System.out.println(PageCounter.getwrites());
                     xmldvr.queryplancount++;            //indicates we are starting query plan for second file.
-                    xmldvr.printItr(result[0].GetTagParams());
+                    xmldvr.ScanHeapFile(result[0].GetTagParams());
                     //xmldvr.printItr(result[1].GetTagParams());
                     //xmldvr.printItr(result[2].GetTagParams());
                     System.out.println("Calling clean up...");

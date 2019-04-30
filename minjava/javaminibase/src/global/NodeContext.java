@@ -21,6 +21,10 @@ public class NodeContext implements Serializable {
     private IntervalTreeFile btf;
     private String intervalTreeIndexString;
 
+    public void setNodeHeapFile(Heapfile nodeHeapFile) {
+        this.nodeHeapFile = nodeHeapFile;
+    }
+
     public NodeContext(){
 
     }
