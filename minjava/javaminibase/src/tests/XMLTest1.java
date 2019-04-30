@@ -42,6 +42,15 @@ class XMLDriver1 implements GlobalConst {
     private int SizeofTuple;
     NodeContext GlobalMainTagPair;
     public int queryplancount = 0;
+    public int amt_of_mem = 100;
+
+    public int getAmt_of_mem() {
+        return amt_of_mem;
+    }
+
+    public void setAmt_of_mem(int amt_of_mem) {
+        this.amt_of_mem = amt_of_mem;
+    }
 
     public XMLDriver1(String fileName) {
         try {
@@ -390,16 +399,16 @@ class XMLDriver1 implements GlobalConst {
                 fscan = tag1.getItr();
             }
             if((taghpfilename2 != null && tag2.getItr() == null) || tag1.getBtf() != null){
-                nlj = new NestedLoopsJoins(tagattrtype1, outer, tagattrsize1, tagattrtype2, inner, tagattrsize2, 2000, fscan, taghpfilename2, outFilter, null, projlist_tag2, outer + inner - (3 * ltfieldtoomit.size()));
+                nlj = new NestedLoopsJoins(tagattrtype1, outer, tagattrsize1, tagattrtype2, inner, tagattrsize2, this.amt_of_mem, fscan, taghpfilename2, outFilter, null, projlist_tag2, outer + inner - (3 * ltfieldtoomit.size()));
             }else{
-                nlj = new SortMerge(tagattrtype1, outer, tagattrsize1, tagattrtype2, inner, tagattrsize2, joinfieldno1, 8, joinfieldno2, 8, 2000, fscan, tag2.getItr(), false, false,
+                nlj = new SortMerge(tagattrtype1, outer, tagattrsize1, tagattrtype2, inner, tagattrsize2, joinfieldno1, 8, joinfieldno2, 8, this.amt_of_mem, fscan, tag2.getItr(), false, false,
                         ascending, outFilter, projlist_tag2, outer + inner - (3 * ltfieldtoomit.size()));
             }
         } catch (Exception e) {
             System.err.println("*** Error preparing for nested_loop_join");
             System.err.println("" + e);
             e.printStackTrace();
-            Runtime.getRuntime().exit(1);
+            //Runtime.getRuntime().exit(1);
         }
 
         Tuple temptup;
@@ -470,7 +479,7 @@ class XMLDriver1 implements GlobalConst {
             scan = heaptosearch.openScan();
         } catch (Exception e) {
             e.printStackTrace();
-            Runtime.getRuntime().exit(1);
+            //Runtime.getRuntime().exit(1);
         }
 
 
@@ -829,7 +838,7 @@ class XMLDriver1 implements GlobalConst {
             scan = hpfl.openScan();
         } catch (Exception e) {
             e.printStackTrace();
-            Runtime.getRuntime().exit(1);
+            //Runtime.getRuntime().exit(1);
         }
         while (!done) {
             try {
@@ -926,7 +935,7 @@ class XMLDriver1 implements GlobalConst {
         catch (Exception e)
         {
             e.printStackTrace();
-            Runtime.getRuntime().exit(1);
+            //Runtime.getRuntime().exit(1);
         }
         while (!done)
         {
@@ -1148,6 +1157,8 @@ public class XMLTest1// implements  GlobalConst
                     System.out.println("Enter node ID from second table : ");
                     String s = br.readLine();
                     int node2 = Integer.parseInt(s) - 1;
+                    System.out.println("no. of buffer to be used : ");
+                    xmldvr.setAmt_of_mem(Integer.parseInt(br.readLine()));
 
 
                     String filepath1 = inputPatternTreeFilesFolder + file1;
@@ -1214,6 +1225,9 @@ public class XMLTest1// implements  GlobalConst
                     System.out.println("Enter the second node ID : ");
                     node2 = Integer.parseInt(br.readLine()) - 1;
 
+                    System.out.println("no. of buffer to be used : ");
+                    xmldvr.setAmt_of_mem(Integer.parseInt(br.readLine()));
+
                     String filepath1 = inputPatternTreeFilesFolder + file1;
                     String filepath2 = inputPatternTreeFilesFolder + file2;
 
@@ -1253,6 +1267,8 @@ public class XMLTest1// implements  GlobalConst
                     result = xmldvr.ReadQueryAndExecute(MainTagPair, filepath, 1)[0];
                     System.out.println("Please enter the tag on which you want to sort");
                     int node = Integer.parseInt(br.readLine()) - 1;
+                    System.out.println("no. of buffer to be used : ");
+                    xmldvr.setAmt_of_mem(Integer.parseInt(br.readLine()));
                     xmldvr.SortByFld(result.GetTagParams(), node);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1275,6 +1291,8 @@ public class XMLTest1// implements  GlobalConst
                 int node = -1;
                 try {
                     node = Integer.parseInt(br.readLine()) - 1;
+                    System.out.println("no. of buffer to be used : ");
+                    xmldvr.setAmt_of_mem(Integer.parseInt(br.readLine()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1305,6 +1323,8 @@ public class XMLTest1// implements  GlobalConst
                 int node = -1;
                 try {
                     node = Integer.parseInt(br.readLine()) - 1;
+                    System.out.println("no. of buffer to be used : ");
+                    xmldvr.setAmt_of_mem(Integer.parseInt(br.readLine()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1333,13 +1353,13 @@ public class XMLTest1// implements  GlobalConst
                     System.out.println(PageCounter.getwrites());
                     xmldvr.queryplancount++;            //indicates we are starting query plan for second file.
                     xmldvr.printItr(result[0].GetTagParams());
-                    xmldvr.printItr(result[1].GetTagParams());
-                    xmldvr.printItr(result[2].GetTagParams());
+                    //xmldvr.printItr(result[1].GetTagParams());
+                    //xmldvr.printItr(result[2].GetTagParams());
                     System.out.println("Calling clean up...");
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.err.println("Error encountered during XML tests:\n");
-                    Runtime.getRuntime().exit(1);
+                    //Runtime.getRuntime().exit(1);
                 }
             }
         }
