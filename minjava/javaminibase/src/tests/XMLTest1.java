@@ -1,7 +1,6 @@
 package tests;
 
 import btree.IntervalKey;
-import btree.IntervalTFileScan;
 import btree.IntervalTreeFile;
 import bufmgr.PageCounter;
 import global.*;
@@ -14,7 +13,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.util.*;
 /*
@@ -261,7 +259,7 @@ class XMLDriver1 implements GlobalConst {
         outFilter[0] = new CondExpr();
         outFilter[0].next = null;
 
-        if (ContainOrEquality) {
+        if (ContainOrEquality && !relflag) {
             outFilter[0].op = new AttrOperator(AttrOperator.aopLT);            //if you need to check containment
         } else if(relflag){
             outFilter[0].op = new AttrOperator(AttrOperator.aopPC);         //introduce a PC flag for comparing interval columns.
