@@ -1,0 +1,1816 @@
+<root>
+<Entry id="100K_RAT" class="STANDARD" mtype="PRT" seqlen="889">
+ <AC>Q62671</AC>
+ <Mod date="01-NOV-1997" Rel="35" type="Created"></Mod>
+ <Mod date="01-NOV-1997" Rel="35" type="Last sequence update"></Mod>
+ <Mod date="15-JUL-1999" Rel="38" type="Last annotation update"></Mod>
+ <Descr>100 KDA PROTEIN (EC 6.3.2.-)</Descr>
+ <Species>Rattus norvegicus (Rat)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Metazoa</Org>
+ <Org>Chordata</Org>
+ <Org>Craniata</Org>
+ <Org>Vertebrata</Org>
+ <Org>Euteleostomi</Org>
+ <Org>Mammalia</Org>
+ <Org>Eutheria</Org>
+ <Org>Rodentia</Org>
+ <Org>Sciurognathi</Org>
+ <Org>Muridae</Org>
+ <Org>Murinae</Org>
+ <Org>Rattus</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=WISTAR</Comment>
+  <Comment>TISSUE=TESTIS</Comment>
+  <DB>MEDLINE</DB>
+  <MedlineID>92253337</MedlineID>
+  <Author>Mueller D</Author>
+  <Author>Rehbein M</Author>
+  <Author>Baumeister H</Author>
+  <Author>Richter D</Author>
+  <Cite>Nucleic Acids Res. 20:1471-1475(1992)</Cite>
+ </Ref>
+ <Ref num="2" pos="ERRATUM">
+  <Author>Mueller D</Author>
+  <Author>Rehbein M</Author>
+  <Author>Baumeister H</Author>
+  <Author>Richter D</Author>
+  <Cite>Nucleic Acids Res. 20:2624-2624(1992)</Cite>
+ </Ref>
+ <EMBL prim_id="X64411" sec_id="CAA45756"></EMBL>
+ <INTERPRO prim_id="IPR000569" sec_id="-"></INTERPRO>
+ <INTERPRO prim_id="IPR002004" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00632" sec_id="HECT" status="1"></PFAM>
+ <PFAM prim_id="PF00658" sec_id="PABP" status="1"></PFAM>
+ <Keyword>Ubiquitin conjugation</Keyword>
+ <Keyword>Ligase</Keyword>
+ <Features>
+  <DOMAIN from="77" to="88">
+   <Descr>ASP/GLU-RICH (ACIDIC)</Descr>
+  </DOMAIN>
+  <DOMAIN from="127" to="150">
+   <Descr>PRO-RICH</Descr>
+  </DOMAIN>
+  <DOMAIN from="420" to="439">
+   <Descr>ARG/GLU-RICH (MIXED CHARGE)</Descr>
+  </DOMAIN>
+  <DOMAIN from="448" to="457">
+   <Descr>ARG/ASP-RICH (MIXED CHARGE)</Descr>
+  </DOMAIN>
+  <DOMAIN from="485" to="514">
+   <Descr>PABP-LIKE</Descr>
+  </DOMAIN>
+  <DOMAIN from="579" to="590">
+   <Descr>ASP/GLU-RICH (ACIDIC)</Descr>
+  </DOMAIN>
+  <DOMAIN from="786" to="889">
+   <Descr>HECT DOMAIN</Descr>
+  </DOMAIN>
+  <DOMAIN from="827" to="847">
+   <Descr>PRO-RICH</Descr>
+  </DOMAIN>
+  <BINDING from="858" to="858">
+   <Descr>UBIQUITIN (BY SIMILARITY)</Descr>
+  </BINDING>
+ </Features>
+</Entry>
+<Entry id="104K_THEPA" class="STANDARD" mtype="PRT" seqlen="924">
+ <AC>P15711</AC>
+ <Mod date="01-APR-1990" Rel="14" type="Created"></Mod>
+ <Mod date="01-APR-1990" Rel="14" type="Last sequence update"></Mod>
+ <Mod date="01-AUG-1992" Rel="23" type="Last annotation update"></Mod>
+ <Descr>104 KDA MICRONEME-RHOPTRY ANTIGEN</Descr>
+ <Species>Theileria parva</Species>
+ <Org>Eukaryota</Org>
+ <Org>Alveolata</Org>
+ <Org>Apicomplexa</Org>
+ <Org>Piroplasmida</Org>
+ <Org>Theileriidae</Org>
+ <Org>Theileria</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=MUGUGA</Comment>
+  <DB>MEDLINE</DB>
+  <MedlineID>90158697</MedlineID>
+  <Author>Iams K.P</Author>
+  <Author>Young J.R</Author>
+  <Author>Nene V</Author>
+  <Author>Desai J</Author>
+  <Author>Webster P</Author>
+  <Author>Ole-Moiyoi O.K</Author>
+  <Author>Musoke A.J</Author>
+  <Cite>Mol. Biochem. Parasitol. 39:47-60(1990)</Cite>
+ </Ref>
+ <EMBL prim_id="M29954" sec_id="AAA18217"></EMBL>
+ <PIR prim_id="A44945" sec_id="A44945"></PIR>
+ <Keyword>Antigen</Keyword>
+ <Keyword>Sporozoite</Keyword>
+ <Keyword>Repeat</Keyword>
+ <Features>
+  <DOMAIN from="1" to="19">
+   <Descr>HYDROPHOBIC</Descr>
+  </DOMAIN>
+  <DOMAIN from="905" to="924">
+   <Descr>HYDROPHOBIC</Descr>
+  </DOMAIN>
+ </Features>
+</Entry>
+<Entry id="108_LYCES" class="STANDARD" mtype="PRT" seqlen="102">
+ <AC>Q43495</AC>
+ <Mod date="15-JUL-1999" Rel="38" type="Created"></Mod>
+ <Mod date="15-JUL-1999" Rel="38" type="Last sequence update"></Mod>
+ <Mod date="15-JUL-1999" Rel="38" type="Last annotation update"></Mod>
+ <Descr>PROTEIN 108 PRECURSOR</Descr>
+ <Species>Lycopersicon esculentum (Tomato)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Asteridae</Org>
+ <Org>euasterids I</Org>
+ <Org>Solanales</Org>
+ <Org>Solanaceae</Org>
+ <Org>Solanum</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=CV. VF36</Comment>
+  <Comment>TISSUE=ANTHER</Comment>
+  <DB>MEDLINE</DB>
+  <MedlineID>94143497</MedlineID>
+  <Author>Chen R</Author>
+  <Author>Smith A.G</Author>
+  <Cite>Plant Physiol. 101:1413-1413(1993)</Cite>
+ </Ref>
+ <EMBL prim_id="Z14088" sec_id="CAA78466"></EMBL>
+ <MENDEL prim_id="8853" sec_id="LYCes" status="1133"></MENDEL>
+ <Keyword>Signal</Keyword>
+ <Features>
+  <SIGNAL from="1" to="30">
+   <Descr>POTENTIAL</Descr>
+  </SIGNAL>
+  <CHAIN from="31" to="102">
+   <Descr>PROTEIN 108</Descr>
+  </CHAIN>
+  <DISULFID from="41" to="77">
+   <Descr>BY SIMILARITY</Descr>
+  </DISULFID>
+  <DISULFID from="51" to="66">
+   <Descr>BY SIMILARITY</Descr>
+  </DISULFID>
+  <DISULFID from="67" to="92">
+   <Descr>BY SIMILARITY</Descr>
+  </DISULFID>
+  <DISULFID from="79" to="99">
+   <Descr>BY SIMILARITY</Descr>
+  </DISULFID>
+ </Features>
+</Entry>
+<Entry id="10KD_VIGUN" class="STANDARD" mtype="PRT" seqlen="75">
+ <AC>P18646</AC>
+ <Mod date="01-NOV-1990" Rel="16" type="Created"></Mod>
+ <Mod date="01-NOV-1990" Rel="16" type="Last sequence update"></Mod>
+ <Mod date="01-FEB-1995" Rel="31" type="Last annotation update"></Mod>
+ <Descr>10 KDA PROTEIN PRECURSOR (CLONE PSAS10)</Descr>
+ <Species>Vigna unguiculata (Cowpea)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Rosidae</Org>
+ <Org>eurosids I</Org>
+ <Org>Fabales</Org>
+ <Org>Fabaceae</Org>
+ <Org>Papilionoideae</Org>
+ <Org>Vigna</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>TISSUE=COTYLEDON</Comment>
+  <DB>MEDLINE</DB>
+  <MedlineID>91355865</MedlineID>
+  <Author>Ishibashi N</Author>
+  <Author>Yamauchi D</Author>
+  <Author>Miniamikawa T</Author>
+  <Cite>Plant Mol. Biol. 15:59-64(1990)</Cite>
+ </Ref>
+ <EMBL prim_id="X16877" sec_id="CAA34760"></EMBL>
+ <PIR prim_id="S11156" sec_id="S11156"></PIR>
+ <HSSP prim_id="P45639" sec_id="1CHL"></HSSP>
+ <INTERPRO prim_id="IPR002118" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00304" sec_id="Gamma-thionin" status="1"></PFAM>
+ <PROSITE prim_id="PS00940" sec_id="GAMMA_THIONIN" status="1"></PROSITE>
+ <Keyword>Germination</Keyword>
+ <Keyword>Signal</Keyword>
+ <Features>
+  <SIGNAL from="1" to="?">
+   <Descr>POTENTIAL</Descr>
+  </SIGNAL>
+  <CHAIN from="?" to="75">
+   <Descr>10 kDa PROTEIN</Descr>
+  </CHAIN>
+  <DISULFID from="31" to="75">
+   <Descr>BY SIMILARITY</Descr>
+  </DISULFID>
+  <DISULFID from="42" to="63">
+   <Descr>BY SIMILARITY</Descr>
+  </DISULFID>
+  <DISULFID from="48" to="69">
+   <Descr>BY SIMILARITY</Descr>
+  </DISULFID>
+  <DISULFID from="52" to="71">
+   <Descr>BY SIMILARITY</Descr>
+  </DISULFID>
+ </Features>
+</Entry>
+<Entry id="110K_PLAKN" class="STANDARD" mtype="PRT" seqlen="296">
+ <AC>P13813</AC>
+ <Mod date="01-JAN-1990" Rel="13" type="Created"></Mod>
+ <Mod date="01-JAN-1990" Rel="13" type="Last sequence update"></Mod>
+ <Mod date="01-FEB-1994" Rel="28" type="Last annotation update"></Mod>
+ <Descr>110 KDA ANTIGEN (PK110) (FRAGMENT)</Descr>
+ <Species>Plasmodium knowlesi</Species>
+ <Org>Eukaryota</Org>
+ <Org>Alveolata</Org>
+ <Org>Apicomplexa</Org>
+ <Org>Haemosporida</Org>
+ <Org>Plasmodium</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <DB>MEDLINE</DB>
+  <MedlineID>88039002</MedlineID>
+  <Author>Perler F.B</Author>
+  <Author>Moon A.M</Author>
+  <Author>Qiang B.Q</Author>
+  <Author>Meda M</Author>
+  <Author>Dalton M</Author>
+  <Author>Card C</Author>
+  <Author>Schmidt-Ullrich R</Author>
+  <Author>Wallach D</Author>
+  <Author>Lynch J</Author>
+  <Author>Donelson J.E</Author>
+  <Cite>Mol. Biochem. Parasitol. 25:185-193(1987)</Cite>
+ </Ref>
+ <EMBL prim_id="M19152" sec_id="AAA29471"></EMBL>
+ <PIR prim_id="A54527" sec_id="A54527"></PIR>
+ <Keyword>Malaria</Keyword>
+ <Keyword>Antigen</Keyword>
+ <Keyword>Repeat</Keyword>
+ <Features>
+  <NON_TER from="1" to="1"></NON_TER>
+  <DOMAIN from="131" to="296">
+   <Descr>13.5 X 12 AA TANDEM REPEATS OF E-E-T-Q-K-</Descr>
+   <Descr>T-V-E-P-E-Q-T</Descr>
+  </DOMAIN>
+ </Features>
+</Entry>
+<Entry id="11S3_HELAN" class="STANDARD" mtype="PRT" seqlen="493">
+ <AC>P19084</AC>
+ <Mod date="01-NOV-1990" Rel="16" type="Created"></Mod>
+ <Mod date="01-NOV-1990" Rel="16" type="Last sequence update"></Mod>
+ <Mod date="30-MAY-2000" Rel="39" type="Last annotation update"></Mod>
+ <Descr>11S GLOBULIN SEED STORAGE PROTEIN G3 PRECURSOR (HELIANTHININ G3)</Descr>
+ <Gene>HAG3</Gene>
+ <Species>Helianthus annuus (Common sunflower)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Asteridae</Org>
+ <Org>euasterids II</Org>
+ <Org>Asterales</Org>
+ <Org>Asteraceae</Org>
+ <Org>Asteroideae</Org>
+ <Org>Heliantheae</Org>
+ <Org>Helianthus</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <DB>MEDLINE</DB>
+  <MedlineID>89232734</MedlineID>
+  <Author>Vonder Haar R.A</Author>
+  <Author>Allen R.D</Author>
+  <Author>Cohen E.A</Author>
+  <Author>Nessler C.L</Author>
+  <Author>Thomas T.L</Author>
+  <Cite>Gene 74:433-443(1988)</Cite>
+ </Ref>
+ <EMBL prim_id="M28832" sec_id="AAA33374"></EMBL>
+ <PIR prim_id="JA0089" sec_id="JA0089"></PIR>
+ <INTERPRO prim_id="IPR000459" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00190" sec_id="Seedstore_11s" status="1"></PFAM>
+ <PRINTS prim_id="PR00439" sec_id="11SGLOBULIN"></PRINTS>
+ <PROSITE prim_id="PS00305" sec_id="11S_SEED_STORAGE" status="1"></PROSITE>
+ <Keyword>Seed storage protein</Keyword>
+ <Keyword>Multigene family</Keyword>
+ <Keyword>Signal</Keyword>
+ <Features>
+  <SIGNAL from="1" to="20"></SIGNAL>
+  <CHAIN from="21" to="305">
+   <Descr>ACIDIC CHAIN</Descr>
+  </CHAIN>
+  <CHAIN from="306" to="493">
+   <Descr>BASIC CHAIN</Descr>
+  </CHAIN>
+  <DISULFID from="103" to="312">
+   <Descr>INTERCHAIN (ACIDIC-BASIC) (POTENTIAL)</Descr>
+  </DISULFID>
+  <DOMAIN from="23" to="35">
+   <Descr>GLN-RICH</Descr>
+  </DOMAIN>
+  <DOMAIN from="111" to="127">
+   <Descr>GLN/GLY-RICH</Descr>
+  </DOMAIN>
+  <DOMAIN from="191" to="297">
+   <Descr>GLN-RICH</Descr>
+  </DOMAIN>
+ </Features>
+</Entry>
+<Entry id="11SB_CUCMA" class="STANDARD" mtype="PRT" seqlen="480">
+ <AC>P13744</AC>
+ <Mod date="01-JAN-1990" Rel="13" type="Created"></Mod>
+ <Mod date="01-JAN-1990" Rel="13" type="Last sequence update"></Mod>
+ <Mod date="01-NOV-1990" Rel="16" type="Last annotation update"></Mod>
+ <Descr>11S GLOBULIN BETA SUBUNIT PRECURSOR</Descr>
+ <Species>Cucurbita maxima (Pumpkin) (Winter squash)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Rosidae</Org>
+ <Org>eurosids I</Org>
+ <Org>Cucurbitales</Org>
+ <Org>Cucurbitaceae</Org>
+ <Org>Cucurbita</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=CV. KUROKAWA AMAKURI NANKIN</Comment>
+  <DB>MEDLINE</DB>
+  <MedlineID>88166744</MedlineID>
+  <Author>Hayashi M</Author>
+  <Author>Mori H</Author>
+  <Author>Nishimura M</Author>
+  <Author>Akazawa T</Author>
+  <Author>Hara-Nishimura I</Author>
+  <Cite>Eur. J. Biochem. 172:627-632(1988)</Cite>
+ </Ref>
+ <Ref num="2" pos="SEQUENCE OF 22-30 AND 297-302">
+  <Author>Ohmiya M</Author>
+  <Author>Hara I</Author>
+  <Author>Mastubara H</Author>
+  <Cite>Plant Cell Physiol. 21:157-167(1980)</Cite>
+ </Ref>
+ <EMBL prim_id="M36407" sec_id="AAA33110"></EMBL>
+ <PIR prim_id="S00366" sec_id="FWPU1B"></PIR>
+ <INTERPRO prim_id="IPR000459" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00190" sec_id="Seedstore_11s" status="1"></PFAM>
+ <PRINTS prim_id="PR00439" sec_id="11SGLOBULIN"></PRINTS>
+ <PROSITE prim_id="PS00305" sec_id="11S_SEED_STORAGE" status="1"></PROSITE>
+ <Keyword>Seed storage protein</Keyword>
+ <Keyword>Signal</Keyword>
+ <Features>
+  <SIGNAL from="1" to="21"></SIGNAL>
+  <CHAIN from="22" to="480">
+   <Descr>11S GLOBULIN BETA SUBUNIT</Descr>
+  </CHAIN>
+  <CHAIN from="22" to="296">
+   <Descr>GAMMA CHAIN (ACIDIC)</Descr>
+  </CHAIN>
+  <CHAIN from="297" to="480">
+   <Descr>DELTA CHAIN (BASIC)</Descr>
+  </CHAIN>
+  <MOD_RES from="22" to="22">
+   <Descr>PYRROLIDONE CARBOXYLIC ACID</Descr>
+  </MOD_RES>
+  <DISULFID from="124" to="303">
+   <Descr>INTERCHAIN (GAMMA-DELTA) (POTENTIAL)</Descr>
+  </DISULFID>
+  <CONFLICT from="27" to="27">
+   <Descr>S -> E (IN REF. 2)</Descr>
+  </CONFLICT>
+  <CONFLICT from="30" to="30">
+   <Descr>E -> S (IN REF. 2)</Descr>
+  </CONFLICT>
+ </Features>
+</Entry>
+<Entry id="120K_RICRI" class="STANDARD" mtype="PRT" seqlen="1300">
+ <AC>P14914</AC>
+ <Mod date="01-APR-1990" Rel="14" type="Created"></Mod>
+ <Mod date="01-FEB-1996" Rel="33" type="Last sequence update"></Mod>
+ <Mod date="01-FEB-1996" Rel="33" type="Last annotation update"></Mod>
+ <Descr>120 KDA SURFACE-EXPOSED PROTEIN</Descr>
+ <Gene>P120</Gene>
+ <Species>Rickettsia rickettsii</Species>
+ <Org>Bacteria</Org>
+ <Org>Proteobacteria</Org>
+ <Org>alpha subdivision</Org>
+ <Org>Rickettsiales</Org>
+ <Org>Rickettsiaceae</Org>
+ <Org>Rickettsieae</Org>
+ <Org>Rickettsia</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=R</Comment>
+  <DB>MEDLINE</DB>
+  <MedlineID>90136087</MedlineID>
+  <Author>Gilmore R.D. Jr</Author>
+  <Author>Joste N</Author>
+  <Author>McDonald G.A</Author>
+  <Cite>Mol. Microbiol. 3:1579-1586(1989)</Cite>
+ </Ref>
+ <EMBL prim_id="X16353" sec_id="CAA34402"></EMBL>
+ <PIR prim_id="S07575" sec_id="S07575"></PIR>
+ <Keyword>Antigen</Keyword>
+ <Keyword>Glycoprotein</Keyword>
+ <Keyword>S-layer</Keyword>
+ <Features>
+  <CARBOHYD from="7" to="7">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="66" to="66">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="86" to="86">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="103" to="103">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="147" to="147">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="268" to="268">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="330" to="330">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="375" to="375">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="415" to="415">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="424" to="424">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="430" to="430">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="436" to="436">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="444" to="444">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="515" to="515">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="547" to="547">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="593" to="593">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="655" to="655">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="698" to="698">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="710" to="710">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="799" to="799">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="800" to="800">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="826" to="826">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="844" to="844">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="861" to="861">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="879" to="879">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="920" to="920">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="926" to="926">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="1116" to="1116">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="1128" to="1128">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="1140" to="1140">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="1146" to="1146">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+  <CARBOHYD from="1211" to="1211">
+   <Descr>POTENTIAL</Descr>
+  </CARBOHYD>
+ </Features>
+</Entry>
+<Entry id="128U_DROME" class="STANDARD" mtype="PRT" seqlen="368">
+ <AC>P32234</AC>
+ <Mod date="01-OCT-1993" Rel="27" type="Created"></Mod>
+ <Mod date="01-OCT-1993" Rel="27" type="Last sequence update"></Mod>
+ <Mod date="01-FEB-1996" Rel="33" type="Last annotation update"></Mod>
+ <Descr>GTP-BINDING PROTEIN 128UP</Descr>
+ <Gene>128UP OR GTP-BP</Gene>
+ <Species>Drosophila melanogaster (Fruit fly)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Metazoa</Org>
+ <Org>Arthropoda</Org>
+ <Org>Tracheata</Org>
+ <Org>Hexapoda</Org>
+ <Org>Insecta</Org>
+ <Org>Pterygota</Org>
+ <Org>Neoptera</Org>
+ <Org>Endopterygota</Org>
+ <Org>Diptera</Org>
+ <Org>Brachycera</Org>
+ <Org>Muscomorpha</Org>
+ <Org>Ephydroidea</Org>
+ <Org>Drosophilidae</Org>
+ <Org>Drosophila</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=OREGON-R</Comment>
+  <DB>MEDLINE</DB>
+  <MedlineID>94166747</MedlineID>
+  <Author>Sommer K.A</Author>
+  <Author>Petersen G</Author>
+  <Author>Bautz E.K.F</Author>
+  <Cite>Mol. Gen. Genet. 242:391-398(1994)</Cite>
+ </Ref>
+ <EMBL prim_id="X71866" sec_id="CAA50701"></EMBL>
+ <PIR prim_id="S33467" sec_id="S33467"></PIR>
+ <PIR prim_id="S42582" sec_id="S42582"></PIR>
+ <FLYBASE prim_id="FBgn0010339" sec_id="128up"></FLYBASE>
+ <INTERPRO prim_id="IPR000765" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF01018" sec_id="GTP1_OBG" status="1"></PFAM>
+ <PRINTS prim_id="PR00326" sec_id="GTP1OBG"></PRINTS>
+ <PROSITE prim_id="PS00905" sec_id="GTP1_OBG" status="1"></PROSITE>
+ <Keyword>GTP-binding</Keyword>
+ <Features>
+  <NP_BIND from="71" to="78">
+   <Descr>GTP (BY SIMILARITY)</Descr>
+  </NP_BIND>
+  <NP_BIND from="117" to="121">
+   <Descr>GTP (BY SIMILARITY)</Descr>
+  </NP_BIND>
+  <NP_BIND from="248" to="251">
+   <Descr>GTP (BY SIMILARITY)</Descr>
+  </NP_BIND>
+ </Features>
+</Entry>
+<Entry id="12AH_CLOS4" class="STANDARD" mtype="PRT" seqlen="29">
+ <AC>P21215</AC>
+ <Mod date="01-AUG-1991" Rel="19" type="Created"></Mod>
+ <Mod date="01-AUG-1991" Rel="19" type="Last sequence update"></Mod>
+ <Mod date="01-AUG-1991" Rel="19" type="Last annotation update"></Mod>
+ <Descr>12-ALPHA-HYDROXYSTEROID DEHYDROGENASE (EC 1.1.1.176) (FRAGMENT)</Descr>
+ <Species>Clostridium sp. (strain C 48-50)</Species>
+ <Org>Bacteria</Org>
+ <Org>Firmicutes</Org>
+ <Org>Bacillus/Clostridium group</Org>
+ <Org>Clostridiaceae</Org>
+ <Org>Clostridium</Org>
+ <Ref num="1" pos="SEQUENCE">
+  <DB>MEDLINE</DB>
+  <MedlineID>91177018</MedlineID>
+  <Author>Braun M</Author>
+  <Author>Luensdorf H</Author>
+  <Author>Bueckmann A.F</Author>
+  <Cite>Eur. J. Biochem. 196:439-450(1991)</Cite>
+ </Ref>
+ <PIR prim_id="S14099" sec_id="S14099"></PIR>
+ <Keyword>Oxidoreductase</Keyword>
+ <Keyword>NADP</Keyword>
+ <Features>
+  <NON_TER from="29" to="29"></NON_TER>
+ </Features>
+</Entry>
+<Entry id="12KD_FRAAN" class="STANDARD" mtype="PRT" seqlen="111">
+ <AC>Q05349</AC>
+ <Mod date="01-OCT-1996" Rel="34" type="Created"></Mod>
+ <Mod date="01-OCT-1996" Rel="34" type="Last sequence update"></Mod>
+ <Mod date="01-NOV-1997" Rel="35" type="Last annotation update"></Mod>
+ <Descr>AUXIN-REPRESSED 12.5 KDA PROTEIN</Descr>
+ <Species>Fragaria ananassa (Strawberry)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Rosidae</Org>
+ <Org>eurosids I</Org>
+ <Org>Rosales</Org>
+ <Org>Rosaceae</Org>
+ <Org>Fragaria</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=CV. OZARK BEAUTY</Comment>
+  <Comment>TISSUE=FLOWER</Comment>
+  <DB>MEDLINE</DB>
+  <MedlineID>91329668</MedlineID>
+  <Author>Reddy A.S.N</Author>
+  <Author>Poovaiah B.W</Author>
+  <Cite>Plant Mol. Biol. 14:127-136(1990)</Cite>
+ </Ref>
+ <EMBL prim_id="X52429" sec_id="CAA36676"></EMBL>
+ <EMBL prim_id="L44142" sec_id="AAA73872"></EMBL>
+ <Features>
+  <DOMAIN from="43" to="57">
+   <Descr>PRO/THR-RICH</Descr>
+  </DOMAIN>
+ </Features>
+</Entry>
+<Entry id="12KD_MYCSM" class="STANDARD" mtype="PRT" seqlen="24">
+ <AC>P80438</AC>
+ <Mod date="01-NOV-1995" Rel="32" type="Created"></Mod>
+ <Mod date="01-NOV-1995" Rel="32" type="Last sequence update"></Mod>
+ <Mod date="01-NOV-1995" Rel="32" type="Last annotation update"></Mod>
+ <Descr>12 KDA PROTEIN (FRAGMENT)</Descr>
+ <Species>Mycobacterium smegmatis</Species>
+ <Org>Bacteria</Org>
+ <Org>Firmicutes</Org>
+ <Org>Actinobacteria</Org>
+ <Org>Actinobacteridae</Org>
+ <Org>Actinomycetales</Org>
+ <Org>Corynebacterineae</Org>
+ <Org>Mycobacteriaceae</Org>
+ <Org>Mycobacterium</Org>
+ <Ref num="1" pos="SEQUENCE">
+  <Author>Pahl A</Author>
+  <Author>Keller U</Author>
+  <Cite>Submitted (MAR-1995) to the SWISS-PROT data bank</Cite>
+ </Ref>
+ <Features>
+  <NON_TER from="24" to="24"></NON_TER>
+ </Features>
+</Entry>
+<Entry id="12S1_ARATH" class="STANDARD" mtype="PRT" seqlen="472">
+ <AC>P15455</AC>
+ <Mod date="01-APR-1990" Rel="14" type="Created"></Mod>
+ <Mod date="01-APR-1990" Rel="14" type="Last sequence update"></Mod>
+ <Mod date="15-DEC-1998" Rel="37" type="Last annotation update"></Mod>
+ <Descr>12S SEED STORAGE PROTEIN PRECURSOR</Descr>
+ <Gene>CRA1</Gene>
+ <Species>Arabidopsis thaliana (Mouse-ear cress)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Rosidae</Org>
+ <Org>eurosids II</Org>
+ <Org>Brassicales</Org>
+ <Org>Brassicaceae</Org>
+ <Org>Arabidopsis</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=CV. LANDSBERG ERECTA</Comment>
+  <Author>Pang P.P</Author>
+  <Author>Pruitt R.E</Author>
+  <Author>Meyerowitz E.M</Author>
+  <Cite>Plant Mol. Biol. 11:805-820(1988)</Cite>
+ </Ref>
+ <Ref num="2" pos="SEQUENCE OF 420-472 FROM N.A">
+  <Comment>STRAIN=CV. COLUMBIA</Comment>
+  <Author>Raynal M</Author>
+  <Author>Grellet F</Author>
+  <Author>Laudie M</Author>
+  <Author>Meyer Y</Author>
+  <Author>Cooke R</Author>
+  <Author>Delseny M</Author>
+  <Cite>Submitted (OCT-1992) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <EMBL prim_id="M37247" sec_id="AAA32777"></EMBL>
+ <EMBL prim_id="X14312" sec_id="CAA32493"></EMBL>
+ <EMBL prim_id="Z17590" sec_id="CAA79005"></EMBL>
+ <PIR prim_id="S08509" sec_id="S08509"></PIR>
+ <INTERPRO prim_id="IPR000459" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00190" sec_id="Seedstore_11s" status="1"></PFAM>
+ <PRINTS prim_id="PR00439" sec_id="11SGLOBULIN"></PRINTS>
+ <PROSITE prim_id="PS00305" sec_id="11S_SEED_STORAGE" status="1"></PROSITE>
+ <Keyword>Seed storage protein</Keyword>
+ <Keyword>Multigene family</Keyword>
+ <Keyword>Signal</Keyword>
+ <Features>
+  <SIGNAL from="1" to="24">
+   <Descr>POTENTIAL</Descr>
+  </SIGNAL>
+  <CHAIN from="25" to="282">
+   <Descr>ACIDIC CHAIN (BY SIMILARITY)</Descr>
+  </CHAIN>
+  <CHAIN from="283" to="472">
+   <Descr>BASIC CHAIN (BY SIMILARITY)</Descr>
+  </CHAIN>
+  <DISULFID from="112" to="289">
+   <Descr>INTERCHAIN (ALPHA-BETA) (POTENTIAL)</Descr>
+  </DISULFID>
+ </Features>
+</Entry>
+<Entry id="12S2_ARATH" class="STANDARD" mtype="PRT" seqlen="455">
+ <AC>P15456</AC>
+ <Mod date="01-APR-1990" Rel="14" type="Created"></Mod>
+ <Mod date="01-APR-1990" Rel="14" type="Last sequence update"></Mod>
+ <Mod date="15-DEC-1998" Rel="37" type="Last annotation update"></Mod>
+ <Descr>12S SEED STORAGE PROTEIN PRECURSOR</Descr>
+ <Gene>CRB</Gene>
+ <Species>Arabidopsis thaliana (Mouse-ear cress)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Rosidae</Org>
+ <Org>eurosids II</Org>
+ <Org>Brassicales</Org>
+ <Org>Brassicaceae</Org>
+ <Org>Arabidopsis</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=CV. LANDSBERG ERECTA</Comment>
+  <Author>Pang P.P</Author>
+  <Author>Pruitt R.E</Author>
+  <Author>Meyerowitz E.M</Author>
+  <Cite>Plant Mol. Biol. 11:805-820(1988)</Cite>
+ </Ref>
+ <Ref num="2" pos="SEQUENCE OF 240-360 FROM N.A">
+  <Comment>STRAIN=CV. COLUMBIA</Comment>
+  <Author>Raynal M</Author>
+  <Author>Grellet F</Author>
+  <Author>Laudie M</Author>
+  <Author>Meyer Y</Author>
+  <Author>Cooke R</Author>
+  <Author>Delseny M</Author>
+  <Cite>Submitted (OCT-1992) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <EMBL prim_id="M37248" sec_id="AAA32778"></EMBL>
+ <EMBL prim_id="X14313" sec_id="CAA32494"></EMBL>
+ <EMBL prim_id="Z17654" sec_id="CAA79024"></EMBL>
+ <PIR prim_id="S08510" sec_id="S08510"></PIR>
+ <INTERPRO prim_id="IPR000459" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00190" sec_id="Seedstore_11s" status="1"></PFAM>
+ <PRINTS prim_id="PR00439" sec_id="11SGLOBULIN"></PRINTS>
+ <PROSITE prim_id="PS00305" sec_id="11S_SEED_STORAGE" status="1"></PROSITE>
+ <Keyword>Seed storage protein</Keyword>
+ <Keyword>Multigene family</Keyword>
+ <Keyword>Signal</Keyword>
+ <Features>
+  <SIGNAL from="1" to="24">
+   <Descr>POTENTIAL</Descr>
+  </SIGNAL>
+  <CHAIN from="25" to="269">
+   <Descr>ACIDIC CHAIN (BY SIMILARITY)</Descr>
+  </CHAIN>
+  <CHAIN from="270" to="455">
+   <Descr>BASIC CHAIN (BY SIMILARITY)</Descr>
+  </CHAIN>
+  <DISULFID from="106" to="276">
+   <Descr>INTERCHAIN (ALPHA-BETA) (POTENTIAL)</Descr>
+  </DISULFID>
+ </Features>
+</Entry>
+<Entry id="1431_ENTHI" class="STANDARD" mtype="PRT" seqlen="239">
+ <AC>P42648</AC>
+ <Mod date="01-NOV-1995" Rel="32" type="Created"></Mod>
+ <Mod date="01-NOV-1995" Rel="32" type="Last sequence update"></Mod>
+ <Mod date="01-NOV-1997" Rel="35" type="Last annotation update"></Mod>
+ <Descr>14-3-3 PROTEIN 1 (14-3-3-1)</Descr>
+ <Species>Entamoeba histolytica</Species>
+ <Org>Eukaryota</Org>
+ <Org>Entamoebidae</Org>
+ <Org>Entamoeba</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=HM-1:IMSS</Comment>
+  <Author>Samuelson J</Author>
+  <Author>Shen P</Author>
+  <Author>Meckler G</Author>
+  <Author>Descoteaux S</Author>
+  <Author>Fu H</Author>
+  <Author>Lohia A</Author>
+  <Cite>Submitted (AUG-1994) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <EMBL prim_id="U13418" sec_id="AAA80185"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+</Entry>
+<Entry id="1431_LYCES" class="STANDARD" mtype="PRT" seqlen="249">
+ <AC>P93206</AC>
+ <Mod date="15-JUL-1998" Rel="36" type="Created"></Mod>
+ <Mod date="15-JUL-1998" Rel="36" type="Last sequence update"></Mod>
+ <Mod date="15-JUL-1998" Rel="36" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN 1</Descr>
+ <Gene>TFT1</Gene>
+ <Species>Lycopersicon esculentum (Tomato)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Asteridae</Org>
+ <Org>euasterids I</Org>
+ <Org>Solanales</Org>
+ <Org>Solanaceae</Org>
+ <Org>Solanum</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=CV. MONEYMAKER</Comment>
+  <Comment>TISSUE=LEAF</Comment>
+  <Author>Roberts M.R</Author>
+  <Author>Bowles D.J</Author>
+  <Cite>Submitted (JAN-1997) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <EMBL prim_id="X95900" sec_id="CAA65145"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+</Entry>
+<Entry id="1431_MAIZE" class="STANDARD" mtype="PRT" seqlen="261">
+ <AC>P49106</AC>
+ <Mod date="01-FEB-1996" Rel="33" type="Created"></Mod>
+ <Mod date="01-FEB-1996" Rel="33" type="Last sequence update"></Mod>
+ <Mod date="01-OCT-1996" Rel="34" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN GF14-6</Descr>
+ <Gene>GRF1</Gene>
+ <Species>Zea mays (Maize)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>Liliopsida</Org>
+ <Org>Poales</Org>
+ <Org>Poaceae</Org>
+ <Org>Zea</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <DB>MEDLINE</DB>
+  <MedlineID>95148741</MedlineID>
+  <Author>de Vetten N.C</Author>
+  <Author>Ferl R.J</Author>
+  <Cite>Plant Physiol. 106:1593-1604(1994)</Cite>
+ </Ref>
+ <EMBL prim_id="S77133" sec_id="AAB33304"></EMBL>
+ <MAIZEDB prim_id="65832" sec_id="-"></MAIZEDB>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+</Entry>
+<Entry id="1431_SCHMA" class="STANDARD" mtype="PRT" seqlen="252">
+ <AC>Q26540</AC>
+ <Mod date="15-JUL-1998" Rel="36" type="Created"></Mod>
+ <Mod date="15-JUL-1998" Rel="36" type="Last sequence update"></Mod>
+ <Mod date="15-JUL-1998" Rel="36" type="Last annotation update"></Mod>
+ <Descr>14-3-3 PROTEIN HOMOLOG 1</Descr>
+ <Species>Schistosoma mansoni (Blood fluke)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Metazoa</Org>
+ <Org>Platyhelminthes</Org>
+ <Org>Neodermata</Org>
+ <Org>Trematoda</Org>
+ <Org>Digenea</Org>
+ <Org>Strigeidida</Org>
+ <Org>Schistosomatoidea</Org>
+ <Org>Schistosomatidae</Org>
+ <Org>Schistosoma</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=PUERTO RICAN</Comment>
+  <DB>MEDLINE</DB>
+  <MedlineID>96123403</MedlineID>
+  <Author>Schechtman D</Author>
+  <Author>Ram D</Author>
+  <Author>Tarrab-Hazdai R</Author>
+  <Author>Arnon R</Author>
+  <Author>Schechter I</Author>
+  <Cite>Mol. Biochem. Parasitol. 73:275-278(1995)</Cite>
+ </Ref>
+ <EMBL prim_id="U24281" sec_id="AAC46983"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+ <Features>
+  <SIMILAR from="133" to="149">
+   <Descr>TO THE C-TERMINUS OF ANNEXINS</Descr>
+  </SIMILAR>
+ </Features>
+</Entry>
+<Entry id="1432_ENTHI" class="STANDARD" mtype="PRT" seqlen="238">
+ <AC>P42649</AC>
+ <Mod date="01-NOV-1995" Rel="32" type="Created"></Mod>
+ <Mod date="01-NOV-1995" Rel="32" type="Last sequence update"></Mod>
+ <Mod date="01-NOV-1997" Rel="35" type="Last annotation update"></Mod>
+ <Descr>14-3-3 PROTEIN 2 (14-3-3-2)</Descr>
+ <Species>Entamoeba histolytica</Species>
+ <Org>Eukaryota</Org>
+ <Org>Entamoebidae</Org>
+ <Org>Entamoeba</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=HM-1:IMSS</Comment>
+  <Author>Samuelson J</Author>
+  <Author>Shen P</Author>
+  <Author>Meckler G</Author>
+  <Author>Descoteaux S</Author>
+  <Author>Fu H</Author>
+  <Author>Lohia A</Author>
+  <Cite>Submitted (AUG-1994) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <EMBL prim_id="U13419" sec_id="AAA80186"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+</Entry>
+<Entry id="1432_LYCES" class="STANDARD" mtype="PRT" seqlen="254">
+ <AC>P93208</AC>
+ <Mod date="15-JUL-1998" Rel="36" type="Created"></Mod>
+ <Mod date="15-JUL-1998" Rel="36" type="Last sequence update"></Mod>
+ <Mod date="15-JUL-1998" Rel="36" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN 2</Descr>
+ <Gene>TFT2</Gene>
+ <Species>Lycopersicon esculentum (Tomato)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Asteridae</Org>
+ <Org>euasterids I</Org>
+ <Org>Solanales</Org>
+ <Org>Solanaceae</Org>
+ <Org>Solanum</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=CV. MONEYMAKER</Comment>
+  <Comment>TISSUE=LEAF</Comment>
+  <Author>Roberts M.R</Author>
+  <Author>Bowles D.J</Author>
+  <Cite>Submitted (JAN-1997) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <EMBL prim_id="X95901" sec_id="CAA65146"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+</Entry>
+<Entry id="1432_MAIZE" class="STANDARD" mtype="PRT" seqlen="261">
+ <AC>Q01526</AC>
+ <Mod date="01-JUL-1993" Rel="26" type="Created"></Mod>
+ <Mod date="01-FEB-1996" Rel="33" type="Last sequence update"></Mod>
+ <Mod date="01-FEB-1996" Rel="33" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN GF14-12</Descr>
+ <Gene>GRF2</Gene>
+ <Species>Zea mays (Maize)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>Liliopsida</Org>
+ <Org>Poales</Org>
+ <Org>Poaceae</Org>
+ <Org>Zea</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <DB>MEDLINE</DB>
+  <MedlineID>95148741</MedlineID>
+  <Author>de Vetten N.C</Author>
+  <Author>Ferl R.J</Author>
+  <Cite>Plant Physiol. 106:1593-1604(1994)</Cite>
+ </Ref>
+ <Ref num="2" pos="SEQUENCE OF 14-261 FROM N.A">
+  <DB>MEDLINE</DB>
+  <MedlineID>93076113</MedlineID>
+  <Author>de Vetten N.C</Author>
+  <Author>Lu G</Author>
+  <Author>Ferl R.J</Author>
+  <Cite>Plant Cell 4:1295-1307(1992)</Cite>
+ </Ref>
+ <EMBL prim_id="S77135" sec_id="-" status="NOT_ANNOTATED_CDS"></EMBL>
+ <EMBL prim_id="M96856" sec_id="AAA33505"></EMBL>
+ <PIR prim_id="JQ1680" sec_id="JQ1680"></PIR>
+ <MAIZEDB prim_id="65832" sec_id="-"></MAIZEDB>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+</Entry>
+<Entry id="1432_SCHMA" class="STANDARD" mtype="PRT" seqlen="214">
+ <AC>Q26537</AC>
+ <Mod date="15-JUL-1998" Rel="36" type="Created"></Mod>
+ <Mod date="15-JUL-1998" Rel="36" type="Last sequence update"></Mod>
+ <Mod date="15-JUL-1998" Rel="36" type="Last annotation update"></Mod>
+ <Descr>14-3-3 PROTEIN HOMOLOG 2 (14-3-3-2) (FRAGMENT)</Descr>
+ <Species>Schistosoma mansoni (Blood fluke)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Metazoa</Org>
+ <Org>Platyhelminthes</Org>
+ <Org>Neodermata</Org>
+ <Org>Trematoda</Org>
+ <Org>Digenea</Org>
+ <Org>Strigeidida</Org>
+ <Org>Schistosomatoidea</Org>
+ <Org>Schistosomatidae</Org>
+ <Org>Schistosoma</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=NMRI</Comment>
+  <Author>Lee K.W</Author>
+  <Author>Thakur A</Author>
+  <Author>Karim A.M</Author>
+  <Author>Loverde P.T</Author>
+  <Cite>Submitted (JUN-1996) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <EMBL prim_id="L78441" sec_id="AAB02100"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+ <Features>
+  <NON_TER from="1" to="1"></NON_TER>
+ </Features>
+</Entry>
+<Entry id="1433_CAEEL" class="STANDARD" mtype="PRT" seqlen="248">
+ <AC>P41932</AC>
+ <AC>Q21537</AC>
+ <Mod date="01-NOV-1995" Rel="32" type="Created"></Mod>
+ <Mod date="01-NOV-1995" Rel="32" type="Last sequence update"></Mod>
+ <Mod date="15-DEC-1998" Rel="37" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN 1</Descr>
+ <Gene>FTT-1 OR M117.2</Gene>
+ <Species>Caenorhabditis elegans</Species>
+ <Org>Eukaryota</Org>
+ <Org>Metazoa</Org>
+ <Org>Nematoda</Org>
+ <Org>Chromadorea</Org>
+ <Org>Rhabditida</Org>
+ <Org>Rhabditoidea</Org>
+ <Org>Rhabditidae</Org>
+ <Org>Peloderinae</Org>
+ <Org>Caenorhabditis</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=BRISTOL N2</Comment>
+  <DB>MEDLINE</DB>
+  <MedlineID>95011616</MedlineID>
+  <Author>Wang W</Author>
+  <Author>Shakes D.C</Author>
+  <Cite>Gene 147:215-218(1994)</Cite>
+ </Ref>
+ <Ref num="2" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=BRISTOL N2</Comment>
+  <Author>Kershaw J</Author>
+  <Cite>Submitted (MAY-1996) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <EMBL prim_id="U05038" sec_id="AAA61872"></EMBL>
+ <EMBL prim_id="Z73910" sec_id="CAA98138"></EMBL>
+ <WORMPEP prim_id="M117"></WORMPEP>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+ <Features>
+  <CONFLICT from="118" to="118">
+   <Descr>A -> V (IN REF. 2)</Descr>
+  </CONFLICT>
+ </Features>
+</Entry>
+<Entry id="1433_CANAL" class="STANDARD" mtype="PRT" seqlen="264">
+ <AC>O42766</AC>
+ <Mod date="15-JUL-1998" Rel="36" type="Created"></Mod>
+ <Mod date="15-JUL-1998" Rel="36" type="Last sequence update"></Mod>
+ <Mod date="15-JUL-1999" Rel="38" type="Last annotation update"></Mod>
+ <Descr>14-3-3 PROTEIN HOMOLOG</Descr>
+ <Gene>BMH1 OR BMH</Gene>
+ <Species>Candida albicans (Yeast)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Fungi</Org>
+ <Org>Ascomycota</Org>
+ <Org>Saccharomycetes</Org>
+ <Org>Saccharomycetales</Org>
+ <Org>anamorphic Saccharomycetales</Org>
+ <Org>Candida</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=SC5314</Comment>
+  <Author>Cognetti D</Author>
+  <Author>Sturtevant J</Author>
+  <Cite>Submitted (DEC-1997) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <EMBL prim_id="AF038154" sec_id="AAB96910"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+</Entry>
+<Entry id="1433_CHLRE" class="STANDARD" mtype="PRT" seqlen="259">
+ <AC>P52908</AC>
+ <Mod date="01-OCT-1996" Rel="34" type="Created"></Mod>
+ <Mod date="01-OCT-1996" Rel="34" type="Last sequence update"></Mod>
+ <Mod date="01-OCT-1996" Rel="34" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN</Descr>
+ <Species>Chlamydomonas reinhardtii</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Chlorophyta</Org>
+ <Org>Chlorophyceae</Org>
+ <Org>Volvocales</Org>
+ <Org>Chlamydomonadaceae</Org>
+ <Org>Chlamydomonas</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=CW15</Comment>
+  <DB>MEDLINE</DB>
+  <MedlineID>95359208</MedlineID>
+  <Author>Lieblich I</Author>
+  <Author>Voigt J</Author>
+  <Cite>Biochim. Biophys. Acta 1263:79-85(1995)</Cite>
+ </Ref>
+ <EMBL prim_id="X79445" sec_id="CAA55964"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+</Entry>
+<Entry id="1433_DICDI" class="STANDARD" mtype="PRT" seqlen="252">
+ <AC>P54632</AC>
+ <Mod date="01-OCT-1996" Rel="34" type="Created"></Mod>
+ <Mod date="01-OCT-1996" Rel="34" type="Last sequence update"></Mod>
+ <Mod date="01-NOV-1997" Rel="35" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN</Descr>
+ <Gene>FTTB</Gene>
+ <Species>Dictyostelium discoideum (Slime mold)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Dictyosteliida</Org>
+ <Org>Dictyostelium</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Author>Knetsch M.L.W</Author>
+  <Author>Ennis H.L</Author>
+  <Author>van Heusden P</Author>
+  <Author>Snaar-Jagalska B.E</Author>
+  <Cite>Submitted (FEB-1996) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <EMBL prim_id="X95568" sec_id="CAA64814"></EMBL>
+ <DICTYDB prim_id="DD01070" sec_id="FTTB"></DICTYDB>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+</Entry>
+<Entry id="1433_ENTHI" class="STANDARD" mtype="PRT" seqlen="236">
+ <AC>P42650</AC>
+ <Mod date="01-NOV-1995" Rel="32" type="Created"></Mod>
+ <Mod date="01-NOV-1995" Rel="32" type="Last sequence update"></Mod>
+ <Mod date="01-NOV-1997" Rel="35" type="Last annotation update"></Mod>
+ <Descr>14-3-3 PROTEIN 3 (14-3-3-3) (FRAGMENT)</Descr>
+ <Species>Entamoeba histolytica</Species>
+ <Org>Eukaryota</Org>
+ <Org>Entamoebidae</Org>
+ <Org>Entamoeba</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=HM-1:IMSS</Comment>
+  <Author>Samuelson J</Author>
+  <Author>Shen P</Author>
+  <Author>Meckler G</Author>
+  <Author>Descoteaux S</Author>
+  <Author>Fu H</Author>
+  <Author>Lohia A</Author>
+  <Cite>Submitted (AUG-1994) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <EMBL prim_id="U13420" sec_id="AAA80187"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+ <Features>
+  <NON_TER from="1" to="1"></NON_TER>
+ </Features>
+</Entry>
+<Entry id="1433_FUCVE" class="STANDARD" mtype="PRT" seqlen="251">
+ <AC>Q39757</AC>
+ <Mod date="01-NOV-1997" Rel="35" type="Created"></Mod>
+ <Mod date="01-NOV-1997" Rel="35" type="Last sequence update"></Mod>
+ <Mod date="01-NOV-1997" Rel="35" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN</Descr>
+ <Species>Fucus vesiculosus</Species>
+ <Org>Eukaryota</Org>
+ <Org>stramenopiles</Org>
+ <Org>Phaeophyceae/Xanthophyceae group</Org>
+ <Org>Phaeophyceae</Org>
+ <Org>Fucales</Org>
+ <Org>Fucaceae</Org>
+ <Org>Fucus</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>TISSUE=FROND TIPS</Comment>
+  <Author>Nicolaus B.H.H</Author>
+  <Cite>Submitted (JUN-1996) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <EMBL prim_id="X98886" sec_id="CAA67389"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="FALSE_NEG"></PROSITE>
+</Entry>
+<Entry id="1433_HELAN" class="STANDARD" mtype="PRT" seqlen="259">
+ <AC>O65352</AC>
+ <Mod date="15-JUL-1999" Rel="38" type="Created"></Mod>
+ <Mod date="15-JUL-1999" Rel="38" type="Last sequence update"></Mod>
+ <Mod date="15-JUL-1999" Rel="38" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN</Descr>
+ <Species>Helianthus annuus (Common sunflower)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Asteridae</Org>
+ <Org>euasterids II</Org>
+ <Org>Asterales</Org>
+ <Org>Asteraceae</Org>
+ <Org>Asteroideae</Org>
+ <Org>Heliantheae</Org>
+ <Org>Helianthus</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=CV. HA300</Comment>
+  <Comment>TISSUE=POLLEN</Comment>
+  <Author>Eliasson A</Author>
+  <Author>Hammann P</Author>
+  <Author>Steinmetz A</Author>
+  <Cite>Submitted (MAY-1998) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <EMBL prim_id="AF066076" sec_id="AAC17447"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+</Entry>
+<Entry id="1433_LYCES" class="STANDARD" mtype="PRT" seqlen="260">
+ <AC>P93209</AC>
+ <AC>P42651</AC>
+ <Mod date="01-NOV-1995" Rel="32" type="Created"></Mod>
+ <Mod date="15-JUL-1998" Rel="36" type="Last sequence update"></Mod>
+ <Mod date="15-JUL-1998" Rel="36" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN 3 (PBLT3)</Descr>
+ <Gene>TFT3</Gene>
+ <Species>Lycopersicon esculentum (Tomato)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Asteridae</Org>
+ <Org>euasterids I</Org>
+ <Org>Solanales</Org>
+ <Org>Solanaceae</Org>
+ <Org>Solanum</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=CV. MONEYMAKER</Comment>
+  <Comment>TISSUE=LEAF</Comment>
+  <Author>Roberts M.R</Author>
+  <Author>Bowles D.J</Author>
+  <Cite>Submitted (JAN-1997) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <Ref num="2" pos="SEQUENCE OF 30-260 FROM N.A">
+  <Comment>STRAIN=CV. AILSA CRAIG</Comment>
+  <Comment>TISSUE=FRUIT</Comment>
+  <DB>MEDLINE</DB>
+  <MedlineID>95359205</MedlineID>
+  <Author>Laughner B</Author>
+  <Author>Lawrence S.D</Author>
+  <Author>Ferl R.J</Author>
+  <Cite>Biochim. Biophys. Acta 1263:67-70(1995)</Cite>
+ </Ref>
+ <EMBL prim_id="X95902" sec_id="CAA65147"></EMBL>
+ <EMBL prim_id="L29151" sec_id="AAA99430"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+ <Features>
+  <CONFLICT from="73" to="73">
+   <Descr>I -> V (IN REF. 2)</Descr>
+  </CONFLICT>
+  <CONFLICT from="158" to="158">
+   <Descr>A -> G (IN REF. 2)</Descr>
+  </CONFLICT>
+ </Features>
+</Entry>
+<Entry id="1433_MESCR" class="STANDARD" mtype="PRT" seqlen="264">
+ <AC>P93259</AC>
+ <Mod date="15-JUL-1998" Rel="36" type="Created"></Mod>
+ <Mod date="15-JUL-1998" Rel="36" type="Last sequence update"></Mod>
+ <Mod date="15-JUL-1998" Rel="36" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN (G-BOX BINDING FACTOR)</Descr>
+ <Gene>GBF</Gene>
+ <Species>Mesembryanthemum crystallinum (Common ice plant)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Caryophyllidae</Org>
+ <Org>Caryophyllales</Org>
+ <Org>Aizoaceae</Org>
+ <Org>Mesembryanthemum</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Author>Michalowski C.B</Author>
+  <Author>Quigley-Landreau F</Author>
+  <Author>Bohnert H.J</Author>
+  <Cite>Submitted (NOV-1996) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <EMBL prim_id="U80070" sec_id="AAB40395"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+</Entry>
+<Entry id="1433_NEOCA" class="STANDARD" mtype="PRT" seqlen="266">
+ <AC>Q25538</AC>
+ <Mod date="15-JUL-1998" Rel="36" type="Created"></Mod>
+ <Mod date="15-JUL-1998" Rel="36" type="Last sequence update"></Mod>
+ <Mod date="15-JUL-1998" Rel="36" type="Last annotation update"></Mod>
+ <Descr>14-3-3 PROTEIN HOMOLOG</Descr>
+ <Species>Neospora caninum</Species>
+ <Org>Eukaryota</Org>
+ <Org>Alveolata</Org>
+ <Org>Apicomplexa</Org>
+ <Org>Coccidia</Org>
+ <Org>Eimeriida</Org>
+ <Org>Sarcocystidae</Org>
+ <Org>Neospora</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=NC-1</Comment>
+  <DB>MEDLINE</DB>
+  <MedlineID>96258557</MedlineID>
+  <Author>Lally N.C</Author>
+  <Author>Jenkins M.C</Author>
+  <Author>Dubey J.P</Author>
+  <Cite>Mol. Biochem. Parasitol. 75:169-178(1996)</Cite>
+ </Ref>
+ <EMBL prim_id="U31542" sec_id="AAC47012"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Features>
+  <DOMAIN from="251" to="254">
+   <Descr>POLY-GLN</Descr>
+  </DOMAIN>
+ </Features>
+</Entry>
+<Entry id="1433_OENHO" class="STANDARD" mtype="PRT" seqlen="260">
+ <AC>P29307</AC>
+ <Mod date="01-DEC-1992" Rel="24" type="Created"></Mod>
+ <Mod date="01-NOV-1995" Rel="32" type="Last sequence update"></Mod>
+ <Mod date="01-NOV-1995" Rel="32" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN</Descr>
+ <Species>Oenothera hookeri (Hooker's evening primrose)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Rosidae</Org>
+ <Org>eurosids II</Org>
+ <Org>Myrtales</Org>
+ <Org>Onagraceae</Org>
+ <Org>Oenothera</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <DB>MEDLINE</DB>
+  <MedlineID>92128551</MedlineID>
+  <Author>Hirsch S</Author>
+  <Author>Aitken A</Author>
+  <Author>Bertsch U</Author>
+  <Author>Soll J</Author>
+  <Cite>FEBS Lett. 296:222-224(1992)</Cite>
+ </Ref>
+ <EMBL prim_id="X62838" sec_id="CAA44642"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+</Entry>
+<Entry id="1433_ORYSA" class="STANDARD" mtype="PRT" seqlen="260">
+ <AC>Q06967</AC>
+ <Mod date="01-JUN-1994" Rel="29" type="Created"></Mod>
+ <Mod date="01-JUN-1994" Rel="29" type="Last sequence update"></Mod>
+ <Mod date="01-JUN-1994" Rel="29" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN S94</Descr>
+ <Species>Oryza sativa (Rice)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>Liliopsida</Org>
+ <Org>Poales</Org>
+ <Org>Poaceae</Org>
+ <Org>Oryza</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <DB>MEDLINE</DB>
+  <MedlineID>94009718</MedlineID>
+  <Author>Uchimiya H</Author>
+  <Author>Kidou S</Author>
+  <Author>Anai T</Author>
+  <Author>Umeda M</Author>
+  <Author>Aotsuka S</Author>
+  <Author>Tsuge T</Author>
+  <Author>Kato A</Author>
+  <Cite>FEBS Lett. 332:282-286(1993)</Cite>
+ </Ref>
+ <Ref num="2" pos="SEQUENCE FROM N.A">
+  <DB>MEDLINE</DB>
+  <MedlineID>93144687</MedlineID>
+  <Author>Kidou S</Author>
+  <Author>Umeda M</Author>
+  <Author>Kato A</Author>
+  <Author>Uchimiya H</Author>
+  <Cite>Plant Mol. Biol. 21:191-194(1993)</Cite>
+ </Ref>
+ <EMBL prim_id="D16140" sec_id="BAA03711"></EMBL>
+ <PIR prim_id="S30927" sec_id="S30927"></PIR>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+</Entry>
+<Entry id="1433_PEA" class="STANDARD" mtype="PRT" seqlen="260">
+ <AC>P46266</AC>
+ <Mod date="01-NOV-1995" Rel="32" type="Created"></Mod>
+ <Mod date="01-NOV-1995" Rel="32" type="Last sequence update"></Mod>
+ <Mod date="01-OCT-1996" Rel="34" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN</Descr>
+ <Species>Pisum sativum (Garden pea)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Rosidae</Org>
+ <Org>eurosids I</Org>
+ <Org>Fabales</Org>
+ <Org>Fabaceae</Org>
+ <Org>Papilionoideae</Org>
+ <Org>Pisum</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=CV. ALASKA</Comment>
+  <DB>MEDLINE</DB>
+  <MedlineID>95288384</MedlineID>
+  <Author>Stankovic B</Author>
+  <Author>Garic-Stankovic A</Author>
+  <Author>Smith C.M</Author>
+  <Author>Davies E</Author>
+  <Cite>Plant Physiol. 107:1481-1482(1995)</Cite>
+ </Ref>
+ <EMBL prim_id="U15036" sec_id="AAA85817"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+</Entry>
+<Entry id="1433_SOLTU" class="STANDARD" mtype="PRT" seqlen="259">
+ <AC>Q41418</AC>
+ <Mod date="01-NOV-1997" Rel="35" type="Created"></Mod>
+ <Mod date="01-NOV-1997" Rel="35" type="Last sequence update"></Mod>
+ <Mod date="01-NOV-1997" Rel="35" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN</Descr>
+ <Species>Solanum tuberosum (Potato)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Asteridae</Org>
+ <Org>euasterids I</Org>
+ <Org>Solanales</Org>
+ <Org>Solanaceae</Org>
+ <Org>Solanum</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=CV. DESIREE</Comment>
+  <Author>Wilczynski G</Author>
+  <Author>Szopa J</Author>
+  <Cite>Submitted (MAY-1996) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <EMBL prim_id="X97724" sec_id="CAA66309"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+</Entry>
+<Entry id="1433_SPIOL" class="STANDARD" mtype="PRT" seqlen="220">
+ <AC>P29308</AC>
+ <Mod date="01-DEC-1992" Rel="24" type="Created"></Mod>
+ <Mod date="01-DEC-1992" Rel="24" type="Last sequence update"></Mod>
+ <Mod date="01-DEC-1992" Rel="24" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN (FRAGMENT)</Descr>
+ <Species>Spinacia oleracea (Spinach)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Caryophyllidae</Org>
+ <Org>Caryophyllales</Org>
+ <Org>Chenopodiaceae</Org>
+ <Org>Spinacia</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <DB>MEDLINE</DB>
+  <MedlineID>92128551</MedlineID>
+  <Author>Hirsch S</Author>
+  <Author>Aitken A</Author>
+  <Author>Bertsch U</Author>
+  <Author>Soll J</Author>
+  <Cite>FEBS Lett. 296:222-224(1992)</Cite>
+ </Ref>
+ <EMBL prim_id="X62837" sec_id="CAA44641"></EMBL>
+ <PIR prim_id="S20581" sec_id="S20581"></PIR>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Features>
+  <NON_TER from="1" to="1"></NON_TER>
+ </Features>
+</Entry>
+<Entry id="1433_TOBAC" class="STANDARD" mtype="PRT" seqlen="251">
+ <AC>Q41246</AC>
+ <Mod date="01-NOV-1997" Rel="35" type="Created"></Mod>
+ <Mod date="01-NOV-1997" Rel="35" type="Last sequence update"></Mod>
+ <Mod date="01-NOV-1997" Rel="35" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN</Descr>
+ <Species>Nicotiana tabacum (Common tobacco)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Asteridae</Org>
+ <Org>euasterids I</Org>
+ <Org>Solanales</Org>
+ <Org>Solanaceae</Org>
+ <Org>Nicotiana</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=CV. WISCONSIN 38</Comment>
+  <DB>MEDLINE</DB>
+  <MedlineID>95093475</MedlineID>
+  <Author>Chen Z</Author>
+  <Author>Fu H</Author>
+  <Author>Liu D</Author>
+  <Author>Chang P.F</Author>
+  <Author>Narasimhan M</Author>
+  <Author>Ferl R</Author>
+  <Author>Hasegawa P.M</Author>
+  <Author>Bressan R.A</Author>
+  <Cite>Plant J. 6:729-740(1994)</Cite>
+ </Ref>
+ <EMBL prim_id="S76737" sec_id="AAB32832"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+</Entry>
+<Entry id="1433_TRIHA" class="STANDARD" mtype="PRT" seqlen="262">
+ <AC>Q99002</AC>
+ <Mod date="01-NOV-1997" Rel="35" type="Created"></Mod>
+ <Mod date="01-NOV-1997" Rel="35" type="Last sequence update"></Mod>
+ <Mod date="15-JUL-1998" Rel="36" type="Last annotation update"></Mod>
+ <Descr>14-3-3 PROTEIN HOMOLOG (TH1433)</Descr>
+ <Species>Trichoderma harzianum</Species>
+ <Org>Eukaryota</Org>
+ <Org>Fungi</Org>
+ <Org>Ascomycota</Org>
+ <Org>anamorphic Ascomycota</Org>
+ <Org>Trichoderma</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=P1</Comment>
+  <DB>MEDLINE</DB>
+  <MedlineID>96257206</MedlineID>
+  <Author>Klemsdal S.S</Author>
+  <Author>Hayes C.K</Author>
+  <Author>Hjeljord L</Author>
+  <Author>Lorito M</Author>
+  <Author>Harman G.E</Author>
+  <Author>Tronsmo A</Author>
+  <Cite>Gene 171:123-127(1996)</Cite>
+ </Ref>
+ <EMBL prim_id="U24158" sec_id="AAB17101"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+</Entry>
+<Entry id="1433_XENLA" class="STANDARD" mtype="PRT" seqlen="235">
+ <AC>P29309</AC>
+ <Mod date="01-DEC-1992" Rel="24" type="Created"></Mod>
+ <Mod date="01-DEC-1992" Rel="24" type="Last sequence update"></Mod>
+ <Mod date="01-DEC-1992" Rel="24" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN (FRAGMENT)</Descr>
+ <Species>Xenopus laevis (African clawed frog)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Metazoa</Org>
+ <Org>Chordata</Org>
+ <Org>Craniata</Org>
+ <Org>Vertebrata</Org>
+ <Org>Euteleostomi</Org>
+ <Org>Amphibia</Org>
+ <Org>Batrachia</Org>
+ <Org>Anura</Org>
+ <Org>Mesobatrachia</Org>
+ <Org>Pipoidea</Org>
+ <Org>Pipidae</Org>
+ <Org>Xenopodinae</Org>
+ <Org>Xenopus</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <DB>MEDLINE</DB>
+  <MedlineID>92272745</MedlineID>
+  <Author>Martens G.J</Author>
+  <Author>Piosik P.A</Author>
+  <Author>Danrn E.H.J</Author>
+  <Cite>Biochem. Biophys. Res. Commun. 184:1456-1469(1992)</Cite>
+ </Ref>
+ <EMBL prim_id="M86928" sec_id="AAA49698"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Features>
+  <NON_TER from="1" to="1"></NON_TER>
+ </Features>
+</Entry>
+<Entry id="1434_CAEEL" class="STANDARD" mtype="PRT" seqlen="248">
+ <AC>Q20655</AC>
+ <Mod date="01-NOV-1997" Rel="35" type="Created"></Mod>
+ <Mod date="01-NOV-1997" Rel="35" type="Last sequence update"></Mod>
+ <Mod date="01-NOV-1997" Rel="35" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN 2</Descr>
+ <Gene>FTT-2 OR F52D10.3</Gene>
+ <Species>Caenorhabditis elegans</Species>
+ <Org>Eukaryota</Org>
+ <Org>Metazoa</Org>
+ <Org>Nematoda</Org>
+ <Org>Chromadorea</Org>
+ <Org>Rhabditida</Org>
+ <Org>Rhabditoidea</Org>
+ <Org>Rhabditidae</Org>
+ <Org>Peloderinae</Org>
+ <Org>Caenorhabditis</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=BRISTOL N2</Comment>
+  <Author>Kershaw J</Author>
+  <Cite>Submitted (NOV-1995) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <EMBL prim_id="Z66564" sec_id="CAA91474"></EMBL>
+ <WORMPEP prim_id="F52D10"></WORMPEP>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+</Entry>
+<Entry id="1434_LYCES" class="STANDARD" mtype="PRT" seqlen="260">
+ <AC>P42652</AC>
+ <Mod date="01-NOV-1995" Rel="32" type="Created"></Mod>
+ <Mod date="01-NOV-1995" Rel="32" type="Last sequence update"></Mod>
+ <Mod date="15-JUL-1998" Rel="36" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN 4 (PBLT4)</Descr>
+ <Species>Lycopersicon esculentum (Tomato)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Asteridae</Org>
+ <Org>euasterids I</Org>
+ <Org>Solanales</Org>
+ <Org>Solanaceae</Org>
+ <Org>Solanum</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=CV. AILSA CRAIG</Comment>
+  <Comment>TISSUE=FRUIT</Comment>
+  <DB>MEDLINE</DB>
+  <MedlineID>95359205</MedlineID>
+  <Author>Laughner B</Author>
+  <Author>Lawrence S.D</Author>
+  <Author>Ferl R.J</Author>
+  <Cite>Biochim. Biophys. Acta 1263:67-70(1995)</Cite>
+ </Ref>
+ <EMBL prim_id="L29150" sec_id="AAA99431"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+</Entry>
+<Entry id="1434_SOLTU" class="STANDARD" mtype="PRT" seqlen="254">
+ <AC>Q43643</AC>
+ <Mod date="01-NOV-1997" Rel="35" type="Created"></Mod>
+ <Mod date="01-NOV-1997" Rel="35" type="Last sequence update"></Mod>
+ <Mod date="01-NOV-1997" Rel="35" type="Last annotation update"></Mod>
+ <Descr>14-3-3-LIKE PROTEIN RA215</Descr>
+ <Species>Solanum tuberosum (Potato)</Species>
+ <Org>Eukaryota</Org>
+ <Org>Viridiplantae</Org>
+ <Org>Embryophyta</Org>
+ <Org>Tracheophyta</Org>
+ <Org>Spermatophyta</Org>
+ <Org>Magnoliophyta</Org>
+ <Org>eudicotyledons</Org>
+ <Org>Asteridae</Org>
+ <Org>euasterids I</Org>
+ <Org>Solanales</Org>
+ <Org>Solanaceae</Org>
+ <Org>Solanum</Org>
+ <Ref num="1" pos="SEQUENCE FROM N.A">
+  <Comment>STRAIN=CV. DESIREE</Comment>
+  <Comment>TISSUE=ROOT</Comment>
+  <Author>Wilczynski G</Author>
+  <Author>Szopa J</Author>
+  <Cite>Submitted (JUN-1995) to the EMBL/GenBank/DDBJ databases</Cite>
+ </Ref>
+ <EMBL prim_id="X87370" sec_id="CAA60800"></EMBL>
+ <INTERPRO prim_id="IPR000308" sec_id="-"></INTERPRO>
+ <PFAM prim_id="PF00244" sec_id="14-3-3" status="1"></PFAM>
+ <PRINTS prim_id="PR00305" sec_id="1433ZETA"></PRINTS>
+ <PROSITE prim_id="PS00796" sec_id="1433_1" status="1"></PROSITE>
+ <PROSITE prim_id="PS00797" sec_id="1433_2" status="1"></PROSITE>
+ <Keyword>Multigene family</Keyword>
+</Entry>

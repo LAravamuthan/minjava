@@ -14,7 +14,6 @@ import heap.*;
  * index files (class BTreeFile).  It derives from abstract base
  * class IndexFileScan.  
  */
-@SuppressWarnings("Duplicates")
 public class BTFileScan  extends IndexFileScan
              implements  GlobalConst
 {

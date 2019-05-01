@@ -18,8 +18,8 @@ import heap.*;
  * abstract base class IndexFile.
  * It provides an insert/delete interface.
  */
-@SuppressWarnings("Duplicates")
-public class BTreeFile extends IndexFile
+
+public class BTreeFile extends IndexFile 
   implements GlobalConst {
   
   private final static int MAGIC0=1989;
@@ -202,6 +202,7 @@ public class BTreeFile extends IndexFile
    *@exception IOException error from lower layer
    *@exception AddFileEntryException can not add file into DB
    */
+
   public BTreeFile(String filename, int keytype,
 		   int keysize, int delete_fashion)  
     throws GetFileEntryException, 
@@ -404,7 +405,7 @@ public class BTreeFile extends IndexFile
       
       if ( trace != null )
 	{
-	  trace.writeBytes( "INSERT " +  rid.pageNo + " "
+	  trace.writeBytes( "INSERT " + rid.pageNo + " "
 			    + rid.slotNo + " " + key + lineSep);
 	  trace.writeBytes( "DO" + lineSep);
 	  trace.flush();
@@ -1776,7 +1777,7 @@ public class BTreeFile extends IndexFile
 	   
     {
       BTFileScan scan = new BTFileScan();
-      if ( headerPage.get_rootId().pid==INVALID_PAGE) {
+      if (headerPage.get_rootId().pid==INVALID_PAGE) {
 	scan.leafPage=null;
 	return scan;
       }

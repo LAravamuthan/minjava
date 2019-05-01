@@ -48,17 +48,27 @@ public class Convert{
   public static intervaltype getIntervalValue (int position, byte []data)
    throws java.io.IOException
     {
-      DataInputStream intstream1, intstream2;
+      InputStream in1, in2;
+      DataInputStream instr1, instr2;
       intervaltype value = new intervaltype();
-      byte int1[] = new byte[4];
-      byte int2[] = new byte[4];
-      // Copy the values from the data byte[] to two byte array using the position location
-      System.arraycopy (data, position, int1, 0, 4);
-      System.arraycopy (data, position+4, int2, 0, 4);
-      // Create a new data input Stream from the ByteArrrayInputStream
-      intstream1 = new DataInputStream(new ByteArrayInputStream(int1));
-      intstream2 = new DataInputStream(new ByteArrayInputStream(int2));
-      value.assign(intstream1.readInt(), intstream2.readInt());
+      byte tmp1[] = new byte[4];
+      byte tmp2[] = new byte[4];
+      
+      // copy the value from data array out to a tmp byte array
+      System.arraycopy (data, position, tmp1, 0, 4);
+      System.arraycopy (data, position+4, tmp2, 0, 4);
+      
+      /* creates a new data input stream to read data from the
+       * specified input stream
+       */
+      in1 = new ByteArrayInputStream(tmp1);
+      in2 = new ByteArrayInputStream(tmp2);
+
+      instr1 = new DataInputStream(in1);
+      instr2 = new DataInputStream(in2);   
+
+      value.assign(instr1.readInt(), instr2.readInt());  
+
       return value;
     }
 
@@ -220,25 +230,29 @@ public class Convert{
   public static void setIntervalValue (intervaltype value, int position, byte []data) 
     throws java.io.IOException
     {
+      /* creates a new data output stream to write data to 
+       * underlying output stream
+       */
+      int st,ed;
+      st = value.get_s();
+      ed = value.get_e();
 
-      int starting_index,ending_index;
-      starting_index = value.get_s();
-      ending_index = value.get_e();
-      DataOutputStream outstream1, outstream2;
       OutputStream out1, out2 ;
-
-
+      DataOutputStream outstr1, outstr2;
+      
       out1 = new ByteArrayOutputStream();
       out2 = new ByteArrayOutputStream();
-      outstream1 = new DataOutputStream (out1);
-      outstream2 = new DataOutputStream (out2);
+      outstr1 = new DataOutputStream (out1);
+      outstr2 = new DataOutputStream (out2);
       // write the value to the output stream
-      outstream1.writeInt(starting_index);
-      outstream2.writeInt(ending_index);
-      // create valid byte array and push the the byte array to valid positions
+      
+      outstr1.writeInt(st);
+      outstr2.writeInt(ed);
+      // creates a byte array with this output stream size and the
+      // valid contents of the buffer have been copied into it
       byte []B1 = ((ByteArrayOutputStream) out1).toByteArray();
-      byte []B2 = ((ByteArrayOutputStream) out2).toByteArray();
-      // copies the first 4 bytes of this byte array into data[]
+      byte []B2 = ((ByteArrayOutputStream) out2).toByteArray();     
+      // copies the first 4 bytes of this byte array into data[] 
       System.arraycopy (B1, 0, data, position, 4);
       System.arraycopy (B2, 0, data, position+4, 4);
     }

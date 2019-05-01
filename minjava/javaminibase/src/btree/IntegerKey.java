@@ -1,4 +1,5 @@
 package btree;
+import global.*;
 
 /**  IntegerKey: It extends the KeyClass.
  *   It defines the integer Key.
@@ -26,8 +27,6 @@ public class IntegerKey extends KeyClass {
   { 
     key=new Integer(value);
   }
-
-
 
   /** get a copy of the integer key
    *  @return the reference of the copy 

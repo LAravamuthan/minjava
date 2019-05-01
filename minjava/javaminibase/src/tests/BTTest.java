@@ -16,15 +16,13 @@ import btree.*;
 
 //watching point: RID rid, some of them may not have to be newed.
 
-@SuppressWarnings("ALL")
 class BTDriver  implements GlobalConst
 {
-  public IntervalTreeFile intfile;
+
   public BTreeFile file;
   public int postfix=0;
   public int keyType;
   public BTFileScan scan;
-  public IntervalTFileScan intscan;
   
   protected String dbpath;  
   protected String logpath;
@@ -39,8 +37,8 @@ class BTDriver  implements GlobalConst
     SystemDefs sysdef = new SystemDefs( dbpath, 5000 ,5000,"Clock");  
     System.out.println ("\n" + "Running " + " tests...." + "\n");
     
-//    keyType=AttrType.attrInteger;
-    keyType= AttrType.attrInterval;
+    keyType=AttrType.attrInteger;
+    
     // Kill anything that might be hanging around
     String newdbpath;
     String newlogpath;
@@ -126,10 +124,7 @@ class BTDriver  implements GlobalConst
    System.out.println("[17]  Open which file (input an integer for the file name): ");
    System.out.println("[18]  Destroy which file (input an integer for the file name): ");
    
-   
    System.out.println("\n[19]  Quit!");
-   System.out.println("\n[20] Insert into interval tree!");
-   System.out.println("\n[21] Range scan on interval tree");
    System.out.print("Hi, make your choice :");
  } 
   
@@ -137,7 +132,6 @@ class BTDriver  implements GlobalConst
   protected void runAllTests (){
     PageId pageno=new PageId();
     int  key, n,m, num, choice, lowkeyInt, hikeyInt;    
-    intervaltype interkey;
     KeyClass lowkey, hikey;
     KeyDataEntry entry;
     RID rid;
@@ -146,14 +140,6 @@ class BTDriver  implements GlobalConst
     try{
       System.out.println(" ***************** The file name is: "+ "AAA"+postfix +"  **********"); 
       file=new BTreeFile("AAA"+postfix, keyType, 4, 1);//full delete
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-      return;
-    }
-      try{
-          System.out.println(" ***************** The file name is: "+ "AAA"+postfix +"  **********");
-          intfile=new IntervalTreeFile("siddharth", keyType, 8, 1);//full delete
     }
     catch(Exception e) {
       e.printStackTrace();
@@ -180,10 +166,10 @@ class BTDriver  implements GlobalConst
 	  file=new BTreeFile("AAA"+postfix, keyType, 100, 1);//full delete
 	  break;
 	case 2:
-	  BT.printBTree(intfile.getHeaderPage());
+	  BT.printBTree(file.getHeaderPage()); 
 	  break;          
 	case 3:
-	  BT.printAllLeafPages(intfile.getHeaderPage());
+	  BT.printAllLeafPages(file.getHeaderPage());
 	  break;            
 	case 4:
 	  System.out.println("Please input the page number: ");              
@@ -321,40 +307,6 @@ class BTDriver  implements GlobalConst
 	  break;         
 	case 19:
 	  break;
-    case 20:
-        Scanner reader = new Scanner(System.in);
-        System.out.println("Please input the interval key to insert: ");
-        int keyS= GetStuff.getChoice();
-        int keyE= GetStuff.getChoice();
-        keyType=AttrType.attrInterval;
-//        keyS = reader.nextInt();
-//        keyE=reader.nextInt();
-
-        intervaltype keyint= new intervaltype();
-        keyint.assign(keyS,keyE);
-        pageno.pid=keyS;
-        rid=new RID(pageno, keyS);
-        intfile.insert(new IntervalKey(keyint), rid);
-        System.out.println("Successfully inserted into intervaltree");
-        intervalT.printAllLeafPages(intfile.getHeaderPage());
-        break;
-        case 21:
-            System.out.println("Please enter the interval for which the scan needs to be done. All intervals with start < start of interval will be returned. ");
-            keyS = GetStuff.getChoice();
-            keyE = GetStuff.getChoice();
-            int condition = 0;               //before or equal.
-            intervaltype target = new intervaltype();
-            target.assign(keyS,keyE);
-            IntervalKey targetkey = new IntervalKey(target);
-            intscan = intfile.new_scan(targetkey, condition);
-            int count = 0;
-            if(intscan != null)
-                System.out.println("intscan is not null");
-            while((entry=intscan.get_next()) != null){
-                System.out.println("Printing result : " + count);
-                System.out.println("key : " + entry.key + " data : " + entry.data);
-                count++;
-            }
 	}
 	
 	
@@ -690,8 +642,7 @@ public class BTTest implements  GlobalConst{
 
   public static void main(String [] argvs) {
  
-    try
-    {
+    try{ 
       BTDriver bttest = new BTDriver();
       bttest.runTests();	
     }

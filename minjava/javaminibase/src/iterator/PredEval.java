@@ -10,11 +10,11 @@ public class PredEval
    *predicate evaluate, according to the condition ConExpr, judge if 
    *the two tuple can join. if so, return true, otherwise false
    *@return true or false
-   *@param p single select condition array
+   *@param p[] single select condition array
    *@param t1 compared tuple1
    *@param t2 compared tuple2
-   *@param in1 the attribute type corespond to the t1
-   *@param in2 the attribute type corespond to the t2
+   *@param in1[] the attribute type corespond to the t1
+   *@param in2[] the attribute type corespond to the t2
    *@exception IOException  some I/O error
    *@exception UnknowAttrType don't know the attribute type
    *@exception InvalidTupleSizeException size of tuple not valid
@@ -47,8 +47,7 @@ public class PredEval
 	{
 	  return true;
 	}
-
-      // to remove to need to put extra null character in the CondExpr Array
+      
       while (i<p.length && p[i] != null)
 	{
 	  temp_ptr = p[i];
@@ -116,7 +115,7 @@ public class PredEval
 		  tuple2 = value;
 		  break;
 		case AttrType.attrString:
-		  str_size[0] = (short)(temp_ptr.operand2.string.length()+1 );
+		  str_size[0] = (short)(temp_ptr.operand2.string.length()+1);
 		  value.setHdr((short)1, val_type, str_size);
 		  value.setStrFld(1, temp_ptr.operand2.string);
 		  tuple2 = value;
@@ -137,7 +136,6 @@ public class PredEval
 		  break;
 		}
 	      
-	      
 	      // Got the arguments, now perform a comparison.
 	      try {
 		comp_res = TupleUtils.CompareTupleWithTuple(comparison_type, tuple1, fld1, tuple2, fld2);
@@ -149,18 +147,23 @@ public class PredEval
 	      switch (temp_ptr.op.attrOperator)
 		{
 		case AttrOperator.aopEQ:
-		  if (comp_res == 0 && temp_ptr.flag == 0) op_res = true;	      
-		  else if (comp_res > 0  && temp_ptr.flag == 1) op_res = true;
+		  if (comp_res == 0) op_res = true;	      
+		  //else if (comp_res > 0) op_res = true;
 		  break;
 		case AttrOperator.aopLT:
-		  if (comp_res == -1 || comp_res == -3) op_res = true; //supporting attrinterval
+		  if (comp_res == -1)
+		  {
+		  	if(temp_ptr.pcflag)
+		  		op_res = tuple1.getIntervalFld(fld1).get_s() == tuple2.getIntFld(fld2-1);
+		  	else
+		  		op_res = true; //attrinterval
+		  } 
+		  //if (comp_res <  0) op_res = true;
 		  break;
 		case AttrOperator.aopGT:
-		  if (comp_res == -1) op_res = true; //supporting attrinterval
+		  if (comp_res == -1) op_res = true; //attrinterval
 		  break;
 		case AttrOperator.aopNE:
-		  if(temp_ptr.flag <= 1)  //if flag == 0 or flag == 1
-		  	return true;
 		  if (comp_res != 0) op_res = true;
 		  break;
 		case AttrOperator.aopLE:
@@ -170,11 +173,8 @@ public class PredEval
 		  if (comp_res >= 0) op_res = true;
 		  break;
 		case AttrOperator.aopNOT:
-			if (comp_res != 0) op_res = true;
-			break;
-		case AttrOperator.aopPC:
-			if (comp_res == -3) op_res = true;
-			break;
+		  if (comp_res != 0) op_res = true;
+		  break;
 		default:
 		  break;
 		}

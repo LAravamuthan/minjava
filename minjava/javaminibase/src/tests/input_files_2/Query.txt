@@ -1,0 +1,4 @@
+Query 11:
+---------------
+ptree_1: pattern_tree5
+buf_size: 100

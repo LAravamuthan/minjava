@@ -98,15 +98,13 @@ public class NestedLoopsJoins  extends Iterator
       perm_mat = proj_list;
       nOutFlds = n_out_flds;
       try {
-		t_size = TupleUtils.setup_op_tuple(Jtuple, Jtypes,
-					   in1, len_in1, in2, len_in2,
-					   t1_str_sizes, t2_str_sizes,
-					   proj_list, nOutFlds);
+	t_size = TupleUtils.setup_op_tuple(Jtuple, Jtypes,
+						in1, len_in1, in2, len_in2,
+						t1_str_sizes, t2_str_sizes,
+						proj_list, nOutFlds);
       }catch (TupleUtilsException e){
 	throw new NestedLoopException(e,"TupleUtilsException is caught by NestedLoopsJoins.java");
-      }
-      
-      
+      }    
       
       try {
 	  hf = new Heapfile(relationName);
@@ -132,8 +130,8 @@ public class NestedLoopsJoins  extends Iterator
    *@exception UnknowAttrType attribute type unknown
    *@exception UnknownKeyTypeException key type unknown
    *@exception Exception other exceptions
-
    */
+  
   public Tuple get_next()
     throws IOException,
 	   JoinsException ,
@@ -151,7 +149,7 @@ public class NestedLoopsJoins  extends Iterator
     {
       // This is a DUMBEST form of a join, not making use of any key information...
       
-      
+
       if (done)
 	return null;
       
@@ -196,7 +194,7 @@ public class NestedLoopsJoins  extends Iterator
 	  // while the inner is not completely scanned && there
 	  // is no match (with pred),get a tuple from the inner.
 
-
+	 
 	      RID rid = new RID();
 	      while ((inner_tuple = inner.getNext(rid)) != null)
 		{

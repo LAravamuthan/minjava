@@ -1,6 +1,0 @@
-3
-root
-Org
-Rattus
-1 2 AD
-2 3 PC

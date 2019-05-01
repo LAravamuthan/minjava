@@ -13,7 +13,7 @@ import bufmgr.*;
 import btree.*; 
 import catalog.*;
 
-/**
+/*
    Here is the implementation for the tests. There are N tests performed.
    We start off by showing that each operator works on its own.
    Then more complicated trees are constructed.
@@ -21,8 +21,47 @@ import catalog.*;
    We also allow the user to hardwire trees together.
 */
 
+//Define the Sailor schema
+class Sailor {
+  public int    sid;
+  public String sname;
+  public int    rating;
+  public double age;
+  
+  public Sailor (int _sid, String _sname, int _rating, double _age) {
+    sid    = _sid;
+    sname  = _sname;
+    rating = _rating;
+    age    = _age;
+  }
+}
 
-@SuppressWarnings("Duplicates")
+//Define the Boat schema
+class Boats {
+  public int    bid;
+  public String bname;
+  public String color;
+  
+  public Boats (int _bid, String _bname, String _color) {
+    bid   = _bid;
+    bname = _bname;
+    color = _color;
+  }
+}
+
+//Define the Reserves schema
+class Reserves {
+  public int    sid;
+  public int    bid;
+  public String date;
+  
+  public Reserves (int _sid, int _bid, String _date) {
+    sid  = _sid;
+    bid  = _bid;
+    date = _date;
+  }
+}
+
 class JoinsDriver implements GlobalConst {
   
   private boolean OK = true;
@@ -307,7 +346,6 @@ class JoinsDriver implements GlobalConst {
 	t.setIntFld(1, ((Reserves)reserves.elementAt(i)).sid);
 	t.setIntFld(2, ((Reserves)reserves.elementAt(i)).bid);
 	t.setStrFld(3, ((Reserves)reserves.elementAt(i)).date);
-
       }
       catch (Exception e) {
 	System.err.println("*** error in Tuple.setStrFld() ***");
@@ -831,32 +869,33 @@ class JoinsDriver implements GlobalConst {
       status = FAIL;
       e.printStackTrace();
     }
-    while ( temp != null) {
-      tt.tupleCopy(temp);
-      
-      try {
-	key = tt.getIntFld(1);
-      }
-      catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-      }
-      
-      try {
-	btf.insert(new IntegerKey(key), rid); 
-      }
-      catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-      }
+    while ( temp != null) 
+    {
+        tt.tupleCopy(temp);
+        
+        try {
+  	     key = tt.getIntFld(1);
+        }
+        catch (Exception e) {
+      	status = FAIL;
+      	e.printStackTrace();
+        }
+        
+        try {
+  	     btf.insert(new IntegerKey(key), rid); 
+        }
+        catch (Exception e) {
+      	status = FAIL;
+      	e.printStackTrace();
+        }
 
-      try {
-	temp = scan.getNext(rid);
-      }
-      catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-      }
+        try {
+  	     temp = scan.getNext(rid);
+        }
+        catch (Exception e) {
+      	status = FAIL;
+      	e.printStackTrace();
+        }
     }
     
     // close the file scan
@@ -1494,47 +1533,47 @@ class JoinsDriver implements GlobalConst {
       short  []  Bsizes = new short[2];
       Bsizes[0] =30;
       Bsizes[1] =20;
-
-
+      
+      
       AttrType [] Jtypes = {
-	new AttrType(AttrType.attrString),
-	new AttrType(AttrType.attrInteger),
+	new AttrType(AttrType.attrString), 
+	new AttrType(AttrType.attrInteger), 
       };
-
+      
       short  []  Jsizes = new short[1];
       Jsizes[0] = 30;
       AttrType [] JJtype = {
-	new AttrType(AttrType.attrString),
+	new AttrType(AttrType.attrString), 
       };
-
+      
       short [] JJsize = new short[1];
-      JJsize[0] = 30;
-
-
-
+      JJsize[0] = 30; 
+      
+      
+      
       FldSpec []  proj1 = {
 	new FldSpec(new RelSpec(RelSpec.outer), 2),
 	new FldSpec(new RelSpec(RelSpec.innerRel), 2)
       }; // S.sname, R.bid
-
+      
       FldSpec [] proj2  = {
 	new FldSpec(new RelSpec(RelSpec.outer), 1)
       };
-
+      
       FldSpec [] Sprojection = {
 	new FldSpec(new RelSpec(RelSpec.outer), 1),
 	new FldSpec(new RelSpec(RelSpec.outer), 2),
         new FldSpec(new RelSpec(RelSpec.outer), 3),
         new FldSpec(new RelSpec(RelSpec.outer), 4)
       };
-
-
-
-
-
+      
+      
+      
+      
+      
       FileScan am = null;
       try {
-	am  = new FileScan("sailors.in", Stypes, Ssizes,
+	am  = new FileScan("sailors.in", Stypes, Ssizes, 
 			   (short)4, (short)4,
 			   Sprojection, null);
       }
@@ -1543,16 +1582,16 @@ class JoinsDriver implements GlobalConst {
 	System.err.println (""+e);
 	e.printStackTrace();
       }
-
+      
       if (status != OK) {
 	//bail out
-
+	
 	System.err.println ("*** Error setting up scan for sailors");
 	Runtime.getRuntime().exit(1);
       }
-
-
-
+      
+  
+      
       NestedLoopsJoins inl = null;
       try {
 	inl = new NestedLoopsJoins (Stypes, 4, Ssizes,
@@ -1567,9 +1606,9 @@ class JoinsDriver implements GlobalConst {
 	e.printStackTrace();
 	Runtime.getRuntime().exit(1);
       }
-
+     
       System.out.print( "After nested loop join S.sid|><|R.sid.\n");
-
+	
       NestedLoopsJoins nlj = null;
       try {
 	nlj = new NestedLoopsJoins (Jtypes, 2, Jsizes,
@@ -1645,7 +1684,6 @@ class JoinsDriver implements GlobalConst {
   }
 }
 
-@SuppressWarnings("Duplicates")
 public class JoinTest
 {
   public static void main(String argv[])

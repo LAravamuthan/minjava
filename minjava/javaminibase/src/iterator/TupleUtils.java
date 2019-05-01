@@ -43,7 +43,6 @@ public class TupleUtils
       float t1_r,  t2_r;
       String t1_s, t2_s;
       intervaltype t1_it, t2_it;
-      int parentid;
       
       switch (fldType.attrType) 
 	{
@@ -86,39 +85,42 @@ public class TupleUtils
     try{
       t1_it = t1.getIntervalFld(t1_fld_no);
       t2_it = t2.getIntervalFld(t2_fld_no);
-      parentid = t2.getIntFld(t2_fld_no-1);
     }catch (FieldNumberOutOfBoundException e){
       throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
     }
-
     int s1 = t1_it.get_s();
     int e1 = t1_it.get_e();
     int s2 = t2_it.get_s();
     int e2 = t2_it.get_e();
 
+/*  if (s1 == s2) return  0;
+    if (s1 <  s2) return -1;
+    if (s1 >  s2) return  1;*/
+  
+    if(s1==s2 || e1==e2)
+      return 0; //equality
 
-      if (s1 == s2 && e1 == e2)
-          return 0; //equality
 
-
-      if (s1 < s2) {
-          if (e1 < e2) {
-              if (e1 < s2) return -2; //left non overlap
-              else return 3; //other overlap
-          } else if (parentid == s1) {
-          	      return -3;
-		  }else{
-				  return -1;
-          }
-      } else {
-          if (e2 < e1) {
-              if (e2 < s1) return 2; //right non overlap
-              else return 3;  //other overlap
-          } else return 1; //enclosure
+    if(s1 < s2)
+    {
+      if(e1 < e2)
+      {
+        if(e1 < s2)return -2; //left non overlap
+        else return -3; //other overlap
       }
+        else return -1; //containment
+    }
+    else 
+    {
+      if(e2 < e1)
+      {
+        if(e2 < s1) return 2; //right non overlap
+        else return 3;  //other overlap
+      }
+      else return 1; //enclosure
+    }
 
 	default:
-	  
 	  throw new UnknowAttrType(null, "Don't know how to handle attrSymbol, attrNull");
 	  
 	}
@@ -155,7 +157,7 @@ public class TupleUtils
    *This function Compares two Tuple inn all fields 
    * @param t1 the first tuple
    * @param t2 the secocnd tuple
-   * @param types the field types
+   * @param type[] the field types
    * @param len the field numbers
    * @return  0        if the two are not equal,
    *          1        if the two are equal,
@@ -178,7 +180,7 @@ public class TupleUtils
   /**
    *get the string specified by the field number
    *@param tuple the tuple 
-   *@param fldno the field number
+   *@param fidno the field number
    *@return the content of the field number
    *@exception IOException some I/O fault
    *@exception TupleUtilsException exception from this class
@@ -233,7 +235,7 @@ public class TupleUtils
     try {
       value.setIntervalFld(fld_no, tuple.getIntervalFld(fld_no));
     }catch (FieldNumberOutOfBoundException e){
-      throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught when setting interval type by TupleUtils.java");
+      throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
     }
     break;
 	case AttrType.attrString:

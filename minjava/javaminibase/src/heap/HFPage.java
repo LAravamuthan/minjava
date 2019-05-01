@@ -4,7 +4,6 @@ package heap;
 
 import java.io.*;
 import java.lang.*;
-
 import global.*;
 import diskmgr.*;
 
@@ -84,7 +83,7 @@ public class HFPage extends Page
    * Default constructor
    */
   
-  public HFPage ()   {  }
+  public HFPage (){}
   
   /**
    * Constructor of class HFPage
@@ -103,9 +102,9 @@ public class HFPage extends Page
    * @param  apage   a page in buffer pool
    */
   
-  public void openHFpage(Page apage)
+  public void openHFpage(Page page)
     {
-      data = apage.getpage();
+      data = page.getpage();
     }
   
   /**
@@ -118,10 +117,10 @@ public class HFPage extends Page
    */
   
   
-  public void init(PageId pageNo, Page apage)
+  public void init(PageId pageNo, Page page)
     throws IOException
     {
-      data = apage.getpage();
+      data = page.getpage();
       
       slotCnt = 0;                // no slots in use
       Convert.setShortValue (slotCnt, SLOT_CNT, data);

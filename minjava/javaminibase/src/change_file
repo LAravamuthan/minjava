@@ -1,0 +1,52 @@
+Define a new data type ”intervaltype” which consists of 2 integers, start and end of the interval.
+change 1
+./global/intervaltype.java
+
+
+Modify attribute type definitions to include a new attribute type called ”attrInterval”, in addition
+to the attribute types already defined in MiniBase.
+change 2
+./global/AttrType.java
+
+
+Modify tuple field get and set methods to include
+change 3
+./heap/Tuple.java
+
+
+Modify page get and set methods to include
+change 4
+./global/Convert.java
+
+
+Modify operand definitions to include operands of type intervaltype
+change 5
+./iterator/Operand.java
+
+
+Modify tuple comparison methods CompareTupleWithTuple and CompareTupleWithValue,
+such that they return
+change 6
+./iterator/TupleUtils.java
+
+
+Modify condition expressions, CondExpr, to include an extra field flag to be used in some
+range based conditions
+change 7
+./iterator/CondExpr.java
+
+
+Modify Eval to work with attributes of type attrInterval. For example,
+change 8
+./iterator/PredEval.java
+
+
+operators aopGE are aopLE are not defined if operands are of type attrInterval.
+change 9
+
+
+
+Modify Sort such that if the sort attribute is of type attrInterval, then the sort function
+sorts all tuples according to the start values.
+change 10
+./iterator/Sort.java

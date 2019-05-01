@@ -166,7 +166,7 @@ public class IoBuf implements GlobalConst{
     }
   
   /**
-   *if WRITE_BUFFER is true, call this mehtod to switch to read buffer.
+   *if WRITE_BUFFER is true, call this method to switch to read buffer.
    *@exception IOException some I/O fault
    *@exception Exception other exceptions
    */
@@ -187,6 +187,7 @@ public class IoBuf implements GlobalConst{
 	  // All the tuples are in the buffer, just read them out.
 	  t_rd_from_pg = 0;
 	  curr_page    = 0;
+    done = false;
 	}
     }   
   

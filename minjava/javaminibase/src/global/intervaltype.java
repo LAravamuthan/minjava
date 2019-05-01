@@ -1,5 +1,7 @@
 package global;
 
+import java.io.*;
+
 public class intervaltype {
 	
 	private int s ;
@@ -8,6 +10,11 @@ public class intervaltype {
 	public intervaltype(){
 		this.s=0;
 		this.e=0;
+	}
+
+	public intervaltype(int st, int ed){
+		this.s=st;
+		this.e=ed;
 	}
 
 	public void assign(int a, int b){
@@ -22,10 +29,10 @@ public class intervaltype {
 		return this.e;
 	}
 
-	public void set_s(int s){
-		this.s = s;
+	public intervaltype(intervaltype obj)
+	{
+		this.s = obj.get_s();
+		this.e = obj.get_e();
 	}
-	public void set_e(int e){
-		this.e = e;
-	}
+
 }

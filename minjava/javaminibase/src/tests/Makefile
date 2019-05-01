@@ -70,13 +70,10 @@ SMJoin:SM_JoinTest.java
 sortmerge: SMJoin
 	$(JAVA) tests.SM_JoinTest
 
-XMLTest1:XMLTest1.java
-	$(JAVAC) XMLTest1.java TestDriver.java
+# test XML
 
-xmltest: XMLTest1
-	$(JAVA) tests.XMLTest1
+XMLTest:XMLTest2.java
+	$(JAVAC) XMLTest2.java
 
-
-
-
-
+xmltest: XMLTest
+	$(JAVA) tests.XMLTest2

@@ -373,8 +373,8 @@ public class Tuple implements GlobalConst{
     * setHdr will set the header of this tuple.   
     *
     * @param	numFlds	  number of fields
-    * @param	types	  contains the types that will be in this tuple
-    * @param	strSizes      contains the sizes of the string
+    * @param	types[]	  contains the types that will be in this tuple
+    * @param	strSizes[]      contains the sizes of the string 
     *				
     * @exception IOException I/O errors
     * @exception InvalidTypeException Invalid tupe type
@@ -493,6 +493,21 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
      return newFldOffset;
    }
 
+
+public void print_interval(AttrType type[], String[] tags)
+throws IOException
+{
+  intervaltype itval;
+  System.out.print("[");
+  for(int i=0;i<fldCnt;i++)
+  {
+      itval = Convert.getIntervalValue(fldOffset[i], data);
+      System.out.printf("%s %s", itval.get_s(), itval.get_e());
+      System.out.print(", "+tags[i]+" |");
+  }
+  System.out.println("]");
+}
+
  /**
   * Print out the tuple
   * @param type  the types in the tuple
@@ -504,9 +519,9 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
   int i, val;
   float fval;
   String sval;
-  intervaltype interval;
+  intervaltype itval;
 
-  System.out.print("{");
+  System.out.print("[");
   for (i=0; i< fldCnt-1; i++)
    {
     switch(type[i].attrType) {
@@ -527,8 +542,8 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
      break;
 
   case AttrType.attrInterval:
-      interval = Convert.getIntervalValue(fldOffset[i], data);
-     System.out.print(" s: " + interval.get_s() +  " " + " e: " + +  interval.get_e() + " ");
+     itval = Convert.getIntervalValue(fldOffset[i], data);
+     System.out.printf("%s %s", itval.get_s(), itval.get_e());
      break;
   
    case AttrType.attrNull:
@@ -551,8 +566,8 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
      break;
 
   case AttrType.attrInterval:
-      interval = Convert.getIntervalValue(fldOffset[i], data);
-      System.out.print(" s: " + interval.get_s() +  " " + " e: " + +  interval.get_e() + " ");
+     itval = Convert.getIntervalValue(fldOffset[i], data);
+     System.out.printf("%s %s ", itval.get_s(), itval.get_e());
      break;
 
    case AttrType.attrString:
@@ -564,7 +579,7 @@ public void setHdr (short numFlds,  AttrType types[], short strSizes[])
    case AttrType.attrSymbol:
      break;
    }
-   System.out.println("}");
+   System.out.println("]");
 
  }
 

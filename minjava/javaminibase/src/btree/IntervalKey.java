@@ -1,46 +1,45 @@
 package btree;
-
-import global.intervaltype;
+import global.*;
+/**  IntegerKey: It extends the KeyClass.
+ *   It defines the integer Key.
+ */ 
 public class IntervalKey extends KeyClass {
 
-    public intervaltype key;
+  private intervaltype key;
 
-    public String toString(){
-        return key.toString();
-    }
+  public String toString(){
+     return Integer.toString(key.get_s())+" "+Integer.toString(key.get_e());
+  }
 
-    /** Class constructor
-     *
-     */
-    public IntervalKey()
-    {
-        key.assign(0,0);
+  /** Class constructor
+   *  @param     value   the value of the integer key to be set 
+   */
+  public IntervalKey(intervaltype value) 
+  { 
+    key=new intervaltype(value.get_s(), value.get_e());
+  }
 
-//        key.setS(0);
-//        key.setE(0);
-    }
-    public IntervalKey(intervaltype value)
-    {
-        key = new intervaltype();
-        key.assign(value.get_s(),value.get_e());
+  /** get a copy of the integer key
+   *  @return the reference of the copy 
+   */
+  public intervaltype getKey() 
+  {
+    return new intervaltype(key.get_s(), key.get_e());
+  }
 
-    }
+  /** set the integer key value
+   */  
+  public int compareTo(IntervalKey keytocompare)
+  {
+    if(this.getKey().get_s() < keytocompare.getKey().get_s())
+      return -1;
+    else
+      return 1;
+  }
 
-    /** Class constructor
-     *
-     */
-    public intervaltype getKey() {return  key;}
 
-
-
-    /** get a copy of the integer key
-     *  @return the reference of the copy
-     */
-
-    /** set the integer key value
-     */
-    public void setKey(intervaltype value)
-    {
-        key.assign(value.get_s(),value.get_e());
-    }
+  public void setKey(intervaltype value) 
+  { 
+    key=new intervaltype(value.get_s(), value.get_e());
+  }
 }

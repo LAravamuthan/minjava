@@ -922,13 +922,14 @@ public class Heapfile implements Filetype,  GlobalConst {
 	      DataPageInfo dpinfo = new DataPageInfo( atuple);
 	      //int dpinfoLen = arecord.length;
 	      
+	      unpinPage(dpinfo.pageId,false /*undirty*/); // changes by sarvesh
 	      freePage(dpinfo.pageId);
 	      
 	    }
 	  // ASSERTIONS:
 	  // - we have freePage()'d all data pages referenced by
 	  // the current directory page.
-	  
+	  unpinPage(currentDirPageId,false /*undirty*/);  // changes by sarvesh
 	  nextDirPageId = currentDirPage.getNextPage();
 	  freePage(currentDirPageId);
 	  
@@ -967,7 +968,7 @@ public class Heapfile implements Filetype,  GlobalConst {
     throws HFBufMgrException {
 
     try {
-      SystemDefs.JavabaseBM.unpinPage(pageno, dirty);
+      SystemDefs.JavabaseBM.unpinPage_force(pageno, dirty);
     }
     catch (Exception e) {
       throw new HFBufMgrException(e,"Heapfile.java: unpinPage() failed");

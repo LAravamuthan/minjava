@@ -65,6 +65,15 @@ class FrameDesc implements GlobalConst{
     
     return(pin_cnt);
   }
+
+  public int unpin_force() {
+    
+    pin_cnt = 0;
+    
+    return(pin_cnt);
+  }
+
+
 }
 
 
@@ -90,7 +99,7 @@ class BufHTEntry {
 // *****************************************************
 
 /** A buffer hashtable to keep track of pages in the buffer pool. 
- * It inserts, retrieves and removes pages from the h ash table. 
+ * It inserts, retrieves and removes pages from the hash table. 
  */
 class BufHashTbl implements GlobalConst{
   
@@ -252,7 +261,7 @@ class Clock extends Replacer {
    *
    * @return -1 if no frame is available.
    *         head of the list otherwise.
-   * @throws BufferPoolExceededException
+   * @throws BufferPoolExceededException.
    */
   public int pick_victim() 
     throws BufferPoolExceededException, 
@@ -465,8 +474,8 @@ public class BufMgr implements GlobalConst{
    * if emptyPage==TRUE, then actually no read is done to bring
    * the page in.
    *
-   * @param pin_pgid Page_Id_in_a_DB page number in the minibase.
-   * @param page the pointer poit to the page.
+   * @param Page_Id_in_a_DB page number in the minibase.
+   * @param page the pointer poit to the page.       
    * @param emptyPage true (empty page); false (non-empty page)
    *
    * @exception ReplacerException if there is a replacer error.
@@ -496,6 +505,8 @@ public class BufMgr implements GlobalConst{
       PageId  oldpageNo = new PageId(-1);
       int     needwrite = 0;
       
+
+
       frameNo = hashTable.lookup(pin_pgid);
       
       if (frameNo < 0) {           // Not in the buffer pool
@@ -580,7 +591,7 @@ public class BufMgr implements GlobalConst{
    * put it in a group of replacement candidates.
    * if pincount=0 before this call, return error.
    *
-   * @param PageId_in_a_DB global page number in the minibase.
+   * @param globalPageId_in_a_DB page number in the minibase.
    * @param dirty the dirty bit of the frame
    *
    * @exception ReplacerException if there is a replacer error. 
@@ -617,6 +628,37 @@ public class BufMgr implements GlobalConst{
       
     }
   
+  public void unpinPage_force(PageId PageId_in_a_DB, boolean dirty) 
+    throws ReplacerException, 
+     PageUnpinnedException, 
+     HashEntryNotFoundException, 
+     InvalidFrameNumberException
+    {
+      
+      int frameNo;
+      
+      frameNo=hashTable.lookup(PageId_in_a_DB);
+      
+      if (frameNo<0){
+  throw new HashEntryNotFoundException (null, "BUFMGR: HASH_NOT_FOUND.");
+      }
+      
+      if (frmeTable[frameNo].pageNo.pid == INVALID_PAGE) {
+  throw new InvalidFrameNumberException (null, "BUFMGR: BAD_FRAMENO.");
+  
+      }
+      
+      if ((replacer.unpin_force(frameNo)) != true) {
+  throw new ReplacerException (null, "BUFMGR: REPLACER_ERROR.");
+      }
+      
+      if (dirty == true)
+  frmeTable[frameNo].dirty = dirty;
+      
+    }
+
+
+
   
   /** Call DB object to allocate a run of new pages and 
    * find a frame in the buffer pool for the first page
@@ -798,8 +840,8 @@ public class BufMgr implements GlobalConst{
    * @return total number of buffer frames.
    */
   public int getNumBuffers() { return numBuffers; }
-  
-  
+
+
   /** Gets the total number of unpinned buffer frames.
    * 
    * @return total number of unpinned buffer frames.
@@ -817,7 +859,7 @@ public class BufMgr implements GlobalConst{
     
     try {
       SystemDefs.JavabaseDB.write_page(pageno, page);
-           PageCounter.writeIncrement();
+           PCounter.writeIncrement();
     }
     catch (Exception e) {
       throw new BufMgrException(e,"BufMgr.java: write_page() failed");
@@ -830,7 +872,7 @@ public class BufMgr implements GlobalConst{
     
     try {
       SystemDefs.JavabaseDB.read_page(pageno, page);
-      PageCounter.readIncrement();
+      PCounter.readIncrement();
 
     }
     catch (Exception e) {

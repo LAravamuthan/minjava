@@ -18,7 +18,6 @@ import heap.*;
  * (their lengths or their types), instead relying on the abstract
  * interface consisting of BT.java.
  */
-@SuppressWarnings("Duplicates")
 public class BTLeafPage extends BTSortedPage {
   
   /** pin the page with pageno, and get the corresponding BTLeafPage,

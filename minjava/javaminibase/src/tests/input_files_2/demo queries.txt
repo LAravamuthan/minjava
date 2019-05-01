@@ -1,0 +1,79 @@
+Query 1:
+---------------
+ptree_1: pattern_tree1
+ptree_2: pattern_tree2
+operation: TJ 3 4
+buf_size: 5,10,50,100,1000
+
+
+Query 2:
+---------------
+ptree_1: pattern_tree2
+operation: SRT 5
+buf_size:5,10,50,100,1000
+
+
+Query 3:
+---------------
+ptree_1: pattern_tree3
+ptree_2: pattern_tree4
+operation: NJ 3 2
+buf_size: 5,10,50,100,1000
+
+
+Query 4:
+---------------
+ptree_1: pattern_tree3
+operation: SRT 4
+buf_size:5,10,50,100,1000
+
+
+Query 5:
+---------------
+ptree_1: pattern_tree6
+buf_size: 5,10,50,100,1000
+
+
+Query 6:
+---------------
+ptree_1: pattern_tree5
+ptree_2: pattern_tree6
+operation: CP
+buf_size: 5,10,50,100,1000
+
+
+Query 7:
+---------------
+ptree_1: pattern_tree7
+ptree_2: pattern_tree8
+operation: NJ 5 5 
+buf_size: 5,10,50,100,1000
+
+
+Query 8:
+---------------
+ptree_1: pattern_tree7
+ptree_2: pattern_tree9
+operation: NJ 5 5 
+buf_size: 5,10,50,100,1000
+
+
+Query 9:
+---------------
+ptree_1: pattern_tree7
+ptree_2: pattern_tree9
+operation: TJ 5 5 
+buf_size: 5,10,50,100,1000
+
+
+Query 10:
+---------------
+ptree_1: pattern_tree8
+operation: SRT 7
+buf_size:5,10,50,100,1000
+
+
+Query 11:
+---------------
+ptree_1: pattern_tree7
+buf_size: 5,10,50,100,1000

@@ -53,6 +53,32 @@ abstract class Replacer implements GlobalConst
    * @throws PageUnpinnedException if the page is originally unpinned.
    * @return true if successful.
    */
+
+  public boolean unpin_force( int frameNo ) throws InvalidFrameNumberException, PageUnpinnedException
+  {
+    if ((frameNo < 0) || (frameNo >= (int)mgr.getNumBuffers())) {
+      
+      throw new InvalidFrameNumberException (null, "BUFMGR: BAD_BUFFRAMENO.");
+      
+    }
+
+    if ((mgr.frameTable())[frameNo].pin_count() == 0) {
+      return true;
+    }
+    else
+    {
+     (mgr.frameTable())[frameNo].unpin_force();
+
+    if ((mgr.frameTable())[frameNo].pin_count() == 0)
+        state_bit[frameNo].state = Referenced;
+    return true;
+     
+    }
+
+
+  }
+
+
   public boolean unpin( int frameNo ) throws InvalidFrameNumberException, PageUnpinnedException
   {
     if ((frameNo < 0) || (frameNo >= (int)mgr.getNumBuffers())) {
@@ -74,6 +100,8 @@ abstract class Replacer implements GlobalConst
     return true;
 
   }
+
+
 
 
   /** Frees and unpins a page in the buffer pool.

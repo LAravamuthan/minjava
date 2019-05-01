@@ -40,6 +40,7 @@ public class SortMerge extends Iterator implements GlobalConst
   private  Tuple     Jtuple;
   private  FldSpec   perm_mat[];
   private  int        nOutFlds;
+  private boolean contequality;
   
   /**
    *constructor,initialization
@@ -61,7 +62,7 @@ public class SortMerge extends Iterator implements GlobalConst
    *@param order the order of the tuple: assending or desecnding?
    *@param outFilter[]  Ptr to the output filter
    *@param proj_list shows what input fields go where in the output tuple
-   *@param n_out_flds number of outer relation fileds
+   *@param n_out_flds number of outer relation fields
    *@exception JoinNewFailed allocate failed
    *@exception JoinLowMemory memory not enough
 	 *@exception SortException exception from sorting
@@ -154,7 +155,11 @@ public class SortMerge extends Iterator implements GlobalConst
       jc_in2       = join_col_in2;
       get_from_in1 = true;
       get_from_in2 = true;
-      
+
+      contequality = false;
+      if(OutputFilter[0].op.attrOperator == AttrOperator.aopLT)
+      	contequality =  true;
+
       // open io_bufs
       io_buf1 = new IoBuf();
       io_buf2 = new IoBuf();
@@ -210,7 +215,8 @@ public class SortMerge extends Iterator implements GlobalConst
       
       // Now, that stuff is setup, all we have to do is a get_next !!!!
     }
-  
+
+
   /**
    *  The tuple is returned
    * All this function has to do is to get 1 tuple from one of the Iterators
@@ -252,140 +258,282 @@ public class SortMerge extends Iterator implements GlobalConst
 	   Exception
     {
       
-      int    comp_res;
-      Tuple _tuple1,_tuple2;
-      if (done) return null;
-      
-      while (true)
-	{
-	  if (process_next_block)
-	    {
-	      process_next_block = false;
-	      if (get_from_in1)
-		if ((tuple1 = p_i1.get_next()) == null)
-		  {
-		    done = true;
-		    return null;
-		  }
-	      if (get_from_in2)
-		if ((tuple2 = p_i2.get_next()) == null)
-		  {
-		    done = true;
-		    return null;
-		  }
-	      get_from_in1 = get_from_in2 = false;
+
+    if(!contequality)
+    {
+	      int    comp_res;
+	      Tuple _tuple1,_tuple2;
+	      if (done) return null;
 	      
-	      // Note that depending on whether the sort order
-	      // is ascending or descending,
-	      // this loop will be modified.
-	      comp_res = TupleUtils.CompareTupleWithTuple(sortFldType, tuple1,
-							  jc_in1, tuple2, jc_in2);
-	      while ((comp_res < 0 && _order.tupleOrder == TupleOrder.Ascending) ||
-		     (comp_res > 0 && _order.tupleOrder == TupleOrder.Descending))
+	      while (true)
 		{
-		  if ((tuple1 = p_i1.get_next()) == null) {
-		    done = true;
-		    return null;
-		  }
-		  
-		  comp_res = TupleUtils.CompareTupleWithTuple(sortFldType, tuple1,
-							      jc_in1, tuple2, jc_in2);
-		}
-	      
-	      comp_res = TupleUtils.CompareTupleWithTuple(sortFldType, tuple1,
-							  jc_in1, tuple2, jc_in2);
-	      while ((comp_res > 0 && _order.tupleOrder == TupleOrder.Ascending) ||
-		     (comp_res < 0 && _order.tupleOrder == TupleOrder.Descending))
-		{
-		  if ((tuple2 = p_i2.get_next()) == null)
+		  if (process_next_block)
 		    {
-		      done = true;
-		      return null;
+		      process_next_block = false;
+		      if (get_from_in1)
+			if ((tuple1 = p_i1.get_next()) == null)
+			  {
+			    done = true;
+			    return null;
+			  }
+		      if (get_from_in2)
+			if ((tuple2 = p_i2.get_next()) == null)
+			  {
+			    done = true;
+			    return null;
+			  }
+		      get_from_in1 = get_from_in2 = false;
+		      
+		      // Note that depending on whether the sort order
+		      // is ascending or descending,
+		      // this loop will be modified.
+		      comp_res = TupleUtils.CompareTupleWithTuple(sortFldType, tuple1,
+								  jc_in1, tuple2, jc_in2);
+		      while ((comp_res < 0 && _order.tupleOrder == TupleOrder.Ascending) ||
+			     (comp_res > 0 && _order.tupleOrder == TupleOrder.Descending))
+			{
+			  if ((tuple1 = p_i1.get_next()) == null) {
+			    done = true;
+			    return null;
+			  }
+			  
+			  comp_res = TupleUtils.CompareTupleWithTuple(sortFldType, tuple1,
+								      jc_in1, tuple2, jc_in2);
+			}
+		      
+		      comp_res = TupleUtils.CompareTupleWithTuple(sortFldType, tuple1,
+								  jc_in1, tuple2, jc_in2);
+		      while ((comp_res > 0 && _order.tupleOrder == TupleOrder.Ascending) ||
+			     (comp_res < 0 && _order.tupleOrder == TupleOrder.Descending))
+			{
+			  if ((tuple2 = p_i2.get_next()) == null)
+			    {
+			      done = true;
+			      return null;
+			    }
+			  
+			  comp_res = TupleUtils.CompareTupleWithTuple(sortFldType, tuple1,
+								      jc_in1, tuple2, jc_in2);
+			}
+		      
+		      if (comp_res != 0)
+			{
+			  process_next_block = true;
+			  continue;
+			}
+		      
+		      TempTuple1.tupleCopy(tuple1);
+		      TempTuple2.tupleCopy(tuple2); 
+		      
+		      io_buf1.init(_bufs1,       1, t1_size, temp_file_fd1);
+		      io_buf2.init(_bufs2,       1, t2_size, temp_file_fd2);
+		      
+		      while (TupleUtils.CompareTupleWithTuple(sortFldType, tuple1,
+							      jc_in1, TempTuple1, jc_in1) == 0)
+			{
+			  // Insert tuple1 into io_buf1
+			  try {
+			    io_buf1.Put(tuple1);
+			  }
+			  catch (Exception e){
+			    throw new JoinsException(e,"IoBuf error in sortmerge");
+			  }
+			  if ((tuple1=p_i1.get_next()) == null)
+			    {
+			      get_from_in1       = true;
+			      break;
+			    }
+			}
+		      
+		      while (TupleUtils.CompareTupleWithTuple(sortFldType, tuple2,
+							      jc_in2, TempTuple2, jc_in2) == 0)
+			{
+			  // Insert tuple2 into io_buf2
+			  
+			  try {
+			    io_buf2.Put(tuple2);
+			  }
+			  catch (Exception e){
+			    throw new JoinsException(e,"IoBuf error in sortmerge");
+			  }
+			  if ((tuple2=p_i2.get_next()) == null)
+			    {
+			      get_from_in2       = true;
+			      break;
+			    }
+			}     
+		      // tuple1 and tuple2 contain the next tuples to be processed after this set.
+		      // Now perform a join of the tuples in io_buf1 and io_buf2.
+		      // This is going to be a simple nested loops join with no frills. I guess,
+		      // it can be made more efficient, this can be done by a future 564 student.
+		      // Another optimization that can be made is to choose the inner and outer
+		      // by checking the number of tuples in each equivalence class. 
+		      if ((_tuple1=io_buf1.Get(TempTuple1)) == null)                // Should not occur
+			System.out.println( "Equiv. class 1 in sort-merge has no tuples");
 		    }
 		  
-		  comp_res = TupleUtils.CompareTupleWithTuple(sortFldType, tuple1,
-							      jc_in1, tuple2, jc_in2);
-		}
-	      
-	      if (comp_res != 0)
-		{
-		  process_next_block = true;
-		  continue;
-		}
-	      
-	      TempTuple1.tupleCopy(tuple1);
-	      TempTuple2.tupleCopy(tuple2); 
-	      
-	      io_buf1.init(_bufs1,       1, t1_size, temp_file_fd1);
-	      io_buf2.init(_bufs2,       1, t2_size, temp_file_fd2);
-	      
-	      while (TupleUtils.CompareTupleWithTuple(sortFldType, tuple1,
-						      jc_in1, TempTuple1, jc_in1) == 0)
-		{
-		  // Insert tuple1 into io_buf1
-		  try {
-		    io_buf1.Put(tuple1);
-		  }
-		  catch (Exception e){
-		    throw new JoinsException(e,"IoBuf error in sortmerge");
-		  }
-		  if ((tuple1=p_i1.get_next()) == null)
+		  if ((_tuple2 = io_buf2.Get(TempTuple2)) == null)
 		    {
-		      get_from_in1       = true;
-		      break;
+		      if (( _tuple1= io_buf1.Get(TempTuple1)) == null)
+			{
+			  process_next_block = true;
+			  continue;                                // Process next equivalence class
+			}
+		      else
+			{
+			  io_buf2.reread();
+			  _tuple2= io_buf2.Get( TempTuple2);
+			}
 		    }
-		}
+		  if (PredEval.Eval(OutputFilter, TempTuple1, TempTuple2, _in1, _in2) == true)
+		    {
+		      Projection.Join(TempTuple1, _in1, 
+				      TempTuple2, _in2, 
+				      Jtuple, perm_mat, nOutFlds);
+		      return Jtuple;
+		    }
+		}    	
+    }
+    else
+    {
+ 	      int    comp_res;
+	      Tuple _tuple1,_tuple2;
+	      if (done) return null;
 	      
-	      while (TupleUtils.CompareTupleWithTuple(sortFldType, tuple2,
-						      jc_in2, TempTuple2, jc_in2) == 0)
+	      while (true)
 		{
-		  // Insert tuple2 into io_buf2
+		  if (process_next_block)
+		    {
+		      process_next_block = false;
+		      if (get_from_in1)
+			if ((tuple1 = p_i1.get_next()) == null)
+			  {
+			    done = true;
+			    return null;
+			  }
+		      if (get_from_in2)
+			if ((tuple2 = p_i2.get_next()) == null)
+			  {
+			    done = true;
+			    return null;
+			  }
+		      get_from_in1 = get_from_in2 = false;
+		      
+		      // Note that depending on whether the sort order
+		      // is ascending or descending,
+		      // this loop will be modified.
+		      comp_res = TupleUtils.CompareTupleWithTuple(sortFldType, tuple1,
+								  jc_in1, tuple2, jc_in2);
+		      while ((comp_res < -1 && _order.tupleOrder == TupleOrder.Ascending) ||
+			     (comp_res > 0 && _order.tupleOrder == TupleOrder.Descending))
+			{
+			  if ((tuple1 = p_i1.get_next()) == null) {
+			    done = true;
+			    return null;
+			  }
+			  
+			  comp_res = TupleUtils.CompareTupleWithTuple(sortFldType, tuple1,
+								      jc_in1, tuple2, jc_in2);
+			}
+		      
+		      comp_res = TupleUtils.CompareTupleWithTuple(sortFldType, tuple1,
+								  jc_in1, tuple2, jc_in2);
+		      while ((comp_res > -1 && _order.tupleOrder == TupleOrder.Ascending) ||
+			     (comp_res < 0 && _order.tupleOrder == TupleOrder.Descending))
+			{
+			  if ((tuple2 = p_i2.get_next()) == null)
+			    {
+			      done = true;
+			      return null;
+			    }
+			  
+			  comp_res = TupleUtils.CompareTupleWithTuple(sortFldType, tuple1,
+								      jc_in1, tuple2, jc_in2);
+			}
+		      
+		      if (comp_res != -1)
+			{
+			  process_next_block = true;
+			  continue;
+			}
+
+		      TempTuple1.tupleCopy(tuple1);
+		      TempTuple2.tupleCopy(tuple2); 
+		      
+		      io_buf1.init(_bufs1,       1, t1_size, temp_file_fd1);
+		      io_buf2.init(_bufs2,       1, t2_size, temp_file_fd2);
+	
+		      while (TupleUtils.CompareTupleWithTuple(sortFldType, TempTuple1,
+							      jc_in1, tuple2, jc_in2) == -1)
+			{
+			  // Insert tuple2 into io_buf2
+			  
+			  try {
+			    io_buf2.Put(tuple2);
+			  }
+			  catch (Exception e){
+			    throw new JoinsException(e,"IoBuf error in sortmerge");
+			  }
+			  if ((tuple2=p_i2.get_next()) == null)
+			    {
+			      get_from_in2       = true;
+			      break;
+			    }
+			}  
+
+
+		      while (TupleUtils.CompareTupleWithTuple(sortFldType, tuple1,
+							      jc_in1, TempTuple2, jc_in2) <= -1)
+			{
+			  // Insert tuple1 into io_buf1
+			  try {
+			    io_buf1.Put(tuple1);
+			  }
+			  catch (Exception e){
+			    throw new JoinsException(e,"IoBuf error in sortmerge");
+			  }
+			  if ((tuple1=p_i1.get_next()) == null)
+			    {
+			      get_from_in1       = true;
+			      break;
+			    }
+			}
+		      
+   
+		      // tuple1 and tuple2 contain the next tuples to be processed after this set.
+		      // Now perform a join of the tuples in io_buf1 and io_buf2.
+		      // This is going to be a simple nested loops join with no frills. I guess,
+		      // it can be made more efficient, this can be done by a future 564 student.
+		      // Another optimization that can be made is to choose the inner and outer
+		      // by checking the number of tuples in each equivalence class. 
+		      if ((_tuple1=io_buf1.Get(TempTuple1)) == null)                // Should not occur
+			System.out.println( "Equiv. class 1 in sort-merge has no tuples");
+		    }
 		  
-		  try {
-		    io_buf2.Put(tuple2);
-		  }
-		  catch (Exception e){
-		    throw new JoinsException(e,"IoBuf error in sortmerge");
-		  }
-		  if ((tuple2=p_i2.get_next()) == null)
+		  if ((_tuple2 = io_buf2.Get(TempTuple2)) == null)
 		    {
-		      get_from_in2       = true;
-		      break;
+		      if (( _tuple1= io_buf1.Get(TempTuple1)) == null)
+			{
+			  process_next_block = true;
+			  continue;                                // Process next equivalence class
+			}
+		      else
+			{
+			  io_buf2.reread();
+			  _tuple2= io_buf2.Get( TempTuple2);
+			}
 		    }
-		}
-	      
-	      // tuple1 and tuple2 contain the next tuples to be processed after this set.
-	      // Now perform a join of the tuples in io_buf1 and io_buf2.
-	      // This is going to be a simple nested loops join with no frills. I guess,
-	      // it can be made more efficient, this can be done by a future 564 student.
-	      // Another optimization that can be made is to choose the inner and outer
-	      // by checking the number of tuples in each equivalence class.
-	      
-	      if ((_tuple1=io_buf1.Get(TempTuple1)) == null)                // Should not occur
-		System.out.println( "Equiv. class 1 in sort-merge has no tuples");
-	    }
-	  
-	  if ((_tuple2 = io_buf2.Get(TempTuple2)) == null)
-	    {
-	      if (( _tuple1= io_buf1.Get(TempTuple1)) == null)
-		{
-		  process_next_block = true;
-		  continue;                                // Process next equivalence class
-		}
-	      else
-		{
-		  io_buf2.reread();
-		  _tuple2= io_buf2.Get( TempTuple2);
-		}
-	    }
-	  if (PredEval.Eval(OutputFilter, TempTuple1, TempTuple2, _in1, _in2) == true)
-	    {
-	      Projection.Join(TempTuple1, _in1, 
-			      TempTuple2, _in2, 
-			      Jtuple, perm_mat, nOutFlds);
-	      return Jtuple;
-	    }
-	}
+		  if (PredEval.Eval(OutputFilter, TempTuple1, TempTuple2, _in1, _in2) == true)
+		    {
+		      Projection.Join(TempTuple1, _in1, 
+				      TempTuple2, _in2, 
+				      Jtuple, perm_mat, nOutFlds);
+		      return Jtuple;
+		    }
+		}      	
+    }
+
+
     }
 
   /** 

@@ -4,7 +4,7 @@ import java.io.*;
 
 /** class PageId
  */
-public class PageId implements Serializable{
+public class PageId{
   
   /** public int pid
    */

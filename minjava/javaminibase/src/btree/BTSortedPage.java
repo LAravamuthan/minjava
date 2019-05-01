@@ -19,7 +19,6 @@ import heap.*;
  * just holds abstract records in sorted order, based 
  * on how they compare using the key interface from BT.java.
  */
-@SuppressWarnings("Duplicates")
 public class BTSortedPage  extends HFPage{
 
   
