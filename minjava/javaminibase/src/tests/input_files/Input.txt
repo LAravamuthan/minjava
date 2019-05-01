@@ -1,4 +1,6 @@
-Query 6:
+Query 1:
 ---------------
 ptree_1: pattern_tree1
+ptree_2: pattern_tree2
+operation: TJ 2 3
 buf_size: 5
