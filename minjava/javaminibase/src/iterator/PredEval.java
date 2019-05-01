@@ -10,11 +10,11 @@ public class PredEval
    *predicate evaluate, according to the condition ConExpr, judge if 
    *the two tuple can join. if so, return true, otherwise false
    *@return true or false
-   *@param p[] single select condition array
+   *@param p single select condition array
    *@param t1 compared tuple1
    *@param t2 compared tuple2
-   *@param in1[] the attribute type corespond to the t1
-   *@param in2[] the attribute type corespond to the t2
+   *@param in1 the attribute type corespond to the t1
+   *@param in2 the attribute type corespond to the t2
    *@exception IOException  some I/O error
    *@exception UnknowAttrType don't know the attribute type
    *@exception InvalidTupleSizeException size of tuple not valid

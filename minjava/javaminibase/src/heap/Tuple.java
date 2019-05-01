@@ -521,7 +521,7 @@ throws IOException
   String sval;
   intervaltype itval;
 
-  System.out.print("[");
+  System.out.print("{{");
   for (i=0; i< fldCnt-1; i++)
    {
     switch(type[i].attrType) {
@@ -579,7 +579,7 @@ throws IOException
    case AttrType.attrSymbol:
      break;
    }
-   System.out.println("]");
+   System.out.println("}}");
 
  }
 

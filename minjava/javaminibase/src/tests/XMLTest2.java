@@ -450,11 +450,14 @@ class XMLDriver implements GlobalConst
 	private short[] Ssizes = null;
 	private int SizeofTuple;
 	//private TagParams maintgpair = null;
+	public HashMap<String, String> relationMap = new HashMap<String, String>();
 
 	public XMLDriver(String fileName)
 	{
 		try
 		{
+			this.relationMap.put("AD", "SM Join on Ancester descendent");
+			this.relationMap.put("PC", "SM Join on Parent Child relationship");
 			this.reader = new BufferedReader(new FileReader(fileName)); //initalize the file reader
 			this.xmlobj = new XMLLineParser();	//initialize the class constructor
 			this.stack = new Stack<Node>(); //create a stack for pushing and popping the nodes of XML this will help in assigning proper interval values
@@ -942,19 +945,14 @@ class XMLDriver implements GlobalConst
 		}
 
 		String[] badtags = GetBadTags();
-/*		System.out.println(Arrays.asList(TagtoPos));
-		displist(PTreeJoins);
-		displist(PTreetags);*/
         for(int i=0;i<TotalJoins;i++)
         {
         	JoinedTaghpname[i] =  GetRandomName();
         }
-//        System.out.println(TotalJoins);
 		for(int i=0;i<TotalJoins;i++)
 		{
 			
 			String[] Jnfields = PTreeJoins[i].split(" ");
-			//System.out.printf("the values %s %s\n", PTreetags[Integer.parseInt(Jnfields[0])-1], PTreetags[Integer.parseInt(Jnfields[1])-1]);
 			int rlftfld = Integer.parseInt(Jnfields[0])-1;
 			int rlscfld = Integer.parseInt(Jnfields[1])-1;
 
@@ -976,10 +974,7 @@ class XMLDriver implements GlobalConst
 
 
 			nljflag = DecideForNLJ(badtags, tag_param_tags[proftfld], tag_param_tags[proscfld]);
-			//System.out.printf("%s %s ", tag_param_tags[proftfld], tag_param_tags[proscfld]);
-			//System.out.println(nljflag);
-
-			try 
+			try
 			{	 
 				fscan1 = new FileScan(tag1hpflname, tag1attrtype, tag1strsz, (short) 3, 3, proj_arr, null);  //file scan pointer
 				if(nljflag)
@@ -999,7 +994,7 @@ class XMLDriver implements GlobalConst
 			}
 			catch (Exception e)
 			{
-				System.err.println ("*** Error setting join constructor / heapfile");
+				System.err.println ("*** Error setting join constructor");
 				e.printStackTrace();
 				Runtime.getRuntime().exit(1);
 			}
@@ -1371,34 +1366,11 @@ class XMLDriver implements GlobalConst
 	{
 		TagParams[] tgprarr = new TagParams[3];
 
-		//PCounter.initialize();
+
 
 		tgprarr[0] = QueryExecute(PairTags, Joins); //query 1
 		tgprarr[1] = null;
 		tgprarr[2] = null;
-		//ScanTagParams(tgprarr[0]);
-		
-/*		int[] spliter = querypossible(NumberofJoins);
-
-		//loop for second and the third query
-		for(int i=0;i<spliter.length;i++)
-		{
-			if(spliter[i] != -1)
-			{
-				tf1 = Query(AllTags, GetJoins(NumberofJoins, 0, spliter[i]));
-				tf2 = Query(AllTags, GetJoins(NumberofJoins, spliter[i], NumberofJoins.length));
-				tgprarr[i+1] = JoinQuery(tf1, tf2);		
-
-				System.out.printf("reads = %s writes = %s\n", PCounter.getreads(), PCounter.getwrites());
-				System.out.printf("Query %s executed\n", i+2);
-
-			}
-			else
-			{
-				System.out.printf("Query %s not possible\n", i+2);
-			}
-
-		}*/
 		return tgprarr;
 	}
 
@@ -1462,8 +1434,6 @@ class XMLDriver implements GlobalConst
 		{
 			Tag_hash_Set.addAll(Arrays.asList(PT2Tags));			
 		}
-
-		//Tag_hash_Set.remove("*");
 
 		unique_ele = new String[Tag_hash_Set.size()];
 		java.util.Iterator<String> it = Tag_hash_Set.iterator();
@@ -1601,13 +1571,13 @@ class XMLDriver implements GlobalConst
 			int rlscfld = Integer.parseInt(Jnfields[1])-1;
 			String relation = Jnfields[2];
 
-			temp = "("+PTTags[rlftfld]+" "+relation+" "+PTTags[rlscfld]+")";
+			temp = "{"+PTTags[rlftfld]+" "+relation+" "+PTTags[rlscfld]+"}";
 			if(i!=0)
-				merge = "("+merge+" EQ "+ temp+")";				
+				merge = "{"+merge+" Sort merge Equality join "+ temp+"}";
 			else
 				merge = new String(temp);
     	}
-    	System.out.println("Query Plan...");
+    	System.out.println("Query Plan.");
     	System.out.println(merge);
     }
 
@@ -1666,9 +1636,6 @@ class XMLDriver implements GlobalConst
 				//break;
 		}
 
-/*		System.out.print(PT2TreePresent);
-		System.out.print("  "+Operation);
-		System.out.printf(" %s %s ", index1, index2);*/
 
 		PatterTreeName1 = folderpath+((MainQLines.get(2).split(" "))[1])+".txt";
 		PTree1Lns       = ReadQuery(PatterTreeName1);
@@ -1689,12 +1656,12 @@ class XMLDriver implements GlobalConst
 		startTime = System.nanoTime();		
 
 		TagParams[] AllTags = ExtractBtreeTagToHeap(Tagpar, btreepr, UniqueTags);	
-		System.out.println("Tags Extracted from Heap File..");
+		System.out.println("All the Node relations created");
 
 		endTime = System.nanoTime();
 		durationInNano = (endTime - startTime);
 		durationInMillis = TimeUnit.NANOSECONDS.toMillis(durationInNano);  //Total execution time in nano seconds
-    	System.out.println("Tag extraction time = "+durationInMillis);
+    	System.out.println("relation creation time in seconds : "+(durationInMillis/1000));
 
     	nulljoin1 = CheckForNullJoin(AllTags, UniqueTags, PTree1Tags, PTree1Joins);
     	if(PT2TreePresent)
@@ -1718,7 +1685,7 @@ class XMLDriver implements GlobalConst
 			{
 				JoinedTagsPT2 = JoinAllPairTags(AllTags, UniqueTags, PTree2Tags, PTree2Joins, NLJTags2);
 			}
-			System.out.println("Tags Joined..");
+			System.out.println("All the realtions are joined");
 		
 			ResultPT1 = MakeQueryPlanner(JoinedTagsPT1, PTree1Joins);
 			if(PT2TreePresent)
@@ -1740,12 +1707,12 @@ class XMLDriver implements GlobalConst
 			switch(Operation)
 			{
 				case "TJ":
-					System.out.println("Tag Join\n");
+					System.out.println("Doing Tag Join\n");
 					TagJoin(ResultPT1[0], ResultPT2[0], index1, index2, bufferframes, pobj);
 					break;
 
 				case "SRT":
-					System.out.println("Sort\n");
+					System.out.println("Doing Sort\n");
 					SortRes(ResultPT1[0], index1, bufferframes, pobj);
 					break; 
 
@@ -1754,24 +1721,19 @@ class XMLDriver implements GlobalConst
 					GroupBy(ResultPT1[0], PTree1Tags, index1, bufferframes, pobj);
 					break;
 
-				case "CP":
-					System.out.println("Cartesian Product\n");
-					CartProd(ResultPT1[0], ResultPT2[0], bufferframes, pobj);
-					break;
-
 				case "NJ":
-					System.out.println("Node Join on ID\n");
+					System.out.println("Node Join\n");
 					NodeJoinID(ResultPT1[0], ResultPT2[0], index1, index2, bufferframes, pobj);
 					break;
 
 				case "Display":
-					System.out.println("Display\n");
+					System.out.println("pattern tree result display \n");
 					Display(ResultPT1[0], bufferframes, pobj);
 					break;
 
 				default:
-					System.out.println("Invalid Case/Zero Result Case");
-					System.out.println("Total Records Fetched = 0");
+					System.out.println("ill formed query or 0 results");
+					System.out.println("Total Records : 0");
 					break;
 			}			
 		}
@@ -1782,7 +1744,7 @@ class XMLDriver implements GlobalConst
 		}
 		finally
 		{
-			System.out.println("Clearing Memory");
+			System.out.println("Cleaing the intermediate Heap Files");
 			for(int i=0;i<AllTags.length;i++)
 			{
 				if(!UniqueTags[i].equals("*"))
@@ -1800,8 +1762,10 @@ class XMLDriver implements GlobalConst
 				DeleteHeapFile(JoinedTagsPT2[NLJTags2.get(i)]);
 			}
 			QueryPlanDisp(PTree1Tags, PTree1Joins);	
-			System.out.printf("Query executed\nreads = %s writes = %s\nNumber of Buffer Frames = %s\n", PCounter.getreads(), PCounter.getwrites(), bufferframes);
-			//PCounter.initialize();
+			System.out.printf("Query executed \n Number of Buffer Frames used %s\n", bufferframes);
+			System.out.println("Page Reads : " + PCounter.getreads());
+			System.out.println("Page Writes : " + PCounter.getwrites());
+			PCounter.initialize();
 		}
 		return null;
 	}
@@ -1824,7 +1788,7 @@ class XMLDriver implements GlobalConst
 				temptup.print(ltattrtype);	 
 				count_records++;
 			}
-			System.out.printf("Total records fetched = %s\n", count_records);
+			System.out.printf("Total records : %s\n", count_records);
 			ltItrtr.close();
 			pobj.CloseFile();
 		}
@@ -1863,7 +1827,7 @@ class XMLDriver implements GlobalConst
 				count_records++;
 			}
 			sortobj.close();
-			System.out.printf("Total records fetched = %s\n", count_records);
+			System.out.printf("Total records : %s\n", count_records);
 		}
 		catch (Exception e) 
 		{
@@ -1968,7 +1932,7 @@ class XMLDriver implements GlobalConst
 				temptup.print(attrtype);	 
 				count_records++;
 			}
-			System.out.printf("Total records fetched = %s\n", count_records);
+			System.out.printf("Total records : %s\n", count_records);
 			sortobj.close();
 			pobj.CloseFile();	
 		}
@@ -2022,7 +1986,7 @@ class XMLDriver implements GlobalConst
 				count_records++;
 			}
 			sm.close();
-			System.out.printf("Total records fetched = %s\n", count_records);
+			System.out.printf("Total records : %s\n", count_records);
 	    }
 	    catch (Exception e) 
 	    {
@@ -2082,7 +2046,7 @@ class XMLDriver implements GlobalConst
 				count_records++;
 			}
 			sm.close();
-			System.out.printf("Total records fetched = %s\n", count_records);
+			System.out.printf("Total records retrieved are = %s\n", count_records);
 		}
 		catch (Exception e) 
 		{
@@ -2165,6 +2129,7 @@ class XMLDriver implements GlobalConst
 //parentchildflag == true check parent child or else check ancester descendant
 //ContainOrEquality == true check containment or else check equality
 
+@SuppressWarnings("Duplicates")
 public class XMLTest2// implements  GlobalConst
 {
 	public static void main(String [] argvs) 
@@ -2173,77 +2138,33 @@ public class XMLTest2// implements  GlobalConst
 		String DataFileName = "./xml_sample_data.xml";
 		//String QueryFileName = "./queryfile.txt";
 		//String DataFileName = "./plane.xml";
-		String QFilePath = "./input_files/Query.txt";
+		String QFilePath = "./input_files/Input.txt";
 		String FolderPath = "./input_files/";
 		try
 		{
 			long startTime = System.nanoTime();		
 
-			System.out.println("Initializing XML Test object"); 
 			XMLDriver xmldvr = new XMLDriver(DataFileName);
-			//System.out.println("Reading XML file lines");
-			System.out.println("Reading the XML data file..");
-			//TagParams MainTagPair = null;
+			System.out.println("Reading XML data.");
 			TagParams MainTagPair = xmldvr.ReadFileLbyLStoreInHeapFile();
-			System.out.println("File Parsing Completed..");
-
 			TagParams SortedTagPair = xmldvr.SortHeapFile(MainTagPair);
-			System.out.println("File Sorting Completed..");
-			
-			//xmldvr.ScanHeapFile(SortedTagPair);
-			//MainTagPair.GetHeapFile().deleteFile();
 			xmldvr.DeleteHeapFile(MainTagPair);
-			MainTagPair=null;
-			System.out.println("Original Heap File Deletion Completed..");
 
-			//BTreePars btreepr = xmldvr.CreateBTreeIndex(SortedTagPair);
-			//System.out.println("BTree Index Creation Completed");
 			BTreePars btreepr = null;
 
 			long endTime = System.nanoTime();
 			long durationInNano = (endTime - startTime);
 			long durationInMillis = TimeUnit.NANOSECONDS.toMillis(durationInNano);  //Total execution time in nano seconds
 	     
-	     	System.out.print("Preprocessing time = ");
-	    	System.out.println(durationInMillis);
-/*	    	try
-	    	{
-				BufferedWriter obj = new BufferedWriter(new FileWriter("output.txt", true));    		
-	    	}
-	    	catch(Exception e)
-	    	{
-	    		e.printStackTrace();
-	    	}*/
-
-
-			//TagParams[] qresult = xmldvr.ReadQueryAndExecute(SortedTagPair, btreepr, QueryFileName);
-			//xmldvr.ScanTagParams(qresult[0]);
-			//BTreePars btpar = xmldvr.CreateBTreeIndex(SortedTagPair);
-			//xmldvr.ExtractTagBTree(SortedTagPair, btf, "crane");
-			//xmldvr.ScanHeapFile(SortedTagPair);
-			/*
-			String[] tagarr = new String[2];
-			tagarr[0]="year";
-			tagarr[1]="model";*/
-			//xmldvr.ExtractBtreeTagToIndex(SortedTagPair, btpar, tagarr);
-		
-/*			Set<String> hash_Set = new HashSet<String>(); 
-			String[] arr = {"aaa", "bbb", "ccc", "ddd","bbb", "ccc", "ddd" };
-			hash_Set.addAll(Arrays.asList(arr));;
-			hash_Set.add("Geeks"); 
-			hash_Set.add("For"); 
-			hash_Set.add("Geeks"); 
-			hash_Set.add("Example"); 
-			hash_Set.add("Set"); 	
-			System.out.println(hash_Set.contains("Geeks"));	
-			System.out.println(hash_Set.remove("Geeddks"));*/
+	     	System.out.print("XML parsing and pre processing Time in seconds:  ");
+	    	System.out.println(durationInMillis/1000);
 			int choice;
 			boolean breakflag = true;
 			Console console = System.console();
 
 			while(breakflag)
 			{
-				System.out.println("Enter you choice\n1. Execute Query\n2. Exit");
+				System.out.println("What to do next \na) Type 1 to run query in Input.txt \nb) Type 2 exit the loopy loop now!");
 				try
 				{
 					choice = Integer.parseInt(console.readLine());				
@@ -2258,8 +2179,7 @@ public class XMLTest2// implements  GlobalConst
 					case 1: 
 						try
 						{
-							//System.out.println("Enter you query file name with extension\n");
-							//String QueryFileName = "input_files/queryfile.txt";//console.readLine();
+							PCounter.initialize();
 							xmldvr.ReadQueryAndExecute(SortedTagPair, btreepr, QFilePath, FolderPath);
 						}						
 						catch(Exception e)
@@ -2272,58 +2192,24 @@ public class XMLTest2// implements  GlobalConst
 						}
 					case 2: 
 						breakflag = false;
-						System.out.println("Deleting heaps files and indexes");
 						xmldvr.DeleteHeapFile(SortedTagPair);
 						//btreepr.GetBTreeFile().destroyFile();
 						SortedTagPair=null;
 						btreepr=null;
-						System.out.println("Exiting..");
+						System.out.println("Adios...");
 						break;
 
 					default:
-						System.out.println("Invalid Choice or data entered is invalid..");
+						System.out.println("Choose between the given options(you can do this)");
 						break;
 				} 			
 			}
-			
-
-		//String[] schtag = new String[]{"root", "seqle", "102", "Speci", "Lycop"};
-			//TagParams[] tgprs = xmldvr.ExtractTagToHeap(MainTagPair, schtag);
-		//	List<Integer> ltfieldtoomit =  new ArrayList<Integer>() ;
-			//ltfieldtoomit.add(1);
-				//TagParams k =	xmldvr.JoinTwoFields(tgprs[0], 2, tgprs[1], 2, ltfieldtoomit, false, true);
-
-			 //xmldvr.ScanHeapFile(k);
-/*
-			TagParams a1_2 = xmldvr.JoinTwoFields(tgprs[0], 2, tgprs[1], 2, false, true);
-			TagParams a2_3 = xmldvr.JoinTwoFields(tgprs[1], 2, tgprs[2], 2, true, true);
-
-			TagParams a1_2_3 = xmldvr.JoinTwoFields(a1_2, 5, a2_3, 2, false ,false);*/
-			//TagParams newj = xmldvr.JoinTwoFields(firjoin, 2, tgprs[2], 2);
-/*			for(int i=0;i<3;i++)
-			{
-				xmldvr.ScanHeapFile(tgprs[i]);
-			}*/
-			//xmldvr.ScanHeapFile(MainTagPair);
-
-/*			for(int i=0;i<qresult.length;i++)
-			{
-				if(qresult[i] != null)
-				{
-					xmldvr.ScanHeapFile(qresult[i]);  //print all the heap file query results
-				}
-		
-			}*/
-			//xmldvr.ScanHeapFile(qresult[0]);
-			//xmldvr.Sort_My_Field();
-/*			System.out.println(PCounter.getreads());
-			System.out.println(PCounter.getwrites());*/
 		}
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			System.err.println ("Error encountered during XML tests:\n");
-			Runtime.getRuntime().exit(1);
+			System.err.println ("Error encountered in running the queries");
+			//Runtime.getRuntime().exit(1);
 		}
 	} 
 }
